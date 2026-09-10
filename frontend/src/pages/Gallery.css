@@ -1,0 +1,123 @@
+.gallery {
+  padding: 40px 0;
+}
+.gallery__header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.gallery__title {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+.gallery__subtitle {
+  color: var(--clr-text-light);
+}
+.gallery__stats {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 30px;
+}
+.gallery__stat {
+  display: flex;
+  flex-direction: column;
+}
+.gallery__stat strong {
+  font-size: 1.5rem;
+  color: var(--clr-primary);
+}
+.gallery__filters {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+.gallery__filter-btn {
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--clr-border);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.gallery__filter-btn--active, .gallery__filter-btn:hover {
+  background: var(--clr-primary);
+  color: white;
+  border-color: var(--clr-primary);
+}
+.gallery__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 60px;
+}
+.gallery__item {
+  position: relative;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  height: 300px;
+}
+.gallery__item--tall {
+  height: 400px;
+}
+.gallery__board {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s;
+}
+.gallery__item:hover .gallery__board {
+  transform: scale(1.05);
+}
+.gallery__board-text {
+  color: white;
+  font-weight: bold;
+  font-size: 1.2rem;
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.3);
+}
+.gallery__overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s;
+  padding: 20px;
+  text-align: center;
+  color: white;
+}
+.gallery__overlay--visible {
+  opacity: 1;
+}
+.gallery__overlay-product {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+.gallery__item-tag {
+  position: absolute;
+  bottom: 15px;
+  left: 15px;
+  background: rgba(255,255,255,0.9);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: black;
+}
+.gallery__cta-inner {
+  text-align: center;
+  padding: 40px;
+  position: relative;
+  overflow: hidden;
+}
+.gallery__cta-actions {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
+}
