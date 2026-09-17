@@ -1,29 +1,32 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingBag, Eye, Star, CheckCircle, XCircle } from 'lucide-react';
-import { useCart } from '../../context/CartContext';
+import { Eye, Star, CheckCircle, XCircle } from 'lucide-react';
 import { formatPrice } from '../../data/products';
 import './ProductCard.css';
 
-export default function ProductCard({ product, showAddToCart = true }) {
-  const { dispatch, items } = useCart();
-  const [added, setAdded] = useState(false);
-  const inCart = items.some((i) => i.id === product.id);
-
-  const handleAdd = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    dispatch({ type: 'ADD_ITEM', payload: product });
-    setAdded(true);
-    setTimeout(() => setAdded(false), 2000);
-  };
-
+export default function ProductCard({ product }) {
   const shapeClass = {
     round: 'product-card__visual--round',
     dome:  'product-card__visual--dome',
     box:   'product-card__visual--box',
     large: 'product-card__visual--large',
   }[product.shape] || '';
+
+  // For Flowerbox, show price range
+  const priceLabel = product.id === 'flowerbox'
+    ? `${formatPrice(70000)} – ${formatPrice(85000)}`
+    : formatPrice(product.price);
+
+  // Count total variants
+  const variantCount = product.variants
+    ? Object.values(product.variants).reduce((sum, v) => {
+        if (Array.isArray(v)) {
+          if (typeof v[0] === 'object') return sum + v.length;
+          return sum + v.length;
+        }
+        return sum;
+      }, 0)
+    : 0;
 
   return (
     <div className="product-card card">
@@ -34,7 +37,7 @@ export default function ProductCard({ product, showAddToCart = true }) {
           <div className="product-card__visual-shine" />
           <div className="product-card__visual-dots" />
           <div className="product-card__visual-text">
-            <span>✦ Papan Ucapan ✦</span>
+            <span>✦ {product.name} ✦</span>
           </div>
         </div>
         {/* Availability Badge */}
@@ -58,38 +61,34 @@ export default function ProductCard({ product, showAddToCart = true }) {
           <div className="product-card__size">📐 {product.size}</div>
         )}
 
+        {variantCount > 0 && (
+          <div className="product-card__variants">
+            🎨 {variantCount} pilihan varian
+          </div>
+        )}
+
         <div className="product-card__rating">
           {[1,2,3,4,5].map((s) => (
-            <Star key={s} size={12} fill="#FFD166" color="#FFD166" />
+            <Star key={s} size={12} fill="#C49A3C" color="#C49A3C" />
           ))}
           <span>(4.9)</span>
         </div>
 
         <div className="product-card__footer">
           <div className="product-card__price">
-            <span className="product-card__price-label">Sewa / hari</span>
-            <span className="product-card__price-amount">{formatPrice(product.price)}</span>
+            <span className="product-card__price-label">
+              {product.id === 'flowerbox' ? 'Mulai dari' : 'Sewa / hari'}
+            </span>
+            <span className="product-card__price-amount">{priceLabel}</span>
           </div>
 
-          {showAddToCart && (
-            <div className="product-card__actions">
-              <Link
-                to={`/product/${product.id}`}
-                className="product-card__icon-btn"
-                title="Lihat Detail"
-              >
-                <Eye size={16} />
-              </Link>
-              <button
-                className={`product-card__icon-btn product-card__add-btn ${inCart ? 'in-cart' : ''} ${added ? 'just-added' : ''}`}
-                onClick={handleAdd}
-                disabled={!product.available}
-                title={inCart ? 'Di Keranjang' : 'Tambah ke Keranjang'}
-              >
-                <ShoppingBag size={16} />
-              </button>
-            </div>
-          )}
+          <Link
+            to={`/product/${product.id}`}
+            className="btn btn-primary btn-sm product-card__cta"
+          >
+            <Eye size={14} />
+            Lihat Detail
+          </Link>
         </div>
       </div>
     </div>

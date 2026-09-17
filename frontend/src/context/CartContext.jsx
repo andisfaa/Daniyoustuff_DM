@@ -5,24 +5,26 @@ const CartContext = createContext(null);
 const cartReducer = (state, action) => {
   switch (action.type) {
     case 'ADD_ITEM': {
-      const existing = state.items.find((i) => i.id === action.payload.id);
+      // Generate a unique cart key based on product id + variant selections
+      const cartKey = action.payload.cartKey || action.payload.id;
+      const existing = state.items.find((i) => i.cartKey === cartKey);
       if (existing) {
         return {
           ...state,
           items: state.items.map((i) =>
-            i.id === action.payload.id ? { ...i, quantity: i.quantity + 1 } : i
+            i.cartKey === cartKey ? { ...i, quantity: i.quantity + 1 } : i
           ),
         };
       }
-      return { ...state, items: [...state.items, { ...action.payload, quantity: 1 }] };
+      return { ...state, items: [...state.items, { ...action.payload, cartKey, quantity: 1 }] };
     }
     case 'REMOVE_ITEM':
-      return { ...state, items: state.items.filter((i) => i.id !== action.payload) };
+      return { ...state, items: state.items.filter((i) => i.cartKey !== action.payload) };
     case 'UPDATE_QUANTITY':
       return {
         ...state,
         items: state.items.map((i) =>
-          i.id === action.payload.id
+          i.cartKey === action.payload.cartKey
             ? { ...i, quantity: Math.max(1, action.payload.quantity) }
             : i
         ),
@@ -31,7 +33,7 @@ const cartReducer = (state, action) => {
       return {
         ...state,
         items: state.items.map((i) =>
-          i.id === action.payload.id ? { ...i, ...action.payload.updates } : i
+          i.cartKey === action.payload.cartKey ? { ...i, ...action.payload.updates } : i
         ),
       };
     case 'CLEAR_CART':
@@ -82,7 +84,7 @@ export const CartProvider = ({ children }) => {
     localStorage.setItem('daniyou_cart', JSON.stringify(state));
   }, [state]);
 
-  const subtotal = state.items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  const subtotal = state.items.reduce((sum, i) => sum + (i.selectedPrice || i.price) * i.quantity, 0);
   const deliveryFee = state.deliveryOption === 'delivery' ? DELIVERY_FEE : 0;
   const discountAmount = subtotal * state.promoDiscount;
   const total = subtotal + deliveryFee + DEPOSIT - discountAmount;

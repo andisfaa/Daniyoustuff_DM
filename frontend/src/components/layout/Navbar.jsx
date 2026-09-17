@@ -116,7 +116,7 @@ export default function Navbar() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Cari papan akrilik... (e.g. Pink Soft, Kubah, Navy)"
+                placeholder="Cari papan akrilik... (e.g. Bulat, Kubah, Flowerbox)"
                 className="navbar__search-input"
               />
               <button type="submit" className="btn btn-primary btn-sm">Cari</button>
@@ -141,7 +141,7 @@ export default function Navbar() {
           <li>
             <Link to="/cart" className="navbar__mobile-link">
               <ShoppingBag size={18} /> Keranjang
-              {itemCount > 0 && <span className="badge badge-purple">{itemCount}</span>}
+              {itemCount > 0 && <span className="badge badge-brown">{itemCount}</span>}
             </Link>
           </li>
           <li>

@@ -1,16 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles, Camera as Instagram, MessageCircle, MapPin, Phone, Heart } from 'lucide-react';
+import { Sparkles, Camera as Instagram, MessageCircle, MapPin, Phone, Heart, Music } from 'lucide-react';
 import './Footer.css';
 
-const WA_NUMBER = '6281234567890'; // placeholder – update with real number
+const WA_NUMBER = '6281356942724';
 
 export default function Footer() {
   return (
     <footer className="footer">
       {/* CTA Banner */}
       <div className="footer__cta">
-        <div className="container footer__cta-inner">
+        <div className="footer__cta-inner">
           <div className="footer__cta-content">
             <h3 className="footer__cta-title">Siap Membuat Momenmu Tak Terlupakan?</h3>
             <p className="footer__cta-desc">
@@ -63,6 +63,15 @@ export default function Footer() {
                 <Instagram size={18} />
               </a>
               <a
+                href="https://www.tiktok.com/@papan.akrilik.murah"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="footer__social-btn"
+                aria-label="TikTok"
+              >
+                <Music size={18} />
+              </a>
+              <a
                 href={`https://wa.me/${WA_NUMBER}`}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -82,7 +91,6 @@ export default function Footer() {
               <li><Link to="/catalog">Katalog Produk</Link></li>
               <li><Link to="/gallery">Portofolio</Link></li>
               <li><Link to="/track">Lacak Pesanan</Link></li>
-              <li><Link to="/account">Akun Saya</Link></li>
             </ul>
           </div>
 
@@ -108,13 +116,19 @@ export default function Footer() {
               <li>
                 <Phone size={15} />
                 <a href={`https://wa.me/${WA_NUMBER}`} target="_blank" rel="noopener noreferrer">
-                  +62 812-3456-7890
+                  +62 813-5694-2724
                 </a>
               </li>
               <li>
                 <Instagram size={15} />
                 <a href="https://www.instagram.com/daniyoustuff.co" target="_blank" rel="noopener noreferrer">
                   @daniyoustuff.co
+                </a>
+              </li>
+              <li>
+                <Music size={15} />
+                <a href="https://www.tiktok.com/@papan.akrilik.murah" target="_blank" rel="noopener noreferrer">
+                  @papan.akrilik.murah
                 </a>
               </li>
             </ul>
