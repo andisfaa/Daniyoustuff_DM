@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
-import { CheckCircle, Download, MessageCircle, Package, ArrowRight, Copy, Star } from 'lucide-react';
+import { CheckCircle, Download, MessageCircle, Package, ArrowRight, Copy, Star, Sparkles, PenTool, Award, Clock, MapPin, CreditCard, Palette, Rocket, Camera } from 'lucide-react';
 import { formatPrice } from '../data/products';
 import './Confirmation.css';
 
@@ -70,7 +70,7 @@ export default function Confirmation() {
         </div>
 
         <div className="confirmation__heading">
-          <h1 className="confirmation__title">Pesananmu Berhasil! 🎉</h1>
+          <h1 className="confirmation__title">Pesananmu Berhasil! <Sparkles size={32} style={{ display: 'inline', verticalAlign: 'middle', marginLeft: '8px', color: 'var(--clr-primary)' }} /></h1>
           <p className="confirmation__subtitle">
             Terima kasih, <strong>{form.name}</strong>! Pesananmu sudah kami terima.
             Tim Daniyou Stuff akan segera menghubungimu via WhatsApp.
@@ -81,7 +81,7 @@ export default function Confirmation() {
         <div className="confirmation__invoice card" ref={invoiceRef}>
           <div className="invoice__header">
             <div className="invoice__brand">
-              <div className="invoice__brand-logo">✦</div>
+              <div className="invoice__brand-logo"><Sparkles size={16} /></div>
               <div>
                 <div className="invoice__brand-name">Daniyou Stuff.co</div>
                 <div className="invoice__brand-tagline">Sewa Papan Akrilik Premium</div>
@@ -150,8 +150,8 @@ export default function Confirmation() {
                   />
                   <div className="invoice__item-info">
                     <div className="invoice__item-name">{item.name}</div>
-                    {item.customName && <div className="invoice__item-meta">✏️ {item.customName}</div>}
-                    {item.eventType && <div className="invoice__item-meta">🎓 {item.eventType}</div>}
+                    {item.customName && <div className="invoice__item-meta"><PenTool size={12} style={{ display: 'inline', marginRight: '4px' }} /> {item.customName}</div>}
+                    {item.eventType && <div className="invoice__item-meta"><Award size={12} style={{ display: 'inline', marginRight: '4px' }} /> {item.eventType}</div>}
                   </div>
                   <div className="invoice__item-qty">x{item.quantity}</div>
                   <div className="invoice__item-price">{formatPrice(item.price * item.quantity)}</div>
@@ -176,7 +176,7 @@ export default function Confirmation() {
 
           <div className="invoice__footer">
             <div className="invoice__status">
-              <span className="badge badge-purple">⏳ Menunggu Konfirmasi</span>
+              <span className="badge badge-purple"><Clock size={12} style={{ display: 'inline', marginRight: '4px' }} /> Menunggu Konfirmasi</span>
             </div>
             <div className="invoice__footer-note">
               Mockup desain akan dikirim setelah pembayaran dikonfirmasi via WhatsApp
@@ -186,13 +186,13 @@ export default function Confirmation() {
 
         {/* Next Steps */}
         <div className="confirmation__next-steps">
-          <h3 className="confirmation__steps-title">🗺️ Langkah Selanjutnya</h3>
+          <h3 className="confirmation__steps-title"><MapPin size={20} style={{ display: 'inline', marginRight: '8px', verticalAlign: 'middle' }} /> Langkah Selanjutnya</h3>
           <div className="confirmation__steps-grid">
             {[
-              { step: '01', icon: '💳', title: 'Konfirmasi Pembayaran', desc: 'Lakukan pembayaran sesuai metode yang dipilih dan konfirmasi via WhatsApp.' },
-              { step: '02', icon: '🎨', title: 'Approval Desain', desc: 'Tim kami mengirim mockup desain papan. Review dan setujui via chat.' },
-              { step: '03', icon: '📦', title: 'Persiapan Papan', desc: 'Papan disiapkan sesuai desain yang disetujui, siap untuk dikirim.' },
-              { step: '04', icon: '🚀', title: 'Pengiriman / Ambil', desc: 'Papan dikirim ke lokasimu atau siap dijemput pada tanggal yang disepakati.' },
+              { step: '01', icon: <CreditCard size={24} />, title: 'Konfirmasi Pembayaran', desc: 'Lakukan pembayaran sesuai metode yang dipilih dan konfirmasi via WhatsApp.' },
+              { step: '02', icon: <Palette size={24} />, title: 'Approval Desain', desc: 'Tim kami mengirim mockup desain papan. Review dan setujui via chat.' },
+              { step: '03', icon: <Package size={24} />, title: 'Persiapan Papan', desc: 'Papan disiapkan sesuai desain yang disetujui, siap untuk dikirim.' },
+              { step: '04', icon: <Rocket size={24} />, title: 'Pengiriman / Ambil', desc: 'Papan dikirim ke lokasimu atau siap dijemput pada tanggal yang disepakati.' },
             ].map((s) => (
               <div key={s.step} className="confirmation__step-card card">
                 <div className="confirmation__step-num">{s.step}</div>
@@ -231,7 +231,7 @@ export default function Confirmation() {
           <div className="confirmation__review-stars">
             {[1,2,3,4,5].map((s) => <Star key={s} size={20} fill="#FFD166" color="#FFD166" />)}
           </div>
-          <p>Senang dengan pengalamanmu? Bagikan ceritamu di Instagram dengan tag <strong>@daniyoustuff.co</strong> 📸</p>
+          <p>Senang dengan pengalamanmu? Bagikan ceritamu di Instagram dengan tag <strong>@daniyoustuff.co</strong> <Camera size={18} style={{ display: 'inline', marginLeft: '4px', verticalAlign: 'middle' }} /></p>
         </div>
       </div>
     </div>

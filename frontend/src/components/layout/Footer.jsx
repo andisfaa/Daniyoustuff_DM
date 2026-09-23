@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Sparkles, Camera as Instagram, MessageCircle, MapPin, Phone, Heart, Music } from 'lucide-react';
+import logoImg from '../../assets/IMG/LOGO DANIYOUSTUFF.CO.png';
 import './Footer.css';
 
 const WA_NUMBER = '6281356942724';
@@ -40,13 +41,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="footer__brand">
             <div className="footer__logo">
-              <div className="footer__logo-icon">
-                <Sparkles size={18} />
-              </div>
-              <div>
-                <div className="footer__logo-name">Daniyou Stuff.co</div>
-                <div className="footer__logo-tagline">Sewa Papan Akrilik Premium</div>
-              </div>
+              <img src={logoImg} alt="DaniyouStuff Logo" className="footer__logo-img" style={{ height: '50px', width: 'auto', borderRadius: '50%' }} />
             </div>
             <p className="footer__brand-desc">
               Spesialis sewa papan ucapan akrilik cantik untuk wisuda, semhas, ulang tahun,

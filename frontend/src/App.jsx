@@ -10,6 +10,7 @@ import Checkout from './pages/Checkout';
 import Confirmation from './pages/Confirmation';
 import OrderTracking from './pages/OrderTracking';
 import Gallery from './pages/Gallery';
+import Customization from './pages/Customization';
 import { CartProvider } from './context/CartContext';
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/catalog" element={<Catalog />} />
               <Route path="/product/:id" element={<ProductDetail />} />
+              <Route path="/product/:id/customize" element={<Customization />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/confirmation" element={<Confirmation />} />

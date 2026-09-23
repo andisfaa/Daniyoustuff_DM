@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Sparkles, Star, ArrowRight, CheckCircle, Truck, Clock,
-  MessageCircle, Award, Users, Camera, ChevronDown
+  MessageCircle, Award, Users, Camera, ChevronDown,
+  Palette, PenTool, Rocket, Search, Calendar, CreditCard
 } from 'lucide-react';
 import ProductCard from '../components/catalog/ProductCard';
 import { products, formatPrice } from '../data/products';
@@ -52,22 +53,22 @@ const STATS = [
 
 const HIGHLIGHTS = [
   {
-    icon: '🎨',
+    icon: <Palette size={24} />,
     title: '27+ Pilihan Papan',
     desc: 'Koleksi lengkap papan bulat, kubah, besar, dan flowerbox dengan berbagai kombinasi warna yang trendi.',
   },
   {
-    icon: '✏️',
+    icon: <PenTool size={24} />,
     title: 'Custom Teks Gratis',
     desc: 'Tulis nama, ucapan, atau pesan istimewamu. Tim kami akan mendesain layout terbaik untukmu.',
   },
   {
-    icon: '🚀',
+    icon: <Rocket size={24} />,
     title: 'Antar-Jemput Cepat',
     desc: 'Layanan pengiriman dan penjemputan ke lokasi acaramu di Makassar & Gowa. Tepat waktu dijamin!',
   },
   {
-    icon: '📸',
+    icon: <Camera size={24} />,
     title: 'Foto-Friendly Design',
     desc: 'Setiap papan dirancang untuk tampil sempurna di foto. Dijamin aesthetic di Instagram dan TikTok!',
   },
@@ -98,15 +99,15 @@ export default function Home() {
         <div className="hero__boards" aria-hidden="true">
           <div className="hero__board hero__board--1" style={{ background: 'linear-gradient(135deg, #FFB6C1, #FF6B9D)' }}>
             <div className="hero__board-shine" />
-            <span>✦ Wisuda ✦</span>
+            <span><Sparkles size={12} style={{ display: 'inline', marginRight: '4px' }} /> Wisuda <Sparkles size={12} style={{ display: 'inline', marginLeft: '4px' }} /></span>
           </div>
           <div className="hero__board hero__board--2" style={{ background: 'linear-gradient(135deg, #1565C0, #42A5F5)' }}>
             <div className="hero__board-shine" />
-            <span>✦ Semhas ✦</span>
+            <span><Sparkles size={12} style={{ display: 'inline', marginRight: '4px' }} /> Semhas <Sparkles size={12} style={{ display: 'inline', marginLeft: '4px' }} /></span>
           </div>
           <div className="hero__board hero__board--3" style={{ background: 'linear-gradient(135deg, #9C27B0, #CE93D8)' }}>
             <div className="hero__board-shine" />
-            <span>✦ Spesial ✦</span>
+            <span><Sparkles size={12} style={{ display: 'inline', marginRight: '4px' }} /> Spesial <Sparkles size={12} style={{ display: 'inline', marginLeft: '4px' }} /></span>
           </div>
         </div>
 
@@ -228,10 +229,10 @@ export default function Home() {
 
           <div className="how-steps">
             {[
-              { step: '01', icon: '🔍', title: 'Pilih Papan', desc: 'Browse koleksi kami dan pilih papan yang paling cocok untuk momenmu.' },
-              { step: '02', icon: '✏️', title: 'Kustomisasi', desc: 'Input nama, ucapan, tanggal acara, dan detail lainnya sesuai keinginanmu.' },
-              { step: '03', icon: '📅', title: 'Jadwalkan', desc: 'Pilih tanggal sewa, durasi, dan opsi pengiriman (antar-jemput tersedia).' },
-              { step: '04', icon: '💳', title: 'Bayar & Konfirmasi', desc: 'Bayar via QRIS/Transfer, lalu konfirmasi via WhatsApp. Selesai!' },
+              { step: '01', icon: <Search size={24} />, title: 'Pilih Papan', desc: 'Browse koleksi kami dan pilih papan yang paling cocok untuk momenmu.' },
+              { step: '02', icon: <PenTool size={24} />, title: 'Kustomisasi', desc: 'Input nama, ucapan, tanggal acara, dan detail lainnya sesuai keinginanmu.' },
+              { step: '03', icon: <Calendar size={24} />, title: 'Jadwalkan', desc: 'Pilih tanggal sewa, durasi, dan opsi pengiriman (antar-jemput tersedia).' },
+              { step: '04', icon: <CreditCard size={24} />, title: 'Bayar & Konfirmasi', desc: 'Bayar via QRIS/Transfer, lalu konfirmasi via WhatsApp. Selesai!' },
             ].map((s, i) => (
               <div className="how-step" key={i}>
                 <div className="how-step__number">{s.step}</div>
@@ -329,7 +330,7 @@ export default function Home() {
               ].map((g, i) => (
                 <div key={i} className={`brand-mini-board brand-mini-board--${i + 1}`} style={{ background: g }}>
                   <div className="brand-mini-board__shine" />
-                  <span>✦</span>
+                  <Sparkles size={16} />
                 </div>
               ))}
             </div>

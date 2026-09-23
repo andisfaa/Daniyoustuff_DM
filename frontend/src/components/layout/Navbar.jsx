@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ShoppingBag, Menu, X, Sparkles, Search } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
+import logoImg from '../../assets/IMG/LOGO DANIYOUSTUFF.CO.png';
 import './Navbar.css';
 
 const NAV_LINKS = [
@@ -51,13 +52,7 @@ export default function Navbar() {
         <div className="navbar__inner container">
           {/* Logo */}
           <Link to="/" className="navbar__logo">
-            <div className="navbar__logo-icon">
-              <Sparkles size={18} />
-            </div>
-            <div className="navbar__logo-text">
-              <span className="navbar__logo-brand">Daniyou</span>
-              <span className="navbar__logo-sub">Stuff.co</span>
-            </div>
+            <img src={logoImg} alt="DaniyouStuff Logo" className="navbar__logo-img" style={{ height: '40px', width: 'auto', borderRadius: '50%' }} />
           </Link>
 
           {/* Desktop Links */}

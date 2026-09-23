@@ -312,7 +312,7 @@ export default function Catalog() {
               </div>
             ) : (
               <div className="catalog__empty">
-                <div className="catalog__empty-icon">🔍</div>
+                <div className="catalog__empty-icon" style={{ marginBottom: '16px' }}><Search size={48} color="var(--clr-border)" /></div>
                 <h3>Produk tidak ditemukan</h3>
                 <p>Coba ubah kata kunci atau filter pencarianmu.</p>
                 <button

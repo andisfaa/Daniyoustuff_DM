@@ -300,11 +300,23 @@ function CartItemRow({ item, dispatch }) {
         {item.size !== 'Custom' && (
           <div className="cart-item__size">📐 {item.size}</div>
         )}
+        {item.selectedModel && (
+          <div className="cart-item__custom">🏷️ {item.selectedModel}</div>
+        )}
         {item.eventType && (
           <div className="cart-item__event">🎓 {item.eventType}</div>
         )}
         {item.customName && (
           <div className="cart-item__custom">✏️ {item.customName}</div>
+        )}
+        {item.selectedBoardColor && (
+          <div className="cart-item__custom">🎨 Papan: {item.selectedBoardColor}</div>
+        )}
+        {item.selectedDecorColor && (
+          <div className="cart-item__custom">🌸 Dekorasi: {item.selectedDecorColor}</div>
+        )}
+        {item.selectedLayout && (
+          <div className="cart-item__custom">📐 Layout: {item.selectedLayout}</div>
         )}
       </div>
 

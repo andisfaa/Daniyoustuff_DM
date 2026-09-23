@@ -54,33 +54,60 @@ export default function Checkout() {
     if (errors[e.target.name]) setErrors({ ...errors, [e.target.name]: '' });
   };
 
+  const buildWaMessage = (orderId) => {
+    const paymentLabels = { qris: 'QRIS', ewallet: 'E-Wallet', transfer: 'Transfer Bank' };
+    const lines = [
+      `Halo Daniyou Stuff! 🌸`,
+      ``,
+      `Saya ingin mengkonfirmasi pesanan:`,
+      `📋 No. Pesanan: *${orderId}*`,
+      `👤 Nama: ${form.name}`,
+      `📱 HP: ${form.phone}`,
+      ``,
+      `🎨 Papan yang Disewa:`,
+      ...items.map((i) => `• ${i.name} x${i.quantity}${i.customName ? ` (${i.customName})` : ''}`),
+      ``,
+      `📅 Tanggal Sewa: ${rentalDate ? new Date(rentalDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-'}`,
+      `🚚 Pengiriman: ${deliveryOption === 'delivery' ? 'Antar-Jemput' : 'Ambil Sendiri'}`,
+      `💳 Metode Bayar: ${paymentLabels[paymentMethod]}`,
+      `💰 Total: ${formatPrice(total)}`,
+      ``,
+      `Terima kasih! 🙏`,
+    ];
+    return encodeURIComponent(lines.join('\n'));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
+    
     setProcessing(true);
-    // Simulate payment processing
-    setTimeout(() => {
-      const orderId = 'DYS-' + Date.now().toString().slice(-8).toUpperCase();
-      navigate('/confirmation', {
-        state: {
-          orderId,
-          form,
-          paymentMethod,
-          items,
-          subtotal,
-          deliveryFee,
-          discountAmount,
-          deposit,
-          total,
-          rentalDate,
-          returnDate,
-          deliveryOption,
-          promoCode,
-        },
-      });
-      dispatch({ type: 'CLEAR_CART' });
-    }, 1800);
+    
+    const orderId = 'DYS-' + Date.now().toString().slice(-8).toUpperCase();
+    const waUrl = `https://wa.me/6281234567890?text=${buildWaMessage(orderId)}`;
+    
+    // Open WA in a new tab synchronously to avoid popup blockers
+    window.open(waUrl, '_blank');
+
+    navigate('/confirmation', {
+      state: {
+        orderId,
+        form,
+        paymentMethod,
+        items,
+        subtotal,
+        deliveryFee,
+        discountAmount,
+        deposit,
+        total,
+        rentalDate,
+        returnDate,
+        deliveryOption,
+        promoCode,
+      },
+    });
+    dispatch({ type: 'CLEAR_CART' });
   };
 
   if (items.length === 0) {

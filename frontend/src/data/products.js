@@ -3,6 +3,11 @@
 // 4 main product types with configurable variants
 // ============================================================
 
+const bulatImages = Object.values(import.meta.glob('../assets/IMG/Katalog Daniyou/PAPAN BULAT/*.jpeg', { eager: true, import: 'default' }));
+const kubahImages = Object.values(import.meta.glob('../assets/IMG/Katalog Daniyou/PAPAN KUBAH/*.jpeg', { eager: true, import: 'default' }));
+const flowerboxImages = Object.values(import.meta.glob('../assets/IMG/Katalog Daniyou/PAPAN FLOWERBOX/*.jpeg', { eager: true, import: 'default' }));
+const besarImages = Object.values(import.meta.glob('../assets/IMG/Katalog Daniyou/PAPAN BESAR/*.jpeg', { eager: true, import: 'default' }));
+
 export const CATEGORIES = {
   BULAT: 'Papan Bulat',
   KUBAH: 'Papan Kubah',
@@ -60,6 +65,7 @@ export const products = [
     features: ['Frame kayu premium', 'Dekorasi bunga segar', 'Custom teks & nama', 'Dapat difoto dari semua sisi'],
     gradient: PALETTES['Pink Soft'],
     shape: 'round',
+    images: bulatImages,
     available: true,
     stock: 5,
     variants: {
@@ -79,6 +85,7 @@ export const products = [
     features: ['Bentuk kubah unik', 'Dekorasi bunga segar', 'Custom teks & nama', 'Tinggi & menawan'],
     gradient: PALETTES['Biru Navy'],
     shape: 'dome',
+    images: kubahImages,
     available: true,
     stock: 5,
     variants: {
@@ -96,6 +103,7 @@ export const products = [
     features: ['Kotak floral premium', 'Bunga segar pilihan', 'Ribbon dekoratif', 'Cocok untuk hadiah'],
     gradient: PALETTES['Pink'],
     shape: 'box',
+    images: flowerboxImages,
     available: true,
     stock: 4,
     variants: {
@@ -110,12 +118,13 @@ export const products = [
     id: 'papan-besar',
     name: 'Papan Besar',
     category: CATEGORIES.BESAR,
-    size: '60×80 cm',
+    size: '80×60 cm',
     price: 100000,
-    description: 'Papan besar premium ukuran 60×80 cm yang megah dan impactful. Pesan terlihat jelas dari jauh, sempurna untuk wisuda dan acara besar.',
+    description: 'Papan besar premium ukuran 80×60 cm yang megah dan impactful. Pesan terlihat jelas dari jauh, sempurna untuk wisuda dan acara besar.',
     features: ['Ukuran extra large', 'Frame premium', 'Dekorasi bunga mewah', 'Impactful & megah'],
     gradient: PALETTES['Navy'],
     shape: 'large',
+    images: besarImages,
     available: true,
     stock: 2,
     variants: {
@@ -135,3 +144,4 @@ export const getGradient = (colorName) => PALETTES[colorName] || PALETTES['Pink 
 export const getBoardColor = (colorName) => BOARD_COLORS[colorName] || BOARD_COLORS['Putih'];
 
 export { PALETTES, BOARD_COLORS };
+

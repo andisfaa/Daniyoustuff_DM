@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Eye, Star, CheckCircle, XCircle } from 'lucide-react';
+import { Eye, Star, CheckCircle, XCircle, Sparkles, Palette, Ruler } from 'lucide-react';
 import { formatPrice } from '../../data/products';
 import './ProductCard.css';
 
@@ -32,14 +32,23 @@ export default function ProductCard({ product }) {
     <div className="product-card card">
       {/* Visual / Board Preview */}
       <Link to={`/product/${product.id}`} className="product-card__visual-wrapper">
-        <div className={`product-card__visual ${shapeClass}`} style={{ background: product.gradient }}>
-          {/* Decorative elements */}
-          <div className="product-card__visual-shine" />
-          <div className="product-card__visual-dots" />
-          <div className="product-card__visual-text">
-            <span>✦ {product.name} ✦</span>
+        {product.images && product.images.length > 0 ? (
+          <img 
+            src={product.images[0]} 
+            alt={product.name} 
+            className={`product-card__visual ${shapeClass}`} 
+            style={{ objectFit: 'cover', width: '100%', height: '100%', border: 'none' }}
+          />
+        ) : (
+          <div className={`product-card__visual ${shapeClass}`} style={{ background: product.gradient }}>
+            {/* Decorative elements */}
+            <div className="product-card__visual-shine" />
+            <div className="product-card__visual-dots" />
+            <div className="product-card__visual-text">
+              <span><Sparkles size={12} style={{ display: 'inline', marginRight: '4px' }} /> {product.name} <Sparkles size={12} style={{ display: 'inline', marginLeft: '4px' }} /></span>
+            </div>
           </div>
-        </div>
+        )}
         {/* Availability Badge */}
         <div className={`product-card__avail-badge ${product.available ? 'avail--yes' : 'avail--no'}`}>
           {product.available
@@ -58,12 +67,12 @@ export default function ProductCard({ product }) {
         </Link>
 
         {product.size !== 'Custom' && (
-          <div className="product-card__size">📐 {product.size}</div>
+          <div className="product-card__size"><Ruler size={14} style={{ display: 'inline', marginRight: '4px', verticalAlign: 'middle' }} /> {product.size}</div>
         )}
 
         {variantCount > 0 && (
           <div className="product-card__variants">
-            🎨 {variantCount} pilihan varian
+            <Palette size={14} style={{ display: 'inline', marginRight: '4px', verticalAlign: 'middle' }} /> {variantCount} pilihan varian
           </div>
         )}
 

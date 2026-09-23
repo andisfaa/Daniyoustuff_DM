@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
   ArrowLeft, ShoppingBag, CheckCircle, Star, Ruler, Tag,
-  Clock, ChevronDown, ChevronUp, MessageCircle, Heart
+  Clock, ChevronDown, ChevronUp, MessageCircle, Heart,
+  Search, Sparkles, Palette
 } from 'lucide-react';
-import { getProductById, THEMES, formatPrice } from '../data/products';
+import { getProductById, THEMES, formatPrice, getGradient, getBoardColor } from '../data/products';
 import { useCart } from '../context/CartContext';
 import './ProductDetail.css';
 
@@ -14,18 +15,31 @@ export default function ProductDetail() {
   const product = getProductById(id);
   const { dispatch, items } = useCart();
 
-  const [eventType, setEventType] = useState('');
-  const [customName, setCustomName] = useState('');
-  const [customGreeting, setCustomGreeting] = useState('');
-  const [addedToCart, setAddedToCart] = useState(false);
+
   const [wishlist, setWishlist] = useState(false);
   const [faqOpen, setFaqOpen] = useState(null);
+  const [mainImageIndex, setMainImageIndex] = useState(0);
+
+  useEffect(() => {
+    if (product) {
+      setMainImageIndex(0);
+    }
+  }, [product]);
+
+  const currentPrice = useMemo(() => {
+    if (product?.variants?.model) {
+      return product.variants.model[0].price;
+    }
+    return product?.price || 0;
+  }, [product]);
 
   if (!product) {
     return (
       <div className="not-found page-enter">
         <div className="container" style={{ textAlign: 'center', paddingTop: '160px' }}>
-          <div style={{ fontSize: '4rem', marginBottom: '24px' }}>🔍</div>
+          <div style={{ marginBottom: '24px' }}>
+            <Search size={64} color="var(--clr-purple)" />
+          </div>
           <h2>Produk tidak ditemukan</h2>
           <p style={{ marginBottom: '24px' }}>Papan yang kamu cari tidak tersedia.</p>
           <Link to="/catalog" className="btn btn-primary">Kembali ke Katalog</Link>
@@ -34,28 +48,8 @@ export default function ProductDetail() {
     );
   }
 
-  const inCart = items.some((i) => i.id === product.id);
-
-  const handleAddToCart = () => {
-    dispatch({
-      type: 'ADD_ITEM',
-      payload: {
-        ...product,
-        customName,
-        customGreeting,
-        eventType,
-      },
-    });
-    setAddedToCart(true);
-    setTimeout(() => setAddedToCart(false), 3000);
-  };
-
   const handleRentNow = () => {
-    dispatch({
-      type: 'ADD_ITEM',
-      payload: { ...product, customName, customGreeting, eventType },
-    });
-    navigate('/cart');
+    navigate(`/product/${product.id}/customize`);
   };
 
   const shapeClass = {
@@ -71,6 +65,8 @@ export default function ProductDetail() {
     { q: 'Apakah termasuk biaya pengiriman?', a: 'Biaya sewa belum termasuk ongkos antar-jemput. Ongkir akan dihitung berdasarkan jarak lokasi acara.' },
     { q: 'Kapan mockup desain dikirimkan?', a: 'Mockup desain akan dikirimkan via WhatsApp dalam 1–2 jam setelah pemesanan dikonfirmasi.' },
   ];
+
+  const currentGradient = product?.gradient || '';
 
   return (
     <div className="product-detail page-enter">
@@ -93,23 +89,48 @@ export default function ProductDetail() {
             <div className="detail-board-wrapper">
               <div className="detail-board-bg" />
 
-              <div className={`detail-board ${shapeClass}`} style={{ background: product.gradient }}>
-                <div className="detail-board__shine" />
-                <div className="detail-board__dots" />
-                <div className="detail-board__center">
-                  <div className="detail-board__preview-text">
-                    {customGreeting || '✦ Ucapan Selamat ✦'}
-                  </div>
-                  {customName && (
-                    <div className="detail-board__preview-name">~ {customName} ~</div>
-                  )}
-                  {eventType && (
-                    <div className="detail-board__preview-event">
-                      {THEMES.find((t) => t.id === eventType)?.label}
+              {product.images && product.images.length > 0 ? (
+                <div className="detail-image-gallery" style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <img 
+                    src={product.images[mainImageIndex]} 
+                    alt={product.name} 
+                    className={`detail-board ${shapeClass}`} 
+                    style={{ objectFit: 'cover', width: '100%', height: '100%', border: 'none', background: 'transparent' }}
+                  />
+                  {product.images.length > 1 && (
+                    <div className="detail-thumbnails" style={{ display: 'flex', gap: '12px', overflowX: 'auto', paddingBottom: '8px' }}>
+                      {product.images.map((img, idx) => (
+                        <img 
+                          key={idx} 
+                          src={img} 
+                          alt={`${product.name} ${idx + 1}`} 
+                          onClick={() => setMainImageIndex(idx)}
+                          style={{ 
+                            width: '70px', 
+                            height: '70px', 
+                            objectFit: 'cover', 
+                            borderRadius: '8px', 
+                            border: mainImageIndex === idx ? '2px solid var(--clr-primary)' : '2px solid transparent',
+                            cursor: 'pointer',
+                            opacity: mainImageIndex === idx ? 1 : 0.7,
+                            transition: 'all 0.2s ease'
+                          }}
+                        />
+                      ))}
                     </div>
                   )}
                 </div>
-              </div>
+              ) : (
+                <div className={`detail-board ${shapeClass}`} style={{ background: currentGradient }}>
+                  <div className="detail-board__shine" />
+                  <div className="detail-board__dots" />
+                  <div className="detail-board__center">
+                    <div className="detail-board__preview-text">
+                      <><Sparkles size={12} style={{ display: 'inline', marginRight: '4px' }} /> Ucapan Selamat <Sparkles size={12} style={{ display: 'inline', marginLeft: '4px' }} /></>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Wishlist */}
               <button
@@ -141,7 +162,7 @@ export default function ProductDetail() {
                   </div>
                 )}
                 <div className="detail-spec-item">
-                  <div className="detail-spec-icon">🎨</div>
+                  <div className="detail-spec-icon"><Palette size={15} /></div>
                   <div>
                     <div className="detail-spec-label">Warna</div>
                     <div className="detail-spec-value">{product.colorVariant}</div>
@@ -180,7 +201,7 @@ export default function ProductDetail() {
             </div>
 
             <div className="detail-price">
-              <span className="detail-price__amount">{formatPrice(product.price)}</span>
+              <span className="detail-price__amount">{formatPrice(currentPrice)}</span>
               <span className="detail-price__unit">/hari</span>
             </div>
 
@@ -198,76 +219,15 @@ export default function ProductDetail() {
 
             <div className="detail-divider" />
 
-            {/* Customization Form */}
-            <div className="detail-form">
-              <h3 className="detail-form__title">✏️ Kustomisasi Papan</h3>
-
-              <div className="input-group">
-                <label className="input-label">Jenis Momen *</label>
-                <select
-                  value={eventType}
-                  onChange={(e) => setEventType(e.target.value)}
-                  className="input-field"
-                >
-                  <option value="">-- Pilih jenis momen --</option>
-                  {THEMES.map((t) => (
-                    <option key={t.id} value={t.id}>{t.label}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="input-group">
-                <label className="input-label">Nama / Gelar</label>
-                <input
-                  type="text"
-                  value={customName}
-                  onChange={(e) => setCustomName(e.target.value)}
-                  placeholder="Contoh: Nurul Ain, S.Kep."
-                  className="input-field"
-                  maxLength={60}
-                />
-              </div>
-
-              <div className="input-group">
-                <label className="input-label">Ucapan / Teks Papan</label>
-                <textarea
-                  value={customGreeting}
-                  onChange={(e) => setCustomGreeting(e.target.value)}
-                  placeholder="Contoh: Selamat Wisuda! Semoga ilmu yang diraih menjadi berkah."
-                  className="input-field"
-                  rows={3}
-                  maxLength={150}
-                />
-                <div style={{ textAlign: 'right', fontSize: '0.75rem', color: 'var(--clr-text-muted)' }}>
-                  {customGreeting.length}/150
-                </div>
-              </div>
-
-              <div className="detail-form__note">
-                💡 Mockup desain papan akan dikirim via WhatsApp setelah pemesanan dikonfirmasi.
-              </div>
-            </div>
-
             {/* Actions */}
-            <div className="detail-actions">
+            <div className="detail-actions" style={{ gridTemplateColumns: '1fr' }}>
               <button
                 className={`btn btn-primary detail-actions__rent ${!product.available ? '' : ''}`}
                 onClick={handleRentNow}
                 disabled={!product.available}
+                style={{ padding: '16px', fontSize: '1.1rem' }}
               >
-                Sewa Sekarang
-              </button>
-              <button
-                className={`btn btn-secondary detail-actions__cart ${addedToCart || inCart ? 'added' : ''}`}
-                onClick={handleAddToCart}
-                disabled={!product.available}
-              >
-                {addedToCart
-                  ? <><CheckCircle size={16} /> Ditambahkan!</>
-                  : inCart
-                  ? <><ShoppingBag size={16} /> Di Keranjang</>
-                  : <><ShoppingBag size={16} /> Tambah ke Keranjang</>
-                }
+                Kustomisasi & Sewa
               </button>
             </div>
 
