@@ -84,7 +84,7 @@ export default function Footer() {
             <ul className="footer__links">
               <li><Link to="/">Beranda</Link></li>
               <li><Link to="/catalog">Katalog Produk</Link></li>
-              <li><Link to="/gallery">Portofolio</Link></li>
+              <li><Link to="/about">About</Link></li>
               <li><Link to="/track">Lacak Pesanan</Link></li>
             </ul>
           </div>

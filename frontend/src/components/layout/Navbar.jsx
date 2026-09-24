@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { ShoppingBag, Menu, X, Sparkles, Search } from 'lucide-react';
+import { ShoppingBag, Menu, X, Sparkles, Search, LogIn } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import logoImg from '../../assets/IMG/LOGO DANIYOUSTUFF.CO.png';
 import './Navbar.css';
@@ -8,7 +8,7 @@ import './Navbar.css';
 const NAV_LINKS = [
   { to: '/',        label: 'Beranda' },
   { to: '/catalog', label: 'Katalog' },
-  { to: '/gallery', label: 'Portofolio' },
+  { to: '/about',   label: 'About' },
   { to: '/track',   label: 'Lacak Pesanan' },
 ];
 
@@ -86,6 +86,11 @@ export default function Navbar() {
               )}
             </Link>
 
+            <Link to="/login" className="btn btn-secondary btn-sm">
+              <LogIn size={16} />
+              Masuk
+            </Link>
+
             <Link to="/catalog" className="btn btn-primary btn-sm">
               Sewa Sekarang
             </Link>
@@ -137,6 +142,11 @@ export default function Navbar() {
             <Link to="/cart" className="navbar__mobile-link">
               <ShoppingBag size={18} /> Keranjang
               {itemCount > 0 && <span className="badge badge-brown">{itemCount}</span>}
+            </Link>
+          </li>
+          <li>
+            <Link to="/login" className="navbar__mobile-link">
+              <LogIn size={18} /> Masuk / Daftar
             </Link>
           </li>
           <li>
