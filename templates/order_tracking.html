@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+{% block title %}Lacak Pesanan — DaniyouStuff.co{% endblock %}
+
+{% block content %}
+<div class="tracking-page">
+
+<!-- Hero -->
+<div class="tracking-hero">
+  <div class="section-badge">📦 Lacak Pesanan</div>
+  <h1 class="section-title" style="font-size:clamp(1.8rem,4vw,2.5rem)">Cek Status Pesananmu</h1>
+  <p class="section-desc" style="margin-bottom:0">Masukkan nomor pesanan untuk melihat status terkini</p>
+</div>
+
+<div class="tracking-content">
+  <!-- Form -->
+  <div class="tracking-form-card">
+    <h2 style="font-family:var(--font-heading);font-size:1.2rem;color:var(--clr-brown-dark);margin-bottom:20px;display:flex;align-items:center;gap:8px">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      Nomor Pesanan
+    </h2>
+    <div class="form-group" style="margin-bottom:12px">
+      <label class="form-label">Masukkan Nomor Pesanan</label>
+      <div style="position:relative">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--clr-grey)"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <input type="text" class="form-control" id="orderNumber" placeholder="Contoh: DNY-2024-001" style="padding-left:44px" oninput="this.value = this.value.toUpperCase()">
+      </div>
+    </div>
+    <p style="font-size:0.8rem;color:var(--clr-grey-dark);margin-bottom:20px">
+      💡 Nomor pesanan dikirim ke WhatsApp setelah konfirmasi pembayaran.
+    </p>
+    <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="trackOrder()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      Lacak Pesanan
+    </button>
+  </div>
+
+  <!-- Result (hidden by default) -->
+  <div class="tracking-result" id="trackingResult">
+    <div class="tracking-order-header">
+      <div>
+        <div style="font-size:0.75rem;color:var(--clr-grey-dark);font-family:var(--font-ui);margin-bottom:4px">Nomor Pesanan</div>
+        <div class="tracking-order-id" id="resultOrderId">DNY-2024-001</div>
+      </div>
+      <span class="badge badge-available" id="resultStatus">✓ Dalam Proses</span>
+    </div>
+
+    <div style="background:rgba(113,83,48,0.04);border-radius:var(--radius-md);padding:16px;margin-bottom:24px;border:1px solid rgba(113,83,48,0.08)">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:0.875rem">
+        <div>
+          <div style="color:var(--clr-grey-dark);margin-bottom:2px">Produk</div>
+          <div style="font-weight:600;color:var(--clr-brown-dark)" id="resultProduct">Papan Bulat</div>
+        </div>
+        <div>
+          <div style="color:var(--clr-grey-dark);margin-bottom:2px">Tanggal Sewa</div>
+          <div style="font-weight:600;color:var(--clr-brown-dark)" id="resultDate">—</div>
+        </div>
+        <div>
+          <div style="color:var(--clr-grey-dark);margin-bottom:2px">Lokasi</div>
+          <div style="font-weight:600;color:var(--clr-brown-dark)">Makassar</div>
+        </div>
+        <div>
+          <div style="color:var(--clr-grey-dark);margin-bottom:2px">Total</div>
+          <div style="font-weight:700;color:var(--clr-brown)" id="resultTotal">Rp60.000</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-family:var(--font-heading);font-size:1rem;color:var(--clr-brown-dark);margin-bottom:20px;display:flex;align-items:center;gap:8px">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Timeline Status
+    </h3>
+    <div class="tracking-timeline">
+      <div class="tracking-step completed">
+        <div class="tracking-step__dot">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="white"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="tracking-step__title">Pesanan Diterima</div>
+        <div class="tracking-step__desc">Pesananmu berhasil kami terima dan sedang diverifikasi.</div>
+        <div class="tracking-step__time" id="step1Time"></div>
+      </div>
+      <div class="tracking-step completed">
+        <div class="tracking-step__dot">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="white"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="tracking-step__title">Pembayaran Dikonfirmasi</div>
+        <div class="tracking-step__desc">Pembayaran telah kami konfirmasi. Proses persiapan dimulai.</div>
+        <div class="tracking-step__time" id="step2Time"></div>
+      </div>
+      <div class="tracking-step current">
+        <div class="tracking-step__dot"></div>
+        <div class="tracking-step__title">Sedang Disiapkan</div>
+        <div class="tracking-step__desc">Tim kami sedang mempersiapkan papan akrilik & dekorasi untukmu.</div>
+        <div class="tracking-step__time">Estimasi selesai besok pagi</div>
+      </div>
+      <div class="tracking-step">
+        <div class="tracking-step__dot"></div>
+        <div class="tracking-step__title">Siap Diantar</div>
+        <div class="tracking-step__desc">Papan siap dan akan diantar ke lokasi fotomu tepat waktu.</div>
+      </div>
+      <div class="tracking-step">
+        <div class="tracking-step__dot"></div>
+        <div class="tracking-step__title">Selesai</div>
+        <div class="tracking-step__desc">Sewa selesai. Semoga momenmu berkesan! 🎉</div>
+      </div>
+    </div>
+
+    <!-- WhatsApp contact -->
+    <div style="margin-top:28px;padding:16px;background:rgba(37,211,102,0.06);border-radius:var(--radius-md);border:1px solid rgba(37,211,102,0.2);text-align:center">
+      <p style="font-size:0.875rem;color:var(--clr-grey-dark);margin-bottom:12px">Ada pertanyaan tentang pesananmu?</p>
+      <a href="https://wa.me/6281356942724" target="_blank" class="btn btn-whatsapp">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+        Hubungi via WhatsApp
+      </a>
+    </div>
+  </div>
+
+  <!-- No result -->
+  <div id="notFound" style="display:none;text-align:center;padding:48px 24px">
+    <div style="font-size:3rem;margin-bottom:16px">🔍</div>
+    <h3 style="font-family:var(--font-heading);font-size:1.3rem;color:var(--clr-brown-dark);margin-bottom:8px">Pesanan Tidak Ditemukan</h3>
+    <p style="color:var(--clr-grey-dark);margin-bottom:20px">Pastikan nomor pesanan sudah benar atau hubungi kami via WhatsApp.</p>
+    <a href="https://wa.me/6281356942724" target="_blank" class="btn btn-whatsapp">Tanya via WhatsApp</a>
+  </div>
+</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const DEMO_ORDERS = {
+  'DNY-2024-001': { product: 'Papan Bulat', total: 'Rp60.000', status: '✓ Sedang Disiapkan' },
+  'DNY-2024-002': { product: 'Papan Kubah', total: 'Rp60.000', status: '✓ Selesai' },
+  'DNY-2024-003': { product: 'Flowerbox Portrait', total: 'Rp70.000', status: '⏳ Menunggu Konfirmasi' },
+  'DNY-2024-004': { product: 'Papan Besar Navy', total: 'Rp100.000', status: '✓ Siap Diantar' },
+};
+
+function trackOrder() {
+  const num = document.getElementById('orderNumber').value.trim();
+  const result = document.getElementById('trackingResult');
+  const notFound = document.getElementById('notFound');
+
+  if (!num) {
+    showToast('Masukkan nomor pesanan terlebih dahulu', 'warning');
+    return;
+  }
+
+  result.classList.remove('show');
+  notFound.style.display = 'none';
+
+  setTimeout(() => {
+    const order = DEMO_ORDERS[num];
+    if (order) {
+      document.getElementById('resultOrderId').textContent = num;
+      document.getElementById('resultProduct').textContent = order.product;
+      document.getElementById('resultTotal').textContent = order.total;
+      document.getElementById('resultStatus').textContent = order.status;
+      const now = new Date();
+      document.getElementById('step1Time').textContent = new Date(now - 86400000).toLocaleString('id-ID', {dateStyle:'medium', timeStyle:'short'});
+      document.getElementById('step2Time').textContent = new Date(now - 43200000).toLocaleString('id-ID', {dateStyle:'medium', timeStyle:'short'});
+      result.classList.add('show');
+      showToast('Pesanan ditemukan!', 'success');
+    } else {
+      notFound.style.display = 'block';
+      showToast('Nomor pesanan tidak ditemukan', 'error');
+    }
+  }, 600);
+}
+
+document.getElementById('orderNumber').addEventListener('keydown', e => {
+  if (e.key === 'Enter') trackOrder();
+});
+</script>
+{% endblock %}

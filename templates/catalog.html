@@ -1,0 +1,325 @@
+{% extends 'base.html' %}
+{% block title %}Katalog Papan Akrilik — DaniyouStuff.co{% endblock %}
+
+{% block content %}
+<div class="catalog-page">
+
+<!-- Hero -->
+<div class="catalog-hero">
+  <div class="catalog-hero__orb catalog-hero__orb--1"></div>
+  <div class="catalog-hero__orb catalog-hero__orb--2"></div>
+  <div style="position:relative;z-index:1">
+    <div class="section-badge">🎨 Koleksi Lengkap</div>
+    <h1 class="section-title" style="font-size:clamp(1.8rem,4vw,2.8rem)">Katalog Papan Akrilik</h1>
+    <p class="section-desc" style="margin-bottom:0">Temukan papan akrilik aesthetic sempurna untuk momen spesialmu</p>
+  </div>
+</div>
+
+<!-- Layout -->
+<div class="catalog-layout">
+
+  <!-- ─── SIDEBAR ─── -->
+  <aside class="catalog-sidebar" id="filterSidebar">
+    <div class="catalog-sidebar__title">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+      Filter & Kategori
+    </div>
+
+    <!-- Kategori -->
+    <div class="catalog-sidebar__section">
+      <div class="catalog-sidebar__label">Kategori</div>
+      {% for cat in categories %}
+      {% set count = (all_products | selectattr('category', 'equalto', cat) | list | length) if cat != 'all' else all_products | length %}
+      <a href="{{ url_for('catalog', category=cat, search=search, sort=sort_by) }}"
+         class="catalog-cat-btn {% if category == cat %}active{% endif %}">
+        <span>{{ 'Semua Produk' if cat == 'all' else cat }}</span>
+        <span class="catalog-cat-count">{{ count }}</span>
+      </a>
+      {% endfor %}
+    </div>
+
+    <!-- Toggle tersedia -->
+    <div class="catalog-sidebar__section">
+      <div class="catalog-sidebar__label">Ketersediaan</div>
+      <label class="toggle-switch">
+        <input type="checkbox" class="toggle-switch__input" id="availableToggle" {% if available_only %}checked{% endif %}>
+        <div class="toggle-switch__track">
+          <div class="toggle-switch__thumb"></div>
+        </div>
+        <span class="toggle-switch__label">Tersedia saja</span>
+      </label>
+    </div>
+
+    <!-- Harga Sewa -->
+    <div class="catalog-sidebar__section">
+      <div class="catalog-sidebar__label">Harga Sewa</div>
+      <div class="price-info-card">
+        {% for p in all_products %}
+        <div class="price-info-row">
+          <span class="price-info-name">{{ p.name }}</span>
+          <span class="price-info-price">{{ format_price(p.price) }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Mini Calendar -->
+    <div class="catalog-sidebar__section">
+      <div class="catalog-sidebar__label">PILIH TANGGAL</div>
+      <div class="mini-calendar" id="miniCalendar">
+        <div class="mini-calendar__header">
+          <button class="mini-calendar__nav" id="calPrev" type="button" aria-label="Bulan sebelumnya">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <span class="mini-calendar__month" id="calMonth"></span>
+          <button class="mini-calendar__nav" id="calNext" type="button" aria-label="Bulan berikutnya">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </div>
+        <div class="mini-calendar__weekdays">
+          <div class="mini-calendar__weekday">Min</div>
+          <div class="mini-calendar__weekday">Sen</div>
+          <div class="mini-calendar__weekday">Sel</div>
+          <div class="mini-calendar__weekday">Rab</div>
+          <div class="mini-calendar__weekday">Kam</div>
+          <div class="mini-calendar__weekday">Jum</div>
+          <div class="mini-calendar__weekday">Sab</div>
+        </div>
+        <div class="mini-calendar__grid" id="calDays"></div>
+        <div class="mini-calendar__selected-info" id="calSelectedInfo" style="display:none"></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ─── MAIN ─── -->
+  <div class="catalog-main">
+    <!-- Toolbar -->
+    <div class="catalog-toolbar">
+      <form class="catalog-search-wrap" method="GET" action="{{ url_for('catalog') }}" id="searchForm">
+        <svg class="catalog-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" class="catalog-search" name="search" value="{{ search }}" placeholder="Cari papan akrilik..." id="searchInput">
+        <input type="hidden" name="category" value="{{ category }}">
+        <input type="hidden" name="sort" value="{{ sort_by }}">
+        <input type="hidden" name="available" id="availableHidden" value="{{ 'true' if available_only else 'false' }}">
+      </form>
+      <select class="catalog-sort" id="sortSelect">
+        <option value="default" {% if sort_by == 'default' %}selected{% endif %}>Default</option>
+        <option value="price-asc" {% if sort_by == 'price-asc' %}selected{% endif %}>Harga: Terendah</option>
+        <option value="price-desc" {% if sort_by == 'price-desc' %}selected{% endif %}>Harga: Tertinggi</option>
+        <option value="name-asc" {% if sort_by == 'name-asc' %}selected{% endif %}>Nama: A-Z</option>
+      </select>
+    </div>
+
+    <!-- Active Filter Tags -->
+    {% if search or category != 'all' or available_only %}
+    <div class="catalog-filter-tags">
+      {% if search %}
+      <span class="filter-tag">
+        🔍 "{{ search }}"
+        <a href="{{ url_for('catalog', category=category, sort=sort_by) }}" class="filter-tag__remove">✕</a>
+      </span>
+      {% endif %}
+      {% if category != 'all' %}
+      <span class="filter-tag">
+        📂 {{ category }}
+        <a href="{{ url_for('catalog', search=search, sort=sort_by) }}" class="filter-tag__remove">✕</a>
+      </span>
+      {% endif %}
+      {% if available_only %}
+      <span class="filter-tag">
+        ✓ Tersedia
+        <a href="{{ url_for('catalog', search=search, category=category, sort=sort_by) }}" class="filter-tag__remove">✕</a>
+      </span>
+      {% endif %}
+      <a href="{{ url_for('catalog') }}" class="filter-tag" style="background:rgba(229,57,53,0.1);color:#C62828">
+        🗑 Hapus Semua Filter
+      </a>
+    </div>
+    {% endif %}
+
+    <p class="catalog-results-info">Menampilkan <strong>{{ products | length }}</strong> produk{% if search %} untuk "{{ search }}"{% endif %}</p>
+
+    <!-- Product Grid -->
+    {% if products %}
+    <div class="catalog-grid">
+      {% for product in products %}
+      <div class="product-card">
+        <div class="product-card__image-wrap">
+          <img src="{{ url_for('serve_img', filename=product.images[0]) }}" alt="{{ product.name }}" loading="lazy">
+          <div class="product-card__badge {% if not product.available %}product-card__badge--unavailable{% endif %}">
+            {% if product.available %}✓ Tersedia{% else %}Tidak Tersedia{% endif %}
+          </div>
+          <div class="product-card__overlay">
+            <a href="{{ url_for('product_detail', pid=product.id) }}" class="btn btn-cream btn-sm">Lihat Detail</a>
+          </div>
+        </div>
+        <div class="product-card__body">
+          <div class="product-card__cat">{{ product.category }}</div>
+          <h3 class="product-card__name">{{ product.name }}</h3>
+          <div class="product-card__meta">
+            <span class="product-card__size">{{ product.size }}</span>
+            <span>•</span>
+            <span>{{ product.variants | length }} varian</span>
+          </div>
+          <div class="stars" style="margin-bottom:12px">⭐⭐⭐⭐⭐ <span style="color:#888;font-size:0.75rem">(5.0)</span></div>
+          <div class="product-card__footer">
+            <div class="product-card__price">{{ format_price(product.price) }}<span style="font-size:0.7rem;font-weight:400;color:#888">/sewa</span></div>
+            <a href="{{ url_for('product_detail', pid=product.id) }}" class="product-card__btn">Detail</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="catalog-empty">
+      <div class="catalog-empty__icon">🔍</div>
+      <h3 class="catalog-empty__title">Produk Tidak Ditemukan</h3>
+      <p class="catalog-empty__desc">Coba ubah kata kunci atau filter pencarianmu.</p>
+      <a href="{{ url_for('catalog') }}" class="btn btn-primary" style="margin-top:20px">Reset Filter</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Sort change → submit form
+document.getElementById('sortSelect').addEventListener('change', function() {
+  const form = document.getElementById('searchForm');
+  const sortInput = form.querySelector('[name="sort"]');
+  if (sortInput) sortInput.value = this.value;
+  else {
+    const inp = document.createElement('input');
+    inp.type = 'hidden'; inp.name = 'sort'; inp.value = this.value;
+    form.appendChild(inp);
+  }
+  form.submit();
+});
+
+// Available toggle
+document.getElementById('availableToggle').addEventListener('change', function() {
+  document.getElementById('availableHidden').value = this.checked ? 'true' : 'false';
+  document.getElementById('searchForm').submit();
+});
+
+// Search on Enter
+document.getElementById('searchInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') document.getElementById('searchForm').submit();
+});
+
+// ── Mini Calendar ──
+(function() {
+  const today = new Date();
+  let year = today.getFullYear();
+  let month = today.getMonth();
+  let selectedDay = today.getDate();
+  let selectedMonth = today.getMonth();
+  let selectedYear = today.getFullYear();
+  const MONTHS = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+
+  function updateSelectedInfo() {
+    const info = document.getElementById('calSelectedInfo');
+    if (selectedDay) {
+      info.style.display = 'block';
+      info.textContent = `Tanggal dipilih: ${selectedDay} ${MONTHS[selectedMonth]} ${selectedYear}`;
+    } else {
+      info.style.display = 'none';
+    }
+  }
+
+  function renderCalendar() {
+    document.getElementById('calMonth').textContent = `${MONTHS[month]} ${year}`;
+    const daysContainer = document.getElementById('calDays');
+    daysContainer.innerHTML = '';
+
+    const firstDay = new Date(year, month, 1).getDay(); // 0 is Sunday (Min)
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const prevMonthDays = new Date(year, month, 0).getDate();
+
+    // 1. Previous month trailing days
+    for (let i = firstDay - 1; i >= 0; i--) {
+      const d = document.createElement('button');
+      d.type = 'button';
+      d.className = 'mini-calendar__day mini-calendar__day--other';
+      const prevDateNum = prevMonthDays - i;
+      d.textContent = prevDateNum;
+      d.addEventListener('click', () => {
+        month--;
+        if (month < 0) { month = 11; year--; }
+        selectedDay = prevDateNum;
+        selectedMonth = month;
+        selectedYear = year;
+        renderCalendar();
+        updateSelectedInfo();
+        showToast(`Tanggal ${selectedDay} ${MONTHS[selectedMonth]} ${selectedYear} dipilih`, 'info');
+      });
+      daysContainer.appendChild(d);
+    }
+
+    // 2. Current month days
+    for (let i = 1; i <= daysInMonth; i++) {
+      const d = document.createElement('button');
+      d.type = 'button';
+      d.className = 'mini-calendar__day';
+      if (i === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+        d.classList.add('mini-calendar__day--today');
+      }
+      if (i === selectedDay && month === selectedMonth && year === selectedYear) {
+        d.classList.add('mini-calendar__day--selected');
+      }
+      d.textContent = i;
+      d.addEventListener('click', () => {
+        selectedDay = i;
+        selectedMonth = month;
+        selectedYear = year;
+        renderCalendar();
+        updateSelectedInfo();
+        showToast(`Tanggal ${i} ${MONTHS[month]} ${year} dipilih`, 'info');
+      });
+      daysContainer.appendChild(d);
+    }
+
+    // 3. Next month trailing days (completes rows of 7, 35 or 42 cells total)
+    const renderedSoFar = firstDay + daysInMonth;
+    const totalCells = renderedSoFar > 35 ? 42 : 35;
+    const nextDaysCount = totalCells - renderedSoFar;
+
+    for (let i = 1; i <= nextDaysCount; i++) {
+      const d = document.createElement('button');
+      d.type = 'button';
+      d.className = 'mini-calendar__day mini-calendar__day--other';
+      d.textContent = i;
+      const nextDateNum = i;
+      d.addEventListener('click', () => {
+        month++;
+        if (month > 11) { month = 0; year++; }
+        selectedDay = nextDateNum;
+        selectedMonth = month;
+        selectedYear = year;
+        renderCalendar();
+        updateSelectedInfo();
+        showToast(`Tanggal ${selectedDay} ${MONTHS[selectedMonth]} ${selectedYear} dipilih`, 'info');
+      });
+      daysContainer.appendChild(d);
+    }
+
+    updateSelectedInfo();
+  }
+
+  document.getElementById('calPrev').addEventListener('click', () => {
+    month--;
+    if (month < 0) { month = 11; year--; }
+    renderCalendar();
+  });
+  document.getElementById('calNext').addEventListener('click', () => {
+    month++;
+    if (month > 11) { month = 0; year++; }
+    renderCalendar();
+  });
+
+  renderCalendar();
+})();
+</script>
+{% endblock %}

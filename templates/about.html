@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+{% block title %}About & Gallery — DaniyouStuff.co{% endblock %}
+
+{% block content %}
+<div class="about-page">
+
+<!-- ─── HERO ─── -->
+<div class="about-hero">
+  <div class="about-hero__orb about-hero__orb--1"></div>
+  <div class="about-hero__orb about-hero__orb--2"></div>
+  <div style="position:relative;z-index:1">
+    <div class="section-badge">🌸 Tentang Kami</div>
+    <h1 class="section-title" style="font-size:clamp(1.8rem,4vw,2.8rem)">DaniyouStuff.co</h1>
+    <p class="section-desc" style="margin-bottom:0">Spesialis papan akrilik aesthetic untuk setiap momen istimewamu</p>
+  </div>
+  <div class="about-stats">
+    <div class="about-stat-card">
+      <span class="about-stat-value">500+</span>
+      <div class="about-stat-label">Pelanggan Puas</div>
+    </div>
+    <div class="about-stat-card">
+      <span class="about-stat-value">1200+</span>
+      <div class="about-stat-label">Foto Diabadikan</div>
+    </div>
+    <div class="about-stat-card">
+      <span class="about-stat-value">4.9 ⭐</span>
+      <div class="about-stat-label">Rating</div>
+    </div>
+    <div class="about-stat-card">
+      <span class="about-stat-value">2+</span>
+      <div class="about-stat-label">Tahun Berpengalaman</div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── STORY ─── -->
+<section class="about-story">
+  <div class="container">
+    <div class="about-story__inner">
+      <div>
+        <div class="section-badge">📖 Cerita Kami</div>
+        <h2 class="section-title">Bermula dari Sebuah<br>Momen Wisuda</h2>
+        <p style="color:var(--clr-grey-dark);line-height:1.9;margin-bottom:20px">
+          DaniyouStuff.co lahir dari keinginan sederhana: membuat foto wisuda lebih berkesan dan aesthetic. Kami memulai dengan satu papan bulat sederhana, dan kini hadir dengan koleksi lengkap untuk menemani setiap momenmu.
+        </p>
+        <p style="color:var(--clr-grey-dark);line-height:1.9;margin-bottom:32px">
+          Setiap papan kami dibuat dengan penuh cinta dan perhatian terhadap detail. Dari pemilihan bunga segar, kombinasi warna yang harmonis, hingga penulisan teks yang rapi — semua disiapkan khusus untuk momen terbaikmu.
+        </p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <a href="{{ url_for('catalog') }}" class="btn btn-primary">Lihat Katalog</a>
+          <a href="https://wa.me/6281356942724" target="_blank" class="btn btn-outline">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+            Hubungi Kami
+          </a>
+        </div>
+      </div>
+      <div class="about-story__photo-grid">
+        <div class="about-story__photo">
+          <img src="{{ url_for('serve_img', filename='Katalog Daniyou/PAPAN BULAT/Bulat (1).jpeg') }}" alt="Papan Akrilik" loading="lazy">
+        </div>
+        <div class="about-story__photo">
+          <img src="{{ url_for('serve_img', filename='Katalog Daniyou/PAPAN KUBAH/Kubah (2).jpeg') }}" alt="Papan Kubah" loading="lazy">
+        </div>
+        <div class="about-story__photo">
+          <img src="{{ url_for('serve_img', filename='Katalog Daniyou/PAPAN FLOWERBOX/Flowerbox (1).jpeg') }}" alt="Flowerbox" loading="lazy">
+        </div>
+        <div class="about-story__photo">
+          <img src="{{ url_for('serve_img', filename='Katalog Daniyou/PAPAN BESAR/Besar (1).jpeg') }}" alt="Papan Besar" loading="lazy">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PORTFOLIO GALLERY ─── -->
+<section class="portfolio">
+  <div class="container">
+    <div class="text-center" style="margin-bottom:12px">
+      <div class="section-badge">📸 Portfolio</div>
+      <h2 class="section-title">Gallery Foto</h2>
+      <p class="section-desc">Kumpulan foto terbaik dari momen-momen istimewa pelanggan kami</p>
+    </div>
+    <div class="portfolio__tabs">
+      <button class="portfolio-tab active" data-cat="all">Semua</button>
+      <button class="portfolio-tab" data-cat="Papan Bulat">Papan Bulat</button>
+      <button class="portfolio-tab" data-cat="Papan Kubah">Papan Kubah</button>
+      <button class="portfolio-tab" data-cat="Flowerbox">Flowerbox</button>
+      <button class="portfolio-tab" data-cat="Papan Besar">Papan Besar</button>
+    </div>
+    <div class="portfolio__grid" id="portfolioGrid">
+      {% for item in gallery_images %}
+      <div class="portfolio-item" data-cat="{{ item.product }}" data-src="{{ url_for('serve_img', filename=item.src) }}">
+        <img src="{{ url_for('serve_img', filename=item.src) }}" alt="{{ item.product }}" loading="lazy">
+        <div class="portfolio-item__overlay">
+          <span class="portfolio-item__label">{{ item.product }} — 🔍 Perbesar</span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ─── TESTIMONIALS ─── -->
+<section class="about-testimonials">
+  <div class="container">
+    <div class="text-center" style="margin-bottom:48px">
+      <div class="section-badge">💬 Testimoni</div>
+      <h2 class="section-title">Cerita Pelanggan Kami</h2>
+    </div>
+    <div class="about-testimonials__grid">
+      {% set testimonials = [
+        {'name': 'Aliya Putri', 'event': 'Wisuda S1 UNHAS 2024', 'text': 'Papan bulat pinknya cantik banget! Semua foto jadi aesthetic. Highly recommend!', 'initial': 'A', 'color': '#FFB6C1'},
+        {'name': 'Rizky Amalia', 'event': 'Seminar Hasil UMI 2024', 'text': 'Pelayanan ramah dan profesional. Papan kubahnya elegan, antar tepat waktu. Puas!', 'initial': 'R', 'color': '#1565C0'},
+        {'name': 'Siti Nurhaliza', 'event': 'Ulang Tahun ke-22', 'text': 'Flowerboxnya BAGUS BANGET! Teman-teman langsung tanya sewa di mana haha.', 'initial': 'S', 'color': '#E91E8C'},
+        {'name': 'Farhan Maulana', 'event': 'Wisuda S2 UNM 2024', 'text': 'Papan besar navy-nya megah. Foto bareng keluarga jadi sangat berkesan. Terima kasih!', 'initial': 'F', 'color': '#0D47A1'},
+      ] %}
+      {% for t in testimonials %}
+      <div class="testimonial-card">
+        <div class="testimonial-card__header">
+          <div class="testimonial-avatar" style="background:linear-gradient(135deg, {{ t.color }}, {{ t.color }}cc)">{{ t.initial }}</div>
+          <div>
+            <div class="testimonial-name">{{ t.name }}</div>
+            <div class="testimonial-event">{{ t.event }}</div>
+          </div>
+        </div>
+        <div class="stars" style="margin-bottom:10px">⭐⭐⭐⭐⭐</div>
+        <p class="testimonial-text">"{{ t.text }}"</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox__close" id="lightboxClose">✕</button>
+  <img class="lightbox__img" id="lightboxImg" src="" alt="">
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Portfolio filter tabs
+const tabs = document.querySelectorAll('.portfolio-tab');
+const items = document.querySelectorAll('.portfolio-item');
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    tabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const cat = tab.dataset.cat;
+    items.forEach(item => {
+      if (cat === 'all' || item.dataset.cat === cat) {
+        item.style.display = '';
+      } else {
+        item.style.display = 'none';
+      }
+    });
+  });
+});
+
+// Lightbox
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightboxImg');
+const lightboxClose = document.getElementById('lightboxClose');
+items.forEach(item => {
+  item.addEventListener('click', () => {
+    lightboxImg.src = item.dataset.src;
+    lightbox.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  });
+});
+function closeLightbox() {
+  lightbox.classList.remove('active');
+  document.body.style.overflow = '';
+}
+lightboxClose.addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+</script>
+{% endblock %}
