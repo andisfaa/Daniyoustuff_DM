@@ -1,3 +1,4 @@
+envsifaa/
 __pycache__/
 venv/
 env/
@@ -5,3 +6,8 @@ envsifaa/
 node_modules/
 .env
 *.pyc
+
+Lib/
+Include/
+Scripts/
+pyvenv.cfg

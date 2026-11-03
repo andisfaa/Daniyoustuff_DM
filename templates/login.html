@@ -2,6 +2,8 @@
 {% block title %}Masuk / Daftar — DaniyouStuff.co{% endblock %}
 
 {% block content %}
+{% set tab = tab|default('masuk') %}
+{% set form = form|default({}) %}
 <div class="login-page">
 
   <!-- ─── LEFT PANEL ─── -->
@@ -38,7 +40,6 @@
       </div>
     </div>
 
-    <!-- Floating boards decoration (Safely spaced inside left panel) -->
     <div class="login-left__boards">
       <div class="login-board login-board--1">
         <img src="{{ url_for('serve_img', filename='Katalog Daniyou/PAPAN BULAT/Bulat (2).jpeg') }}" alt="Papan Bulat">
@@ -55,49 +56,50 @@
   <!-- ─── RIGHT PANEL ─── -->
   <div class="login-right">
     <div class="login-card">
-      <!-- Logo (mobile) -->
       <div class="login-card__logo">
         <img src="{{ url_for('serve_img', filename='LOGO DANIYOUSTUFF.CO.png') }}" alt="Logo">
       </div>
 
       <!-- Tabs -->
       <div class="login-tabs">
-        <button class="login-tab active" id="tabMasuk" onclick="switchTab('masuk')">Masuk</button>
-        <button class="login-tab" id="tabDaftar" onclick="switchTab('daftar')">Daftar</button>
+        <button type="button" class="login-tab {{ 'active' if tab == 'masuk' }}" id="tabMasuk" onclick="switchTab('masuk')">Masuk</button>
+        <button type="button" class="login-tab {{ 'active' if tab == 'daftar' }}" id="tabDaftar" onclick="switchTab('daftar')">Daftar</button>
       </div>
 
-      <!-- Alert -->
-      <div class="login-alert" id="loginAlert"></div>
+      <!-- Alert dari server (error login / daftar) -->
+      {% set server_error = error_login or error_register %}
+      <div class="login-alert login-alert--error {{ 'show' if server_error }}" id="loginAlert">
+        {% if server_error %}<span>❌</span> {{ server_error }}{% endif %}
+      </div>
 
       <!-- ── FORM MASUK ── -->
-      <div class="login-form active" id="formMasuk">
+      <div class="login-form {{ 'active' if tab == 'masuk' }}" id="formMasuk">
         <h2 class="login-title">Selamat Datang! 👋</h2>
         <p class="login-subtitle">Masuk untuk akses fitur pemesanan & riwayat sewa</p>
-        <form id="loginForm">
+        <form id="loginForm" method="POST" action="{{ url_for('login', next=request.args.get('next')) }}">
           <div class="form-group">
             <label class="form-label">Email</label>
             <div class="input-with-icon">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-              <input type="email" class="form-control" name="email" placeholder="nama@email.com" required autocomplete="email">
+              <input type="email" class="form-control" name="email" value="{{ form.email or '' if tab == 'masuk' else '' }}" placeholder="nama@email.com" required autocomplete="email">
             </div>
           </div>
           <div class="form-group">
             <label class="form-label">Password</label>
-            <div class="input-with-icon" style="position:relative">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--clr-grey);pointer-events:none"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              <input type="password" class="form-control" id="loginPassword" name="password" placeholder="Masukkan password" required style="padding-left:44px;padding-right:44px" autocomplete="current-password">
-              <button type="button" class="password-toggle" onclick="togglePass('loginPassword', this)">
+            <div class="input-with-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <input type="password" class="form-control" id="loginPassword" name="password" placeholder="Masukkan password" required style="padding-right:44px" autocomplete="current-password">
+              <button type="button" class="password-toggle" onclick="togglePass('loginPassword', this)" aria-label="Tampilkan password">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
             </div>
           </div>
-          <input type="hidden" name="action" value="login">
           <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:4px" id="loginBtn">
             Masuk
           </button>
         </form>
         <div class="login-divider"><span>atau</span></div>
-        <a href="https://wa.me/6281356942724" target="_blank" class="btn btn-whatsapp" style="width:100%;justify-content:center">
+        <a href="https://wa.me/6281356942724" target="_blank" rel="noopener" class="btn btn-whatsapp" style="width:100%;justify-content:center">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
           Pesan via WhatsApp
         </a>
@@ -105,35 +107,41 @@
       </div>
 
       <!-- ── FORM DAFTAR ── -->
-      <div class="login-form" id="formDaftar">
+      <div class="login-form {{ 'active' if tab == 'daftar' }}" id="formDaftar">
         <h2 class="login-title">Buat Akun Baru ✨</h2>
         <p class="login-subtitle">Daftar gratis dan nikmati kemudahan sewa papan akrilik</p>
-        <form id="registerForm">
+        <form id="registerForm" method="POST" action="{{ url_for('register') }}">
           <div class="form-group">
             <label class="form-label">Nama Lengkap</label>
             <div class="input-with-icon">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-              <input type="text" class="form-control" name="name" placeholder="Nama lengkapmu" required autocomplete="name">
+              <input type="text" class="form-control" name="nama" value="{{ form.nama or '' if tab == 'daftar' else '' }}" placeholder="Nama lengkapmu" required autocomplete="name">
             </div>
           </div>
           <div class="form-group">
             <label class="form-label">Email</label>
             <div class="input-with-icon">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-              <input type="email" class="form-control" name="email" placeholder="nama@email.com" required autocomplete="email">
+              <input type="email" class="form-control" name="email" value="{{ form.email or '' if tab == 'daftar' else '' }}" placeholder="nama@email.com" required autocomplete="email">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">No. WhatsApp <span style="font-weight:400;color:var(--clr-grey)">(opsional)</span></label>
+            <div class="input-with-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              <input type="tel" class="form-control" name="no_wa" value="{{ form.no_wa or '' if tab == 'daftar' else '' }}" placeholder="08xxxxxxxxxx" autocomplete="tel">
             </div>
           </div>
           <div class="form-group">
             <label class="form-label">Password</label>
-            <div style="position:relative">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--clr-grey);pointer-events:none"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              <input type="password" class="form-control" id="regPassword" name="password" placeholder="Min. 8 karakter" required style="padding-left:44px;padding-right:44px" autocomplete="new-password">
-              <button type="button" class="password-toggle" onclick="togglePass('regPassword', this)">
+            <div class="input-with-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <input type="password" class="form-control" id="regPassword" name="password" placeholder="Min. 8 karakter" minlength="8" required style="padding-right:44px" autocomplete="new-password">
+              <button type="button" class="password-toggle" onclick="togglePass('regPassword', this)" aria-label="Tampilkan password">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
             </div>
           </div>
-          <input type="hidden" name="action" value="register">
           <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:4px" id="registerBtn">
             Daftar Sekarang
           </button>
@@ -161,42 +169,13 @@ function togglePass(id, btn) {
   else { inp.type = 'password'; btn.style.opacity = '0.5'; }
 }
 
-function showAlert(msg, type) {
-  const alert = document.getElementById('loginAlert');
-  alert.className = `login-alert login-alert--${type} show`;
-  alert.innerHTML = `<span>${type === 'success' ? '✅' : '❌'}</span> ${msg}`;
-}
-
-function submitForm(formEl, btnEl) {
-  const formData = new FormData(formEl);
-  btnEl.disabled = true;
-  btnEl.textContent = 'Memproses...';
-  fetch('/login', { method: 'POST', body: formData })
-    .then(r => r.json())
-    .then(data => {
-      showAlert(data.message, data.success ? 'success' : 'error');
-      if (data.success) {
-        showToast(data.message, 'success');
-        setTimeout(() => window.location.href = '/', 1200);
-      } else {
-        btnEl.disabled = false;
-        btnEl.textContent = 'Coba Lagi';
-      }
-    })
-    .catch(() => {
-      showAlert('Terjadi kesalahan. Silakan coba lagi.', 'error');
-      btnEl.disabled = false;
-      btnEl.textContent = 'Coba Lagi';
-    });
-}
-
-document.getElementById('loginForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  submitForm(this, document.getElementById('loginBtn'));
-});
-document.getElementById('registerForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  submitForm(this, document.getElementById('registerBtn'));
+// Cegah klik ganda saat form dikirim
+[['loginForm', 'loginBtn'], ['registerForm', 'registerBtn']].forEach(function (p) {
+  document.getElementById(p[0]).addEventListener('submit', function () {
+    var btn = document.getElementById(p[1]);
+    btn.disabled = true;
+    btn.textContent = 'Memproses...';
+  });
 });
 </script>
 {% endblock %}

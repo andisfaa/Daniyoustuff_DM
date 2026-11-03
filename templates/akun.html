@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Akun Saya — DaniyouStuff.co{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width:560px;padding:calc(var(--navbar-height) + 48px) 24px 80px">
+  <h1 class="section-title" style="font-size:1.8rem">Akun Saya</h1>
+
+  <div class="card" style="margin-top:24px">
+    <div class="card-body">
+      <p><strong>Nama:</strong> {{ current_user.nama }}</p>
+      <p><strong>Email:</strong> {{ current_user.email }}</p>
+      <p><strong>WhatsApp:</strong> {{ current_user.no_wa or '-' }}</p>
+      <p style="margin-top:20px;color:var(--clr-grey-dark)">Riwayat pesanan akan muncul di sini.</p>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:12px;margin-top:20px;flex-wrap:wrap">
+    {% if current_user.role == 'admin' %}
+    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline">Dashboard Admin</a>
+    {% endif %}
+    <a href="{{ url_for('logout') }}" class="btn btn-primary">Keluar</a>
+  </div>
+</div>
+{% endblock %}

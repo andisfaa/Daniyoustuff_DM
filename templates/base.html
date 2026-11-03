@@ -55,18 +55,24 @@
       </a>
 
       <!-- Auth -->
-      {% if session.get('user') %}
+      {% if current_user %}
       <div class="navbar__user-menu">
         <button class="navbar__user-btn" id="userMenuBtn">
-          <div class="navbar__avatar">{{ session['user']['name'][0].upper() }}</div>
-          <span>{{ session['user']['name'] }}</span>
+          <div class="navbar__avatar">{{ current_user.nama[0]|upper }}</div>
+          <span>{{ current_user.nama.split(' ')[0] }}</span>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
         <div class="navbar__dropdown" id="userDropdown">
-          <a href="#" class="navbar__dropdown-item">
+          <a href="{{ url_for('akun') }}" class="navbar__dropdown-item">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             Profil Saya
           </a>
+          {% if current_user.role == 'admin' %}
+          <a href="{{ url_for('admin_dashboard') }}" class="navbar__dropdown-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            Dashboard Admin
+          </a>
+          {% endif %}
           <a href="{{ url_for('cart') }}" class="navbar__dropdown-item">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
             Keranjang
@@ -109,15 +115,18 @@
   <a href="{{ url_for('about') }}" class="mobile-menu__link">About</a>
   <a href="{{ url_for('track') }}" class="mobile-menu__link">Lacak Pesanan</a>
   <div class="mobile-menu__actions">
-    {% if session.get('user') %}
-    <a href="{{ url_for('logout') }}" class="btn btn-outline">Keluar</a>
+    {% if current_user %}
+    <a href="{{ url_for('akun') }}" class="btn btn-outline">Akun Saya</a>
+    {% if current_user.role == 'admin' %}
+    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline">Admin</a>
+    {% endif %}
+    <a href="{{ url_for('logout') }}" class="btn btn-primary">Keluar</a>
     {% else %}
     <a href="{{ url_for('login') }}" class="btn btn-outline">Masuk</a>
     <a href="https://wa.me/6281356942724" target="_blank" class="btn btn-primary">Sewa Sekarang</a>
     {% endif %}
   </div>
 </div>
-
 <!-- ═══════════════════════════════════════════
      MAIN CONTENT
 ═══════════════════════════════════════════ -->
