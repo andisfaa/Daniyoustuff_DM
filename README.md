@@ -11,12 +11,12 @@ Tampilan UI/UX, warna palet (*warm earthy aesthetic* `#EEEBDA`, `#715330`, `#AAA
 ### Cara 1: Menggunakan file Batch (Paling Mudah)
 Cukup double-click file:
 ```
-d:\DANIYOU PROJECT - Copy\envsifaa\run.bat
+d:\DANIYOU PROJECT\envsifaa\run.bat
 ```
 
 ### Cara 2: Melalui Terminal / PowerShell
 ```powershell
-cd "d:\DANIYOU PROJECT - Copy\envsifaa"
+cd "d:\DANIYOU PROJECT\envsifaa"
 .\Scripts\python.exe app.py
 ```
 
