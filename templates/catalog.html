@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static store_extras %}
 {% block title %}Katalog Papan Akrilik — DaniyouStuff.co{% endblock %}
 
 {% block content %}
@@ -29,11 +30,10 @@
     <div class="catalog-sidebar__section">
       <div class="catalog-sidebar__label">Kategori</div>
       {% for cat in categories %}
-      {% set count = (all_products | selectattr('category', 'equalto', cat) | list | length) if cat != 'all' else all_products | length %}
-      <a href="{{ url_for('catalog', category=cat, search=search, sort=sort_by) }}"
-         class="catalog-cat-btn {% if category == cat %}active{% endif %}">
-        <span>{{ 'Semua Produk' if cat == 'all' else cat }}</span>
-        <span class="catalog-cat-count">{{ count }}</span>
+      <a href="{% url 'catalog' %}?category={{ cat.slug }}&search={{ search }}&sort={{ sort_by }}"
+         class="catalog-cat-btn {% if category == cat.slug %}active{% endif %}">
+        <span>{{ cat.name }}</span>
+        <span class="catalog-cat-count">{{ cat.count }}</span>
       </a>
       {% endfor %}
     </div>
@@ -57,7 +57,7 @@
         {% for p in all_products %}
         <div class="price-info-row">
           <span class="price-info-name">{{ p.name }}</span>
-          <span class="price-info-price">{{ format_price(p.price) }}</span>
+          <span class="price-info-price">{{ p.price|format_price }}</span>
         </div>
         {% endfor %}
       </div>
@@ -95,12 +95,12 @@
   <div class="catalog-main">
     <!-- Toolbar -->
     <div class="catalog-toolbar">
-      <form class="catalog-search-wrap" method="GET" action="{{ url_for('catalog') }}" id="searchForm">
+      <form class="catalog-search-wrap" method="GET" action="{% url 'catalog' %}" id="searchForm">
         <svg class="catalog-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
         <input type="text" class="catalog-search" name="search" value="{{ search }}" placeholder="Cari papan akrilik..." id="searchInput">
         <input type="hidden" name="category" value="{{ category }}">
         <input type="hidden" name="sort" value="{{ sort_by }}">
-        <input type="hidden" name="available" id="availableHidden" value="{{ 'true' if available_only else 'false' }}">
+        <input type="hidden" name="available" id="availableHidden" value="{% if available_only %}1{% else %}0{% endif %}">
       </form>
       <select class="catalog-sort" id="sortSelect">
         <option value="default" {% if sort_by == 'default' %}selected{% endif %}>Default</option>
@@ -116,22 +116,22 @@
       {% if search %}
       <span class="filter-tag">
         🔍 "{{ search }}"
-        <a href="{{ url_for('catalog', category=category, sort=sort_by) }}" class="filter-tag__remove">✕</a>
+        <a href="{% url 'catalog' %}" class="filter-tag__remove">✕</a>
       </span>
       {% endif %}
       {% if category != 'all' %}
       <span class="filter-tag">
         📂 {{ category }}
-        <a href="{{ url_for('catalog', search=search, sort=sort_by) }}" class="filter-tag__remove">✕</a>
+        <a href="{% url 'catalog' %}" class="filter-tag__remove">✕</a>
       </span>
       {% endif %}
       {% if available_only %}
       <span class="filter-tag">
         ✓ Tersedia
-        <a href="{{ url_for('catalog', search=search, category=category, sort=sort_by) }}" class="filter-tag__remove">✕</a>
+        <a href="{% url 'catalog' %}" class="filter-tag__remove">✕</a>
       </span>
       {% endif %}
-      <a href="{{ url_for('catalog') }}" class="filter-tag" style="background:rgba(229,57,53,0.1);color:#C62828">
+      <a href="{% url 'catalog' %}" class="filter-tag" style="background:rgba(229,57,53,0.1);color:#C62828">
         🗑 Hapus Semua Filter
       </a>
     </div>
@@ -144,18 +144,15 @@
     <div class="catalog-grid">
       {% for product in products %}
       <div class="product-card">
-        <div class="product-card__image-wrap">
-          <img src="{{ url_for('serve_img', filename=product.images[0]) }}" alt="{{ product.name }}" loading="lazy">
+        <a href="{% url 'product_detail' product.id %}" class="product-card__image-wrap" style="text-decoration:none;display:block;">
+          <img src="{% product_img product %}" alt="{{ product.name }}" loading="lazy">
           <div class="product-card__badge {% if not product.available %}product-card__badge--unavailable{% endif %}">
             {% if product.available %}✓ Tersedia{% else %}Tidak Tersedia{% endif %}
           </div>
-          <div class="product-card__overlay">
-            <a href="{{ url_for('product_detail', pid=product.id) }}" class="btn btn-cream btn-sm">Lihat Detail</a>
-          </div>
-        </div>
+        </a>
         <div class="product-card__body">
           <div class="product-card__cat">{{ product.category }}</div>
-          <h3 class="product-card__name">{{ product.name }}</h3>
+          <h3 class="product-card__name"><a href="{% url 'product_detail' product.id %}" style="color:inherit;text-decoration:none;">{{ product.name }}</a></h3>
           <div class="product-card__meta">
             <span class="product-card__size">{{ product.size }}</span>
             <span>•</span>
@@ -163,8 +160,14 @@
           </div>
           <div class="stars" style="margin-bottom:12px">⭐⭐⭐⭐⭐ <span style="color:#888;font-size:0.75rem">(5.0)</span></div>
           <div class="product-card__footer">
-            <div class="product-card__price">{{ format_price(product.price) }}<span style="font-size:0.7rem;font-weight:400;color:#888">/sewa</span></div>
-            <a href="{{ url_for('product_detail', pid=product.id) }}" class="product-card__btn">Detail</a>
+            <div class="product-card__price">
+              <span class="product-card__price-val">{{ product.price|format_price }}</span>
+              <span class="product-card__unit">/sewa</span>
+            </div>
+            <a href="{% url 'product_detail' product.id %}" class="product-card__btn" title="Pilih varian & sewa papan">
+              Pilih &amp; Sewa
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </a>
           </div>
         </div>
       </div>
@@ -175,7 +178,7 @@
       <div class="catalog-empty__icon">🔍</div>
       <h3 class="catalog-empty__title">Produk Tidak Ditemukan</h3>
       <p class="catalog-empty__desc">Coba ubah kata kunci atau filter pencarianmu.</p>
-      <a href="{{ url_for('catalog') }}" class="btn btn-primary" style="margin-top:20px">Reset Filter</a>
+      <a href="{% url 'catalog' %}" class="btn btn-primary" style="margin-top:20px">Reset Filter</a>
     </div>
     {% endif %}
   </div>
@@ -321,5 +324,24 @@ document.getElementById('searchInput').addEventListener('keydown', function(e) {
 
   renderCalendar();
 })();
+
+function quickCheckout(productId) {
+  fetch('/cart/add', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ product_id: productId, direct: true })
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      window.location.href = "{% url 'checkout' %}";
+    } else {
+      showToast('Gagal memproses checkout: ' + (data.message || ''), 'error');
+    }
+  })
+  .catch(() => {
+    window.location.href = '/checkout/direct/' + productId + '/';
+  });
+}
 </script>
 {% endblock %}

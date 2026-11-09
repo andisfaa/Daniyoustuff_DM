@@ -1,0 +1,279 @@
+{% extends 'base.html' %}
+{% load static store_extras %}
+{% block title %}Checkout & Pembayaran QRIS — DaniyouStuff.co{% endblock %}
+
+{% block content %}
+<div class="account-container page-enter">
+  <div class="account-header">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+      <a href="{% url 'cart' %}" style="color:var(--clr-brown);font-size:0.85rem;text-decoration:none;display:inline-flex;align-items:center;gap:4px;">
+        &larr; Kembali ke Keranjang
+      </a>
+    </div>
+    <h1 class="account-header__title">Checkout & Pembayaran QRIS</h1>
+    <p class="account-header__subtitle">Lengkapi data pemesan, pilih metode pengiriman, dan transfer melalui QRIS resmi toko kami.</p>
+  </div>
+
+  {% if error %}
+  <div class="login-alert login-alert--error show" style="margin-bottom:24px;">
+    <span>❌</span> {{ error }}
+  </div>
+  {% endif %}
+
+  <form method="POST" action="{% url 'checkout' %}" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="checkout-grid">
+      <!-- ── KOLOM KIRI: FORM DATA PEMESAN & PENGIRIMAN ── -->
+      <div class="account-card">
+        <h2 style="font-family:var(--font-heading);font-size:1.3rem;color:var(--clr-brown-dark);margin-bottom:18px;">
+          1. Data Pemesan & Pengiriman
+        </h2>
+
+        <div class="form-group" style="margin-bottom:18px;">
+          <label class="form-label" style="font-weight:600;font-size:0.88rem;color:var(--clr-brown-dark);margin-bottom:6px;display:block;">
+            Nama Lengkap <span style="color:var(--clr-error)">*</span>
+          </label>
+          <div class="input-with-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <input type="text" class="form-control" name="customer_name" value="{{ initial.name }}" placeholder="Nama pemesan" required>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom:18px;">
+          <label class="form-label" style="font-weight:600;font-size:0.88rem;color:var(--clr-brown-dark);margin-bottom:6px;display:block;">
+            No. WhatsApp / HP Aktif <span style="color:var(--clr-error)">*</span>
+          </label>
+          <div class="input-with-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <input type="tel" class="form-control" name="customer_phone" value="{{ initial.phone }}" placeholder="Contoh: 081234567890" required>
+          </div>
+          <small style="font-size:0.75rem;color:var(--clr-grey);margin-top:4px;display:block;">Tim kami akan mengonfirmasi dan menghubungi via WhatsApp.</small>
+        </div>
+
+        <!-- Opsi Metode Pengiriman / Pengambilan -->
+        <div class="form-group" style="margin-bottom:20px;">
+          <label class="form-label" style="font-weight:600;font-size:0.88rem;color:var(--clr-brown-dark);margin-bottom:8px;display:block;">
+            Metode Pengiriman / Pengambilan <span style="color:var(--clr-error)">*</span>
+          </label>
+          <div class="delivery-options-grid">
+            <!-- Opsi 1: Diantar Kurir -->
+            <label class="delivery-option-card selected" id="optCourier" onclick="selectDelivery('courier', 15000)">
+              <input type="radio" name="delivery_method" value="courier" checked>
+              <div class="delivery-option-card__title">
+                <span>🚗</span> Diantar via Kurir
+              </div>
+              <div class="delivery-option-card__desc">
+                Layanan antar ke lokasi acara & jemput kembali setelah selesai.
+              </div>
+              <div class="delivery-option-card__price">+Rp 15.000</div>
+            </label>
+
+            <!-- Opsi 2: Ambil Sendiri -->
+            <label class="delivery-option-card" id="optPickup" onclick="selectDelivery('pickup', 0)">
+              <input type="radio" name="delivery_method" value="pickup">
+              <div class="delivery-option-card__title">
+                <span>🏬</span> Ambil Sendiri
+              </div>
+              <div class="delivery-option-card__desc">
+                Ambil dan kembalikan langsung ke studio DaniyouStuff (Makassar).
+              </div>
+              <div class="delivery-option-card__price" style="color:var(--clr-success);">Gratis (Rp 0)</div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Tanggal Acara (Wajib) -->
+        <div class="form-group" style="margin-bottom:18px;">
+          <label class="form-label" style="font-weight:600;font-size:0.88rem;color:var(--clr-brown-dark);margin-bottom:6px;display:block;">
+            Tanggal Acara <span style="color:var(--clr-error)">*</span>
+          </label>
+          <div class="input-with-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <input type="date" class="form-control" name="event_date" value="{{ initial.event_date|default:'' }}" required>
+          </div>
+          <small style="font-size:0.75rem;color:var(--clr-grey);margin-top:4px;display:block;">Wajib diisi agar ketersediaan papan dan slot kurir dapat disiapkan tepat waktu.</small>
+        </div>
+
+        <!-- Alamat Pengiriman -->
+        <div class="form-group" style="margin-bottom:18px;" id="addressGroup">
+          <label class="form-label" style="font-weight:600;font-size:0.88rem;color:var(--clr-brown-dark);margin-bottom:6px;display:block;">
+            Alamat Lengkap Pengiriman / Lokasi Antar <span style="color:var(--clr-error)" id="addressRequiredStar">*</span>
+          </label>
+          <textarea class="form-control" name="customer_address" id="customerAddressInput" rows="3" placeholder="Nama Jalan, Nomor, Gedung/Fakultas Kampus, Kota, Patokan pengantaran" required>{{ initial.address }}</textarea>
+          <small style="font-size:0.75rem;color:var(--clr-grey);margin-top:4px;display:block;" id="addressHelpText">Kurir kami akan mengantar papan akrilik ke alamat ini.</small>
+        </div>
+
+        <div class="form-group" style="margin-bottom:24px;">
+          <label class="form-label" style="font-weight:600;font-size:0.88rem;color:var(--clr-brown-dark);margin-bottom:6px;display:block;">
+            Catatan Tambahan / Kustomisasi Nama
+          </label>
+          <textarea class="form-control" name="notes" rows="2" placeholder="Contoh: Nama di papan: Sarah Amelia, S.Ked / Bunga tolong nuansa pastel pink">{{ initial.notes|default:'' }}</textarea>
+        </div>
+
+        <!-- Unggah Bukti Pembayaran -->
+        <h2 style="font-family:var(--font-heading);font-size:1.3rem;color:var(--clr-brown-dark);margin-top:28px;margin-bottom:14px;border-top:1px solid rgba(113,83,48,0.08);padding-top:24px;">
+          2. Unggah Bukti Transfer QRIS <span style="color:var(--clr-error)">*</span>
+        </h2>
+        <p style="font-size:0.85rem;color:var(--clr-grey-dark);margin-bottom:16px;">
+          Setelah melakukan pembayaran via QRIS pada kolom kanan, silakan upload bukti tangkapan layar (screenshot) transfer Anda di sini:
+        </p>
+
+        <div class="proof-upload-zone" id="dropZone">
+          <input type="file" name="payment_proof" id="proofInput" accept="image/png, image/jpeg, image/jpg" required onchange="handleProofPreview(event)">
+          <div id="uploadPrompt">
+            <div style="font-size:2.2rem;margin-bottom:8px;">📸</div>
+            <div style="font-weight:600;color:var(--clr-brown);font-size:0.95rem;">Klik untuk pilih foto bukti transfer</div>
+            <div style="font-size:0.78rem;color:var(--clr-grey);margin-top:4px;">Format JPG, JPEG, PNG (Maks 5 MB)</div>
+          </div>
+          <div class="proof-preview-box" id="previewBox">
+            <img src="" id="proofImg" class="proof-preview-img" alt="Pratinjau Bukti">
+            <div style="font-size:0.8rem;color:var(--clr-brown);font-weight:600;margin-top:8px;" id="proofFileName"></div>
+            <div style="font-size:0.75rem;color:var(--clr-grey);">Klik untuk mengganti foto</div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg" style="width:100%;justify-content:center;margin-top:24px;padding:14px 24px;font-size:1rem;font-weight:600;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          Konfirmasi & Kirim Bukti Pembayaran
+        </button>
+        <p style="text-align:center;font-size:0.78rem;color:var(--clr-grey);margin-top:12px;">
+          🔒 Pembayaran akan diverifikasi oleh Admin toko di dashboard sistem.
+        </p>
+      </div>
+
+      <!-- ── KOLOM KANAN: BARCODE QRIS & RINGKASAN BELANJA ── -->
+      <div>
+        <div class="qris-card">
+          <span class="qris-badge-tag">QRIS RESMI TOKO</span>
+          <h3 style="font-family:var(--font-heading);font-size:1.35rem;color:var(--clr-brown-dark);margin:0 0 6px;">
+            Pindai QRIS untuk Membayar
+          </h3>
+          <p style="font-size:0.82rem;color:var(--clr-grey-dark);margin-bottom:14px;">
+            Dapat discan melalui BCA Mobile, Livin' Mandiri, BRImo, BNI, GoPay, OVO, Dana, ShopeePay, dan semua aplikasi bank/e-wallet berlogo QRIS.
+          </p>
+
+          <div class="qris-image-wrapper">
+            <img src="{% static 'img/qris.jpg' %}" alt="QRIS Business Marni" class="qris-image">
+          </div>
+
+          <div class="qris-merchant-info">
+            <div><strong>Nama Merchant:</strong> Business Marni</div>
+            <div><strong>NMID:</strong> ID1026553104054</div>
+            <div><strong>Standar:</strong> QRIS Nasional (ASPI / GPN)</div>
+          </div>
+
+          <div class="qris-steps">
+            <strong>Cara Pembayaran:</strong>
+            <ol>
+              <li>Buka aplikasi m-Banking atau E-Wallet pilihan Anda.</li>
+              <li>Pilih menu <strong>Scan / Bayar QR</strong>, lalu arahkan kamera ke barcode di atas.</li>
+              <li>Pastikan nama merchant yang muncul adalah <strong>Business Marni</strong>.</li>
+              <li>Masukkan nominal transfer sesuai total: <strong style="color:var(--clr-brown);font-size:1rem;" id="qrisTotalStep">{{ total|format_price }}</strong></li>
+              <li>Simpan bukti transfer dan unggah pada formulir di sebelah kiri.</li>
+            </ol>
+          </div>
+
+          <!-- Ringkasan Item Pesanan -->
+          <div style="text-align:left;border-top:1px dashed rgba(113,83,48,0.15);padding-top:18px;margin-top:18px;">
+            <h4 style="font-family:var(--font-heading);font-size:1.05rem;color:var(--clr-brown-dark);margin-bottom:12px;">
+              Ringkasan Pesanan ({{ cart_items|length }} Item)
+            </h4>
+
+            {% for itm in cart_items %}
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:0.85rem;">
+              <div>
+                <strong style="color:var(--clr-brown-dark)">{{ itm.name }}</strong> &times; {{ itm.qty|default:1 }}
+                {% if itm.options %}
+                <div style="font-size:0.75rem;color:var(--clr-grey-dark)">
+                  {% for k, v in itm.options.items %}
+                    {% if v %}{{ k|option_label }}: {{ v }}{% if not forloop.last %}, {% endif %}{% endif %}
+                  {% endfor %}
+                </div>
+                {% endif %}
+              </div>
+              <div style="font-weight:600;color:var(--clr-brown);white-space:nowrap;margin-left:12px;">
+                {{ itm.price|format_price }}
+              </div>
+            </div>
+            {% endfor %}
+
+            <!-- Subtotal & Ongkir Breakdown -->
+            <div style="border-top:1px dashed rgba(113,83,48,0.12);margin-top:10px;padding-top:10px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.85rem;color:var(--clr-grey-dark);margin-bottom:6px;">
+                <span>Subtotal Produk:</span>
+                <span style="font-weight:600;color:var(--clr-brown-dark)">{{ items_subtotal|format_price }}</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.85rem;color:var(--clr-grey-dark);">
+                <span>Biaya Pengiriman:</span>
+                <span style="font-weight:600;color:var(--clr-brown)" id="shippingDisplay">+Rp 15.000</span>
+              </div>
+            </div>
+
+            <div style="border-top:1px solid rgba(113,83,48,0.12);margin-top:12px;padding-top:12px;display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-weight:600;font-size:0.95rem;color:var(--clr-brown-dark)">Total Tagihan:</span>
+              <span style="font-family:var(--font-heading);font-weight:700;font-size:1.35rem;color:var(--clr-brown)" id="totalDisplay">
+                {{ total|format_price }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const itemsSubtotal = {{ items_subtotal }};
+let currentShipping = 15000;
+
+function selectDelivery(method, fee) {
+  currentShipping = fee;
+  document.querySelectorAll('.delivery-option-card').forEach(c => c.classList.remove('selected'));
+
+  const optCourier = document.getElementById('optCourier');
+  const optPickup = document.getElementById('optPickup');
+  const addressRequiredStar = document.getElementById('addressRequiredStar');
+  const addressInput = document.getElementById('customerAddressInput');
+  const addressHelpText = document.getElementById('addressHelpText');
+
+  if (method === 'courier') {
+    optCourier.classList.add('selected');
+    optCourier.querySelector('input').checked = true;
+    addressRequiredStar.style.display = 'inline';
+    addressInput.required = true;
+    addressHelpText.textContent = 'Kurir kami akan mengantar & menjemput papan akrilik ke alamat ini.';
+  } else {
+    optPickup.classList.add('selected');
+    optPickup.querySelector('input').checked = true;
+    addressRequiredStar.style.display = 'none';
+    addressInput.required = false;
+    addressHelpText.textContent = 'Anda dapat mengambil langsung ke studio DaniyouStuff (Makassar).';
+  }
+
+  const total = itemsSubtotal + currentShipping;
+  const formattedFee = fee === 0 ? 'Gratis (Rp 0)' : '+Rp ' + fee.toLocaleString('id-ID');
+  const formattedTotal = 'Rp ' + total.toLocaleString('id-ID');
+
+  document.getElementById('shippingDisplay').textContent = formattedFee;
+  document.getElementById('totalDisplay').textContent = formattedTotal;
+  document.getElementById('qrisTotalStep').textContent = formattedTotal;
+}
+
+function handleProofPreview(event) {
+  const input = event.target;
+  if (input.files && input.files[0]) {
+    const file = input.files[0];
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('proofImg').src = e.target.result;
+      document.getElementById('proofFileName').textContent = file.name;
+      document.getElementById('previewBox').style.display = 'block';
+      document.getElementById('uploadPrompt').style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  }
+}
+</script>
+{% endblock %}

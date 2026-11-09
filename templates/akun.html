@@ -1,24 +1,193 @@
 {% extends 'base.html' %}
+{% load static store_extras %}
 {% block title %}Akun Saya — DaniyouStuff.co{% endblock %}
 
 {% block content %}
-<div class="container" style="max-width:560px;padding:calc(var(--navbar-height) + 48px) 24px 80px">
-  <h1 class="section-title" style="font-size:1.8rem">Akun Saya</h1>
-
-  <div class="card" style="margin-top:24px">
-    <div class="card-body">
-      <p><strong>Nama:</strong> {{ current_user.nama }}</p>
-      <p><strong>Email:</strong> {{ current_user.email }}</p>
-      <p><strong>WhatsApp:</strong> {{ current_user.no_wa or '-' }}</p>
-      <p style="margin-top:20px;color:var(--clr-grey-dark)">Riwayat pesanan akan muncul di sini.</p>
-    </div>
+<div class="account-container page-enter">
+  <!-- ── Header ── -->
+  <div class="account-header">
+    <h1 class="account-header__title">Akun Saya</h1>
+    <p class="account-header__subtitle">Kelola informasi pribadi, nomor kontak, alamat pengiriman, dan lacak status pesanan Anda.</p>
   </div>
 
-  <div style="display:flex;gap:12px;margin-top:20px;flex-wrap:wrap">
-    {% if current_user.role == 'admin' %}
-    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline">Dashboard Admin</a>
-    {% endif %}
-    <a href="{{ url_for('logout') }}" class="btn btn-primary">Keluar</a>
+  {% if updated %}
+  <div class="login-alert show" style="background:rgba(76,175,80,0.12);border-color:#4CAF50;color:#2E7D32;margin-bottom:24px;">
+    <span>✅</span> Profil dan alamat pengiriman Anda berhasil diperbarui!
+  </div>
+  {% endif %}
+
+  <div class="account-grid">
+    <!-- ── KOLOM KIRI: KARTU PROFIL & FORM EDIT ── -->
+    <div class="account-card">
+      <div class="account-avatar-header">
+        <div class="account-avatar">
+          {{ user|user_initial }}
+        </div>
+        <div class="account-avatar-info">
+          <div class="account-avatar-info__name">{{ user.first_name|default:user.username }}</div>
+          <div class="account-avatar-info__email">{{ user.email }}</div>
+          {% if user.is_staff %}
+          <span class="status-badge badge-processing" style="margin-top:6px;font-size:0.7rem;">⭐ Administrator</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <form method="POST" action="{% url 'profile_update' %}" class="account-form">
+        {% csrf_token %}
+        <div class="form-group">
+          <label class="form-label">Nama Lengkap</label>
+          <div class="input-with-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <input type="text" class="form-control" name="nama" value="{{ user.first_name }}" placeholder="Nama lengkap Anda" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Alamat Email</label>
+          <div class="input-with-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <input type="email" class="form-control" value="{{ user.email }}" disabled style="background:rgba(0,0,0,0.03);color:#777;cursor:not-allowed;">
+          </div>
+          <small style="font-size:0.75rem;color:var(--clr-grey);margin-top:4px;display:block;">Email digunakan untuk login akun.</small>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">No. WhatsApp / HP</label>
+          <div class="input-with-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <input type="tel" class="form-control" name="telepon" value="{{ profile.phone_number|default:'' }}" placeholder="Contoh: 081234567890">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Alamat Pengiriman Lengkap</label>
+          <textarea class="form-control" name="alamat" placeholder="Jalan, No. Rumah, RT/RW, Kelurahan, Kecamatan, Kota, Patokan pengantaran">{{ profile.address|default:'' }}</textarea>
+          <small style="font-size:0.75rem;color:var(--clr-grey);margin-top:4px;display:block;">Alamat ini otomatis terisi saat Anda melakukan checkout sewa papan akrilik.</small>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px;">
+          Simpan Profil
+        </button>
+      </form>
+
+      <div style="margin-top:24px;padding-top:20px;border-top:1px solid rgba(113,83,48,0.08);display:flex;flex-direction:column;gap:10px;">
+        {% if user.is_staff %}
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-outline" style="justify-content:center;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          Dashboard Admin
+        </a>
+        {% endif %}
+        <a href="{% url 'logout' %}" class="btn btn-outline" style="justify-content:center;color:var(--clr-error);border-color:rgba(229,57,53,0.3);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Keluar dari Akun
+        </a>
+      </div>
+    </div>
+
+    <!-- ── KOLOM KANAN: RIWAYAT PESANAN ── -->
+    <div>
+      <div class="account-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+          <h2 style="font-family:var(--font-heading);font-size:1.35rem;color:var(--clr-brown-dark);margin:0;">
+            Riwayat Pesanan ({{ user_orders|length }})
+          </h2>
+          <a href="{% url 'catalog' %}" class="btn btn-outline" style="font-size:0.8rem;padding:6px 14px;">
+            + Sewa Baru
+          </a>
+        </div>
+
+        {% if user_orders %}
+        <div class="order-history-list">
+          {% for o in user_orders %}
+          <div class="order-card-item">
+            <div class="order-card-header">
+              <div>
+                <span class="order-card-code">{{ o.order_code }}</span>
+                <div class="order-card-date">{{ o.created_at|date:"d M Y, H:i" }}</div>
+              </div>
+
+              <!-- Status Badge -->
+              <div>
+                {% if o.status == 'pending' %}
+                <span class="status-badge badge-pending">⏳ Menunggu Verifikasi</span>
+                {% elif o.status == 'confirmed' %}
+                <span class="status-badge badge-confirmed">✅ Pembayaran Dikonfirmasi</span>
+                {% elif o.status == 'processing' %}
+                <span class="status-badge badge-processing">⚙️ Sedang Diproses</span>
+                {% elif o.status == 'ready' %}
+                <span class="status-badge badge-ready">📦 Siap Dikirim / Diambil</span>
+                {% elif o.status == 'delivered' %}
+                <span class="status-badge badge-delivered">🚗 Sedang Dikirim</span>
+                {% elif o.status == 'completed' %}
+                <span class="status-badge badge-completed">🎉 Selesai</span>
+                {% elif o.status == 'cancelled' %}
+                <span class="status-badge badge-cancelled">❌ Dibatalkan</span>
+                {% else %}
+                <span class="status-badge badge-pending">{{ o.get_status_display }}</span>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Item List -->
+            <div class="order-card-body">
+              {% for itm in o.items.all %}
+              <div class="order-prod-row">
+                <div class="order-prod-thumb">
+                  {% if itm.image %}
+                  <img src="{% img_static itm.image %}" alt="{{ itm.product_name }}">
+                  {% else %}
+                  <div style="width:100%;height:100%;background:var(--clr-cream-dark);display:flex;align-items:center;justify-content:center;color:var(--clr-brown);">🌸</div>
+                  {% endif %}
+                </div>
+                <div class="order-prod-info">
+                  <div class="order-prod-name">{{ itm.product_name }} <span style="font-weight:400;color:var(--clr-grey-dark);font-size:0.8rem;">(x{{ itm.qty }})</span></div>
+                  {% if itm.options %}
+                  <div class="order-prod-meta">
+                    {% for k, v in itm.options.items %}
+                      {% if v %}
+                        <span style="display:inline-block;margin-right:8px;">{{ k|option_label }}: <strong>{{ v }}</strong></span>
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                  {% endif %}
+                </div>
+                <div style="font-weight:600;font-size:0.9rem;color:var(--clr-brown);white-space:nowrap;">
+                  {{ itm.price|format_price }}
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+
+            <!-- Footer info & button -->
+            <div class="order-card-footer">
+              <div class="order-card-total">
+                Pengiriman: <strong>{{ o.get_delivery_method_display }}</strong> &bull; Total: <strong>{{ o.subtotal|format_price }}</strong>
+              </div>
+              <div style="display:flex;gap:8px;">
+                <a href="{% url 'track' %}?code={{ o.order_code }}" class="btn btn-outline" style="font-size:0.8rem;padding:6px 14px;">
+                  Lacak Status &rarr;
+                </a>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+
+        {% else %}
+        <!-- Empty State -->
+        <div style="text-align:center;padding:48px 16px;">
+          <div style="font-size:3rem;margin-bottom:12px;">🛍️</div>
+          <h3 style="font-family:var(--font-heading);font-size:1.25rem;color:var(--clr-brown-dark);margin-bottom:8px;">Belum Ada Riwayat Pesanan</h3>
+          <p style="color:var(--clr-grey-dark);font-size:0.88rem;max-width:360px;margin:0 auto 20px;">
+            Anda belum pernah memesan atau menyewa papan akrilik di DaniyouStuff.co. Buat momen wisuda atau acaramu lebih berkesan sekarang!
+          </p>
+          <a href="{% url 'catalog' %}" class="btn btn-primary">
+            Lihat Katalog Papan Akrilik
+          </a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
   </div>
 </div>
 {% endblock %}

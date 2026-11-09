@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static store_extras %}
 {% block title %}{{ product.name }} — DaniyouStuff.co{% endblock %}
 
 {% block content %}
@@ -6,9 +7,9 @@
 
 <!-- Breadcrumb -->
 <div class="breadcrumb">
-  <a href="{{ url_for('home') }}">Beranda</a>
+  <a href="{% url 'home' %}">Beranda</a>
   <span class="breadcrumb__sep">/</span>
-  <a href="{{ url_for('catalog') }}">Katalog</a>
+  <a href="{% url 'catalog' %}">Katalog</a>
   <span class="breadcrumb__sep">/</span>
   <span style="color:var(--clr-brown)">{{ product.name }}</span>
 </div>
@@ -19,12 +20,12 @@
   <!-- ─── GALLERY ─── -->
   <div class="detail-gallery">
     <div class="detail-main-img" id="mainImgWrap">
-      <img id="mainImg" src="{{ url_for('serve_img', filename=product.images[0]) }}" alt="{{ product.name }}">
+      <img id="mainImg" src="{% product_img product %}" alt="{{ product.name }}">
     </div>
     <div class="detail-thumbs">
       {% for img in product.images %}
-      <div class="detail-thumb {% if loop.first %}active{% endif %}" onclick="changeImg('{{ url_for('serve_img', filename=img) }}', this)">
-        <img src="{{ url_for('serve_img', filename=img) }}" alt="{{ product.name }} {{ loop.index }}" loading="lazy">
+      <div class="detail-thumb {% if forloop.first %}active{% endif %}" onclick="changeImg('{% img_static img %}', this)">
+        <img src="{% img_static img %}" alt="{{ product.name }} {{ forloop.counter }}" loading="lazy">
       </div>
       {% endfor %}
     </div>
@@ -35,7 +36,7 @@
     <div class="detail-info__cat">{{ product.category }}</div>
     <h1 class="detail-info__name">{{ product.name }}</h1>
     <div class="detail-info__price-row">
-      <div class="detail-info__price" id="displayPrice">{{ format_price(product.price) }}</div>
+      <div class="detail-info__price" id="displayPrice">{{ product.price|format_price }}</div>
       <div class="detail-info__period">/sewa</div>
     </div>
     <div class="detail-info__stock">
@@ -50,22 +51,22 @@
 
     <!-- Variants -->
     <div class="detail-variants">
-      {% for key, values in product.variants.items() %}
+      {% for key, values in product.variants.items %}
       {% if key == 'model' %}
       <div class="detail-variant-group">
         <div class="detail-variant-label">Model <span>(pilih satu)</span></div>
         <div class="variant-options">
           {% for m in values %}
           <button class="variant-btn" onclick="selectModel(this, {{ m.price }})" data-price="{{ m.price }}">
-            {{ m.name }} — {{ format_price(m.price) }}
+            {{ m.name }} — {{ m.price|format_price }}
           </button>
           {% endfor %}
         </div>
       </div>
       {% else %}
       <div class="detail-variant-group">
-        <div class="detail-variant-label">{{ key | title | replace('_', ' ') }} <span>(pilih satu)</span></div>
-        <div class="variant-options" id="variant-{{ loop.index }}">
+        <div class="detail-variant-label">{{ key|replace_underscore|title }} <span>(pilih satu)</span></div>
+        <div class="variant-options" id="variant-{{ forloop.counter }}">
           {% for v in values %}
           <button class="variant-btn" onclick="selectVariant(this, '{{ key }}', '{{ v }}')">{{ v }}</button>
           {% endfor %}
@@ -76,22 +77,22 @@
     </div>
 
     <!-- Custom text fields -->
-    <div class="detail-custom">
+    <div class="detail-custom" id="kustomisasi">
       <div class="detail-custom-title">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        Kustomisasi Papan
+        Kustomisasi Papan Akrilik
       </div>
       <div class="form-group">
-        <label class="form-label">Nama / Teks Utama</label>
-        <input type="text" class="form-control" id="customNama" placeholder="Contoh: Alyssa Putri, S.Ked">
+        <label class="form-label">Nama / Teks Utama <span style="color:var(--clr-error)">*</span></label>
+        <input type="text" class="form-control" id="customNama" placeholder="Contoh: Alyssa Putri, S.Ked" required oninput="this.classList.remove('input-error')">
       </div>
       <div class="form-group">
-        <label class="form-label">Ucapan / Keterangan</label>
-        <input type="text" class="form-control" id="customUcapan" placeholder="Contoh: Wisuda Sarjana 2024">
+        <label class="form-label">Ucapan / Keterangan <span style="color:var(--clr-error)">*</span></label>
+        <input type="text" class="form-control" id="customUcapan" placeholder="Contoh: Wisuda Sarjana 2024" required oninput="this.classList.remove('input-error')">
       </div>
       <div class="form-group">
-        <label class="form-label">Tanggal Acara</label>
-        <input type="date" class="form-control" id="customTanggal">
+        <label class="form-label">Tanggal Acara <span style="color:var(--clr-error)">*</span></label>
+        <input type="date" class="form-control" id="customTanggal" required oninput="this.classList.remove('input-error')">
       </div>
       <div class="form-group">
         <label class="form-label">Catatan Tambahan (Opsional)</label>
@@ -101,13 +102,22 @@
 
     <!-- Actions -->
     <div class="detail-actions">
-      <button class="btn btn-primary btn-lg" onclick="addToCart()" {% if not product.available %}disabled style="opacity:0.5;cursor:not-allowed"{% endif %}>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-        Tambah ke Keranjang
+      <!-- Tombol Sewa & Checkout Langsung QRIS -->
+      <button type="button" class="btn btn-primary btn-lg" onclick="checkoutNow()" {% if not product.available %}disabled style="opacity:0.5;cursor:not-allowed"{% endif %} style="flex:1 1 200px;justify-content:center;background:linear-gradient(135deg, var(--clr-brown), var(--clr-brown-dark));box-shadow:0 4px 14px rgba(113,83,48,0.3);font-weight:600;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Sewa & Bayar QRIS Langsung
       </button>
-      <a href="#" onclick="orderProductWA(event)" class="btn btn-whatsapp btn-lg">
+
+      <!-- Tombol Tambah ke Keranjang -->
+      <button type="button" class="btn btn-outline btn-lg" onclick="addToCart()" {% if not product.available %}disabled style="opacity:0.5;cursor:not-allowed"{% endif %} style="flex:1 1 150px;justify-content:center;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        + Keranjang
+      </button>
+
+      <!-- Tombol Konsultasi ke Daniyou (WhatsApp) -->
+      <a href="#" onclick="orderProductWA(event)" class="btn btn-whatsapp btn-lg" style="flex:1 1 180px;justify-content:center;">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
-        Pesan via WhatsApp
+        Konsultasi ke Daniyou
       </a>
     </div>
 
@@ -134,19 +144,22 @@
     <div class="related__grid">
       {% for p in related %}
       <div class="product-card">
-        <div class="product-card__image-wrap">
-          <img src="{{ url_for('serve_img', filename=p.images[0]) }}" alt="{{ p.name }}" loading="lazy">
+        <a href="{% url 'product_detail' p.id %}" class="product-card__image-wrap" style="text-decoration:none;display:block;">
+          <img src="{% product_img p %}" alt="{{ p.name }}" loading="lazy">
           <div class="product-card__badge">✓ Tersedia</div>
-          <div class="product-card__overlay">
-            <a href="{{ url_for('product_detail', pid=p.id) }}" class="btn btn-cream btn-sm">Lihat Detail</a>
-          </div>
-        </div>
+        </a>
         <div class="product-card__body">
           <div class="product-card__cat">{{ p.category }}</div>
-          <h3 class="product-card__name">{{ p.name }}</h3>
+          <h3 class="product-card__name"><a href="{% url 'product_detail' p.id %}" style="color:inherit;text-decoration:none;">{{ p.name }}</a></h3>
           <div class="product-card__footer">
-            <div class="product-card__price">{{ format_price(p.price) }}<span style="font-size:0.7rem;font-weight:400;color:#888">/sewa</span></div>
-            <a href="{{ url_for('product_detail', pid=p.id) }}" class="product-card__btn">Detail</a>
+            <div class="product-card__price">
+              <span class="product-card__price-val">{{ p.price|format_price }}</span>
+              <span class="product-card__unit">/sewa</span>
+            </div>
+            <a href="{% url 'product_detail' p.id %}" class="product-card__btn" title="Pilih varian & sewa papan">
+              Pilih &amp; Sewa
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </a>
           </div>
         </div>
       </div>
@@ -156,11 +169,64 @@
 </section>
 {% endif %}
 
+<!-- ─── POP-UP MODAL AJAK LOGIN/REGISTER ─── -->
+<div class="auth-modal-backdrop" id="authModal" onclick="closeAuthModal(event)">
+  <div class="auth-modal-card" onclick="event.stopPropagation()">
+    <button type="button" class="auth-modal-close" onclick="closeAuthModal()" aria-label="Tutup">&times;</button>
+    <div class="auth-modal-icon">🔐</div>
+    <h3 class="auth-modal-title">Yuk, Masuk atau Buat Akun Dulu! ✨</h3>
+    <p class="auth-modal-desc">
+      Untuk melanjutkan proses sewa papan akrilik dan pembayaran QRIS, silakan masuk ke akunmu atau daftar gratis dalam 1 menit.
+    </p>
+
+    <!-- Preview Pesanan Yang Sudah Diisi -->
+    <div class="auth-modal-preview">
+      <div class="auth-modal-preview__label">
+        <span>✨</span> Data Desainmu Sudah Tersimpan Aman:
+      </div>
+      <div class="auth-modal-preview__val" id="authModalSummary">
+        Papan Akrilik siap diproses setelah login.
+      </div>
+    </div>
+
+    <div class="auth-modal-actions">
+      <button type="button" class="btn btn-primary btn-lg" onclick="goToAuthPage()" style="width:100%;justify-content:center;font-weight:600;padding:14px 20px;">
+        Masuk / Daftar Akun Sekarang &rarr;
+      </button>
+      <button type="button" class="btn btn-outline" onclick="closeAuthModal()" style="width:100%;justify-content:center;">
+        Kembali Cek Desain
+      </button>
+    </div>
+  </div>
+</div>
+
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script>
+const IS_USER_AUTHENTICATED = {% if user.is_authenticated %}true{% else %}false{% endif %};
+
+function openAuthModal(summaryText) {
+  if (summaryText) {
+    document.getElementById('authModalSummary').textContent = summaryText;
+  }
+  document.getElementById('authModal').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeAuthModal(e) {
+  if (e && e.target && e.target !== document.getElementById('authModal') && !e.target.classList.contains('auth-modal-close')) {
+    return;
+  }
+  document.getElementById('authModal').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+function goToAuthPage() {
+  window.location.href = "{% url 'login' %}?next={% url 'checkout' %}";
+}
+
 // Gallery
 function changeImg(src, thumbEl) {
   document.getElementById('mainImg').src = src;
@@ -250,8 +316,38 @@ function orderProductWA(e) {
   window.open(waUrl, '_blank');
 }
 
+function validateCustomInputs() {
+  const namaEl = document.getElementById('customNama');
+  const ucapanEl = document.getElementById('customUcapan');
+  const tanggalEl = document.getElementById('customTanggal');
+
+  [namaEl, ucapanEl, tanggalEl].forEach(el => el.classList.remove('input-error'));
+
+  if (!namaEl.value.trim()) {
+    namaEl.classList.add('input-error');
+    namaEl.focus();
+    showToast('⚠️ Mohon isi Nama / Teks Utama pada papan!', 'warning');
+    return false;
+  }
+  if (!ucapanEl.value.trim()) {
+    ucapanEl.classList.add('input-error');
+    ucapanEl.focus();
+    showToast('⚠️ Mohon isi Ucapan / Keterangan pada papan!', 'warning');
+    return false;
+  }
+  if (!tanggalEl.value) {
+    tanggalEl.classList.add('input-error');
+    tanggalEl.focus();
+    showToast('⚠️ Mohon pilih Tanggal Acara sewa papan!', 'warning');
+    return false;
+  }
+  return true;
+}
+
 // Add to cart with price & full options
 function addToCart() {
+  if (!validateCustomInputs()) return;
+
   const options = {
     ...selectedVariants,
     nama: document.getElementById('customNama').value.trim(),
@@ -274,6 +370,49 @@ function addToCart() {
     } else {
       showToast('Gagal menambahkan ke keranjang', 'error');
     }
+  });
+}
+
+// Sewa & Bayar Langsung tanpa harus lewat keranjang
+function checkoutNow() {
+  if (!validateCustomInputs()) return;
+
+  const options = {
+    ...selectedVariants,
+    nama: document.getElementById('customNama').value.trim(),
+    ucapan: document.getElementById('customUcapan').value.trim(),
+    tanggal: document.getElementById('customTanggal').value,
+  };
+  const catatan = document.getElementById('customCatatan') ? document.getElementById('customCatatan').value.trim() : '';
+  if (catatan) options['catatan'] = catatan;
+
+  // Simpan data kustomisasi ke sesi keranjang
+  fetch('/cart/add', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ product_id: '{{ product.id }}', price: currentPrice, options, direct: true })
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (!IS_USER_AUTHENTICATED) {
+      // User belum login: Munculkan Pop-up Modal ajak login/register
+      const summary = `Produk: {{ product.name }} • Untuk: "${options.nama}" • Tgl Acara: ${options.tanggal}`;
+      openAuthModal(summary);
+      return;
+    }
+
+    if (data.success) {
+      window.location.href = "{% url 'checkout' %}";
+    } else {
+      showToast('Gagal memproses sewa: ' + (data.message || ''), 'error');
+    }
+  })
+  .catch(() => {
+    if (!IS_USER_AUTHENTICATED) {
+      openAuthModal();
+      return;
+    }
+    window.location.href = "{% url 'direct_checkout' product.id %}";
   });
 }
 </script>
