@@ -66,6 +66,18 @@ WSGI_APPLICATION = 'daniyou.wsgi.application'
 # ── Database MySQL / Fallback ──
 USE_SQLITE = os.environ.get('USE_SQLITE') == '1'
 
+if not USE_SQLITE:
+    # Cek ketersediaan MySQL port secara cepat agar tidak crash jika XAMPP mati
+    import socket
+    db_host = os.environ.get('DB_HOST', '127.0.0.1')
+    db_port = int(os.environ.get('DB_PORT', 3306))
+    try:
+        sock = socket.create_connection((db_host, db_port), timeout=0.8)
+        sock.close()
+    except OSError:
+        # Jika MySQL tidak aktif, otomatis fallback ke SQLite agar web tetap berjalan lancar
+        USE_SQLITE = True
+
 if USE_SQLITE:
     DATABASES = {
         'default': {
