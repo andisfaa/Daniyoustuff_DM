@@ -13,13 +13,13 @@
     <span><strong>Akses Pengelola:</strong> Anda dapat menambah, mengubah, dan menghapus isi foto galeri & ulasan pelanggan melalui Admin.</span>
   </div>
   <div style="display:flex;gap:8px;flex-wrap:wrap;">
-    <a href="/admin/store/galleryitem/" target="_blank" class="btn btn-outline" style="font-size:0.78rem;padding:6px 14px;background:#fff;">
+    <a href="{% url 'admin_dashboard' %}?tab=galeri" class="btn btn-outline" style="font-size:0.78rem;padding:6px 14px;background:#fff;">
       📸 Kelola Foto Galeri
     </a>
-    <a href="/admin/store/testimonial/" target="_blank" class="btn btn-outline" style="font-size:0.78rem;padding:6px 14px;background:#fff;">
+    <a href="{% url 'admin_dashboard' %}?tab=testimoni" class="btn btn-outline" style="font-size:0.78rem;padding:6px 14px;background:#fff;">
       💬 Kelola Testimoni
     </a>
-    <a href="/admin/" target="_blank" class="btn btn-primary" style="font-size:0.78rem;padding:6px 14px;">
+    <a href="{% url 'admin_dashboard' %}" class="btn btn-primary" style="font-size:0.78rem;padding:6px 14px;">
       Buka Dashboard Admin &rarr;
     </a>
   </div>
@@ -103,7 +103,7 @@
       <p class="section-desc">Kumpulan foto terbaik dari momen-momen istimewa pelanggan kami</p>
       {% if user.is_staff %}
       <div style="margin-top:8px;">
-        <a href="/admin/store/galleryitem/" target="_blank" class="btn btn-outline" style="font-size:0.75rem;padding:4px 14px;background:#fff;border-color:var(--clr-brown);color:var(--clr-brown);">
+        <a href="{% url 'admin_dashboard' %}?tab=galeri" class="btn btn-outline" style="font-size:0.75rem;padding:4px 14px;background:#fff;border-color:var(--clr-brown);color:var(--clr-brown);">
           📸 + Kelola Foto Galeri di Dashboard Admin
         </a>
       </div>
@@ -137,7 +137,7 @@
       <h2 class="section-title">Cerita Pelanggan Kami</h2>
       {% if user.is_staff %}
       <div style="margin-top:8px;">
-        <a href="/admin/store/testimonial/" target="_blank" class="btn btn-outline" style="font-size:0.75rem;padding:4px 14px;background:#fff;border-color:var(--clr-brown);color:var(--clr-brown);">
+        <a href="{% url 'admin_dashboard' %}?tab=testimoni" class="btn btn-outline" style="font-size:0.75rem;padding:4px 14px;background:#fff;border-color:var(--clr-brown);color:var(--clr-brown);">
           💬 + Kelola Testimoni di Dashboard Admin
         </a>
       </div>
