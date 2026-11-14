@@ -1013,6 +1013,11 @@
   <div class="admin-panel">
     <div class="admin-panel__top">
       <h2 class="admin-panel__title">Daftar Pengguna & Pelanggan</h2>
+      {% if user.is_superuser %}
+      <button onclick="openModal('modalUserAdd')" class="btn-admin btn-admin--primary">
+        👑 + Tambah Pengguna / Admin
+      </button>
+      {% endif %}
     </div>
 
     <!-- Filter & Pencarian Pengguna -->
@@ -1470,6 +1475,70 @@
     </form>
   </div>
 </div>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     MODAL: TAMBAH USER / ADMIN BARU (KHUSUS SUPERUSER)
+══════════════════════════════════════════════════════════════ -->
+{% if user.is_superuser %}
+<div id="modalUserAdd" class="admin-modal">
+  <div class="admin-modal__box">
+    <div class="admin-modal__header">
+      <h3 class="admin-modal__title">👑 Tambah Pengguna / Admin Baru</h3>
+      <button type="button" class="admin-modal__close" onclick="closeModal('modalUserAdd')">&times;</button>
+    </div>
+
+    <form method="POST" action="{% url 'admin_user_save' %}">
+      {% csrf_token %}
+
+      <div style="background:#fcfbf8;border:1px solid #ebd9c0;border-radius:10px;padding:12px 16px;margin-bottom:18px;font-size:0.83rem;color:#7a6248;">
+        💡 <strong>Hak Akses Superuser:</strong> Anda dapat membuat akun pengguna baru dan menentukan apakah akun tersebut sebagai <strong>Admin Staff</strong> (dapat mengelola pesanan, katalog, artikel, portofolio) atau <strong>Superuser</strong>.
+      </div>
+
+      <div class="form-group-admin">
+        <label class="form-label-admin">Username *</label>
+        <input type="text" name="username" class="form-control-admin" placeholder="Contoh: staff_admin" required autocomplete="off">
+      </div>
+
+      <div class="form-group-admin">
+        <label class="form-label-admin">Alamat Email *</label>
+        <input type="email" name="email" class="form-control-admin" placeholder="admin@daniyoustuff.co" required>
+        <small style="color:#888;font-size:0.75rem;">Email ini digunakan juga untuk login akun.</small>
+      </div>
+
+      <div class="form-group-admin">
+        <label class="form-label-admin">Nama Lengkap</label>
+        <input type="text" name="full_name" class="form-control-admin" placeholder="Contoh: Sifa Ramadani">
+      </div>
+
+      <div class="form-group-admin">
+        <label class="form-label-admin">Kata Sandi (Password) *</label>
+        <input type="password" name="password" class="form-control-admin" placeholder="Minimal 6 karakter" required minlength="6" autocomplete="new-password">
+      </div>
+
+      <div class="form-group-admin">
+        <label class="form-label-admin">No. WhatsApp / HP</label>
+        <input type="tel" name="phone_number" class="form-control-admin" placeholder="081234567890">
+      </div>
+
+      <!-- PILIHAN ROLE / HAK AKSES -->
+      <div class="form-group-admin">
+        <label class="form-label-admin">Role Akun &amp; Hak Akses *</label>
+        <select name="role" class="form-control-admin" style="font-weight:600;">
+          <option value="staff" selected>🛡️ Admin Staff (Akses Dashboard Pengelola Toko)</option>
+          <option value="superuser">👑 Superuser (Akses Penuh Seluruh Sistem &amp; Kelola Admin)</option>
+          <option value="customer">👤 Pelanggan Biasa (Tanpa Akses Admin)</option>
+        </select>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:22px;">
+        <button type="button" class="btn-admin btn-admin--secondary" onclick="closeModal('modalUserAdd')">Batal</button>
+        <button type="submit" class="btn-admin btn-admin--primary">Simpan &amp; Buat Akun</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endif %}
 
 
 <script>

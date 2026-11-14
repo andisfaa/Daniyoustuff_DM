@@ -477,8 +477,82 @@ def admin_gallery_delete(request, item_id):
 
 
 # ─────────────────────────────────────────────────────────────
-#  AKSI PENGGUNA (HAPUS PENGGUNA)
+#  AKSI PENGGUNA (TAMBAH USER/ADMIN & HAPUS PENGGUNA)
 # ─────────────────────────────────────────────────────────────
+
+def superuser_required(view_func):
+    """Decorator untuk memastikan hanya Superuser yang dapat mengakses."""
+    @login_required(login_url='login')
+    def _wrapped(request, *args, **kwargs):
+        if not request.user.is_superuser:
+            messages.error(request, "Akses ditolak. Fitur ini hanya dapat diakses oleh Superuser.")
+            return redirect('/admin-dashboard/?tab=pengguna')
+        return view_func(request, *args, **kwargs)
+    return _wrapped
+
+
+@superuser_required
+def admin_user_save(request):
+    """Tambah pengguna atau admin baru (Khusus Superuser)."""
+    if request.method == 'POST':
+        username = request.POST.get('username', '').strip()
+        email = request.POST.get('email', '').strip()
+        full_name = request.POST.get('full_name', '').strip()
+        password = request.POST.get('password', '').strip()
+        phone_number = request.POST.get('phone_number', '').strip()
+        role = request.POST.get('role', 'staff').strip()  # 'customer', 'staff', 'superuser'
+
+        if not username:
+            messages.error(request, "Username wajib diisi.")
+            return redirect('/admin-dashboard/?tab=pengguna')
+
+        if not password or len(password) < 6:
+            messages.error(request, "Password minimal 6 karakter.")
+            return redirect('/admin-dashboard/?tab=pengguna')
+
+        if User.objects.filter(username=username).exists():
+            messages.error(request, f"Username '{username}' sudah digunakan. Silakan pilih username lain.")
+            return redirect('/admin-dashboard/?tab=pengguna')
+
+        if email and User.objects.filter(email=email).exists():
+            messages.error(request, f"Email '{email}' sudah terdaftar. Silakan gunakan email lain.")
+            return redirect('/admin-dashboard/?tab=pengguna')
+
+        # Buat user baru
+        new_user = User(username=username, email=email)
+        if full_name:
+            names = full_name.split(' ', 1)
+            new_user.first_name = names[0]
+            if len(names) > 1:
+                new_user.last_name = names[1]
+
+        new_user.set_password(password)
+
+        if role == 'superuser':
+            new_user.is_staff = True
+            new_user.is_superuser = True
+            role_label = "Superuser (Akses Penuh)"
+        elif role == 'staff':
+            new_user.is_staff = True
+            new_user.is_superuser = False
+            role_label = "Admin Staff"
+        else:
+            new_user.is_staff = False
+            new_user.is_superuser = False
+            role_label = "Pelanggan"
+
+        new_user.save()
+
+        # Update nomor telepon di UserProfile
+        if phone_number:
+            profile, _ = UserProfile.objects.get_or_create(user=new_user)
+            profile.phone_number = phone_number
+            profile.save()
+
+        messages.success(request, f"Akun '{new_user.username}' berhasil dibuat dengan role: {role_label}!")
+
+    return redirect('/admin-dashboard/?tab=pengguna')
+
 
 @staff_required
 def admin_user_delete(request, user_id):

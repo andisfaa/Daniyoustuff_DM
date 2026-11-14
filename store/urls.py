@@ -55,6 +55,7 @@ urlpatterns = [
     path('admin-dashboard/gallery/save/', admin_views.admin_gallery_save, name='admin_gallery_save'),
     path('admin-dashboard/gallery/<int:item_id>/toggle/', admin_views.admin_gallery_toggle, name='admin_gallery_toggle'),
     path('admin-dashboard/gallery/<int:item_id>/delete/', admin_views.admin_gallery_delete, name='admin_gallery_delete'),
+    path('admin-dashboard/user/save/', admin_views.admin_user_save, name='admin_user_save'),
     path('admin-dashboard/user/<int:user_id>/delete/', admin_views.admin_user_delete, name='admin_user_delete'),
 
     # ── Artikel / Blog ─────────────────────────────────────────
