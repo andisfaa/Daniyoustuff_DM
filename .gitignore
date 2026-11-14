@@ -32,7 +32,10 @@ pyvenv.cfg
 local_settings.py
 db.sqlite3
 staticfiles/
-media/
+media/*
+!media/products/
+!media/gallery/
+!media/articles/
 
 # Environment
 .env

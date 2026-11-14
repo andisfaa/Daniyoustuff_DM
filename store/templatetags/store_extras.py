@@ -21,26 +21,44 @@ def multiply(value, arg):
 
 
 def _path_of(img):
-    """Ambil path gambar dari string atau objek ProductImage."""
+    """Ambil URL/path gambar dari string atau objek gambar/ImageField."""
+    if not img:
+        return ""
     if isinstance(img, str):
         return img
-    for field in ("image_path", "path", "url", "image", "filename"):
+    if hasattr(img, 'url'):
+        return img.url
+    for field in ("image", "image_path", "path", "url", "filename"):
         val = getattr(img, field, None)
         if val:
+            if hasattr(val, 'url'):
+                return val.url
             return str(val)
     return ""
 
 
 @register.simple_tag
 def product_img(product):
-    """Kembalikan URL gambar pertama dari sebuah produk."""
+    """Kembalikan URL gambar pertama dari sebuah produk (prioritas ImageField)."""
     if not product:
         return ""
     if isinstance(product, str):
         return img_static(product)
+
+    # Cek ImageField utama langsung jika instance Product
+    if hasattr(product, "image") and product.image:
+        try:
+            return product.image.url
+        except ValueError:
+            pass
+
     images = getattr(product, "images", None)
     if isinstance(product, dict):
+        if product.get("image"):
+            img = product["image"]
+            return getattr(img, "url", str(img))
         images = product.get("images")
+
     first = None
     if images is not None:
         if hasattr(images, "all"):          # relasi ForeignKey
@@ -49,7 +67,17 @@ def product_img(product):
             first = images.first()
         elif images:                        # list biasa
             first = images[0]
-    path = _path_of(first) if first else ""
+
+    if not first:
+        return ""
+
+    if hasattr(first, 'image') and first.image:
+        try:
+            return first.image.url
+        except ValueError:
+            pass
+
+    path = _path_of(first)
     if not path:
         return ""
     if path.startswith(("http://", "https://", "/")):
@@ -61,9 +89,11 @@ def product_img(product):
 
 @register.simple_tag
 def img_static(path):
-    """Kembalikan URL static untuk gambar"""
+    """Kembalikan URL untuk gambar (support media ImageField dan static)."""
     if not path:
         return ""
+    if hasattr(path, 'url'):
+        return path.url
     path_str = _path_of(path) if not isinstance(path, str) else path
     if not path_str:
         return ""

@@ -68,7 +68,11 @@ class Product(models.Model):
         imgs = []
         if self.image:
             imgs.append(self.image.url)
-        imgs.extend(list(self.images.values_list('path', flat=True)))
+        for pi in self.images.all():
+            if pi.image:
+                imgs.append(pi.image.url)
+            elif pi.path:
+                imgs.append(pi.path)
         return imgs
 
 
@@ -213,8 +217,8 @@ class GalleryItem(models.Model):
 
     title = models.CharField(max_length=150, blank=True, verbose_name="Judul / Keterangan Foto", default="Papan Akrilik")
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default='Papan Bulat', verbose_name="Kategori Papan")
-    image = models.ImageField(upload_to='gallery/', blank=True, null=True, verbose_name="Upload Foto Baru")
-    static_path = models.CharField(max_length=300, blank=True, verbose_name="Atau Path Foto Statis", help_text="Contoh: img/Katalog Daniyou/PAPAN BULAT/Bulat (1).jpeg")
+    image = models.ImageField(upload_to='gallery/', blank=True, null=True, verbose_name="Foto Galeri")
+    static_path = models.CharField(max_length=300, blank=True, verbose_name="Path Foto (Legacy)")
     order = models.IntegerField(default=0, verbose_name="Urutan Tampil")
     is_active = models.BooleanField(default=True, verbose_name="Tampilkan di Web")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Waktu Ditambahkan")
