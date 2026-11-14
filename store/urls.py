@@ -50,9 +50,12 @@ urlpatterns = [
     path('admin-dashboard/product/<int:product_id>/toggle/', admin_views.admin_product_toggle, name='admin_product_toggle'),
     path('admin-dashboard/product/<int:product_id>/delete/', admin_views.admin_product_delete, name='admin_product_delete'),
     path('admin-dashboard/testimonial/save/', admin_views.admin_testimonial_save, name='admin_testimonial_save'),
+    path('admin-dashboard/testimonial/<int:item_id>/toggle/', admin_views.admin_testimonial_toggle, name='admin_testimonial_toggle'),
     path('admin-dashboard/testimonial/<int:item_id>/delete/', admin_views.admin_testimonial_delete, name='admin_testimonial_delete'),
     path('admin-dashboard/gallery/save/', admin_views.admin_gallery_save, name='admin_gallery_save'),
+    path('admin-dashboard/gallery/<int:item_id>/toggle/', admin_views.admin_gallery_toggle, name='admin_gallery_toggle'),
     path('admin-dashboard/gallery/<int:item_id>/delete/', admin_views.admin_gallery_delete, name='admin_gallery_delete'),
+    path('admin-dashboard/user/<int:user_id>/delete/', admin_views.admin_user_delete, name='admin_user_delete'),
 
     # ── Artikel / Blog ─────────────────────────────────────────
     path('artikel/', views.article_list, name='article_list'),

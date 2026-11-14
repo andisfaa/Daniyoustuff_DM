@@ -1,4 +1,5 @@
 import json
+import os
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse, HttpResponseForbidden, Http404
 from django.contrib.auth.decorators import login_required
@@ -7,6 +8,7 @@ from django.contrib import messages
 from django.utils.text import slugify
 from django.utils import timezone
 from django.db.models import Sum, Count, Q
+from django.conf import settings
 
 from .models import (
     Product, ProductImage, ProductVariant,
@@ -197,7 +199,6 @@ def admin_article_save(request):
         # Pastikan slug unik jika baru
         if article_id:
             article = get_object_or_404(Article, id=article_id)
-            # Cek duplikat slug selain artikel ini
             if Article.objects.filter(slug=slug).exclude(id=article.id).exists():
                 slug = f"{slug}-{article.id}"
         else:
@@ -238,7 +239,6 @@ def admin_article_save(request):
                 tag_objs.append(tag_obj)
             article.tags.set(tag_objs)
         else:
-            # Bisa juga dari multi-select checkbox jika ada
             selected_tag_ids = request.POST.getlist('tags')
             if selected_tag_ids:
                 article.tags.set(selected_tag_ids)
@@ -261,12 +261,12 @@ def admin_article_delete(request, article_id):
 
 
 # ─────────────────────────────────────────────────────────────
-#  AKSI PRODUK
+#  AKSI PRODUK (TAMBAH, EDIT, TOGGLE, HAPUS)
 # ─────────────────────────────────────────────────────────────
 
 @staff_required
 def admin_product_save(request):
-    """Tambah atau edit produk."""
+    """Tambah atau edit produk lengkap dengan ImageField dan checkbox ketersediaan."""
     if request.method == 'POST':
         product_id = request.POST.get('product_id', '').strip()
         name = request.POST.get('name', '').strip()
@@ -277,7 +277,8 @@ def admin_product_save(request):
         stock = request.POST.get('stock', '10').strip()
         description = request.POST.get('description', '').strip()
         gradient = request.POST.get('gradient', 'linear-gradient(135deg, #FFB6C1 0%, #FF69B4 100%)').strip()
-        available = request.POST.get('available') == 'on'
+        # Ketersediaan dari checkbox (bisa 'on', '1', atau ada di POST)
+        available = ('available' in request.POST)
 
         if not name:
             messages.error(request, "Nama produk wajib diisi.")
@@ -292,6 +293,7 @@ def admin_product_save(request):
 
         if product_id:
             product = get_object_or_404(Product, id=product_id)
+            is_new = False
         else:
             id_slug = slugify(name)
             base_slug = id_slug
@@ -300,6 +302,7 @@ def admin_product_save(request):
                 id_slug = f"{base_slug}-{c}"
                 c += 1
             product = Product(id_slug=id_slug)
+            is_new = True
 
         product.name = name
         product.category = category or 'Papan Akrilik'
@@ -310,30 +313,26 @@ def admin_product_save(request):
         product.description = description
         product.gradient = gradient
         product.available = available
-        product.save()
 
-        # Handle foto jika ada upload
+        # Handle foto langsung ke ImageField produk
         if 'image' in request.FILES:
-            uploaded_file = request.FILES['image']
-            # Simpan foto via ProductImage atau FileField
-            # Di model ProductImage, path adalah CharField, simpan ke media/products
-            import os
-            from django.conf import settings
-            upload_dir = os.path.join(settings.MEDIA_ROOT, 'products')
-            os.makedirs(upload_dir, exist_ok=True)
-            filename = f"{product.id_slug}_{uploaded_file.name}"
-            filepath = os.path.join(upload_dir, filename)
-            with open(filepath, 'wb+') as dest:
-                for chunk in uploaded_file.chunks():
-                    dest.write(chunk)
-            # Buat atau update ProductImage
-            ProductImage.objects.create(
-                product=product,
-                path=f"/media/products/{filename}",
-                order=0
-            )
+            product.image = request.FILES['image']
+            product.save()
 
-        messages.success(request, f"Produk '{product.name}' berhasil disimpan.")
+            # Juga simpan referensi ke ProductImage jika diperlukan
+            if product.image:
+                ProductImage.objects.create(
+                    product=product,
+                    image=product.image,
+                    path=product.image.url,
+                    order=0
+                )
+        else:
+            product.save()
+
+        action_word = "ditambahkan" if is_new else "diperbarui"
+        messages.success(request, f"Produk '{product.name}' berhasil {action_word}!")
+
     return redirect('/admin-dashboard/?tab=produk')
 
 
@@ -361,7 +360,7 @@ def admin_product_delete(request, product_id):
 
 
 # ─────────────────────────────────────────────────────────────
-#  AKSI TESTIMONI
+#  AKSI TESTIMONI (TAMBAH, EDIT, TOGGLE STATUS, HAPUS)
 # ─────────────────────────────────────────────────────────────
 
 @staff_required
@@ -374,13 +373,15 @@ def admin_testimonial_save(request):
         text = request.POST.get('text', '').strip()
         rating = int(request.POST.get('rating', '5'))
         avatar_color = request.POST.get('avatar_color', '#715330').strip()
-        is_active = request.POST.get('is_active') == 'on'
+        is_active = ('is_active' in request.POST)
         order = int(request.POST.get('order', '0'))
 
         if item_id:
             item = get_object_or_404(Testimonial, id=item_id)
+            is_new = False
         else:
             item = Testimonial()
+            is_new = True
 
         item.name = name
         item.event = event
@@ -391,7 +392,20 @@ def admin_testimonial_save(request):
         item.order = order
         item.save()
 
-        messages.success(request, f"Testimoni dari '{item.name}' berhasil disimpan.")
+        action_word = "ditambahkan" if is_new else "diperbarui"
+        messages.success(request, f"Testimoni dari '{item.name}' berhasil {action_word}!")
+    return redirect('/admin-dashboard/?tab=testimoni')
+
+
+@staff_required
+def admin_testimonial_toggle(request, item_id):
+    """Toggle status tampilkan/sembunyikan testimoni."""
+    if request.method == 'POST':
+        item = get_object_or_404(Testimonial, id=item_id)
+        item.is_active = not item.is_active
+        item.save()
+        status_txt = "Ditampilkan di website" if item.is_active else "Disembunyikan dari website"
+        messages.success(request, f"Status testimoni '{item.name}' diubah: {status_txt}.")
     return redirect('/admin-dashboard/?tab=testimoni')
 
 
@@ -407,23 +421,25 @@ def admin_testimonial_delete(request, item_id):
 
 
 # ─────────────────────────────────────────────────────────────
-#  AKSI GALERI FOTO
+#  AKSI GALERI FOTO (TAMBAH, EDIT, TOGGLE STATUS, HAPUS)
 # ─────────────────────────────────────────────────────────────
 
 @staff_required
 def admin_gallery_save(request):
-    """Upload foto baru ke galeri portofolio."""
+    """Upload foto baru atau edit foto galeri (ImageField)."""
     if request.method == 'POST':
         item_id = request.POST.get('item_id', '').strip()
         title = request.POST.get('title', 'Papan Akrilik').strip()
         category = request.POST.get('category', 'Papan Bulat').strip()
         order = int(request.POST.get('order', '0'))
-        is_active = request.POST.get('is_active') == 'on'
+        is_active = ('is_active' in request.POST)
 
         if item_id:
             item = get_object_or_404(GalleryItem, id=item_id)
+            is_new = False
         else:
             item = GalleryItem()
+            is_new = True
 
         item.title = title
         item.category = category
@@ -434,7 +450,20 @@ def admin_gallery_save(request):
             item.image = request.FILES['image']
 
         item.save()
-        messages.success(request, f"Foto galeri '{item.title}' berhasil disimpan.")
+        action_word = "ditambahkan" if is_new else "diperbarui"
+        messages.success(request, f"Foto galeri '{item.title}' berhasil {action_word}!")
+    return redirect('/admin-dashboard/?tab=galeri')
+
+
+@staff_required
+def admin_gallery_toggle(request, item_id):
+    """Toggle status tampil/sembunyi item galeri."""
+    if request.method == 'POST':
+        item = get_object_or_404(GalleryItem, id=item_id)
+        item.is_active = not item.is_active
+        item.save()
+        status_txt = "Ditampilkan di galeri" if item.is_active else "Disembunyikan dari galeri"
+        messages.success(request, f"Status foto galeri '{item.title}' diubah: {status_txt}.")
     return redirect('/admin-dashboard/?tab=galeri')
 
 
@@ -447,3 +476,30 @@ def admin_gallery_delete(request, item_id):
         item.delete()
         messages.success(request, f"Foto galeri '{title}' berhasil dihapus.")
     return redirect('/admin-dashboard/?tab=galeri')
+
+
+# ─────────────────────────────────────────────────────────────
+#  AKSI PENGGUNA (HAPUS PENGGUNA)
+# ─────────────────────────────────────────────────────────────
+
+@staff_required
+def admin_user_delete(request, user_id):
+    """Hapus akun pengguna dari sistem."""
+    if request.method == 'POST':
+        target_user = get_object_or_404(User, id=user_id)
+
+        # Cek jangan sampai menghapus akun sendiri
+        if target_user.id == request.user.id:
+            messages.error(request, "Anda tidak dapat menghapus akun Anda sendiri yang sedang aktif digunakan.")
+            return redirect('/admin-dashboard/?tab=pengguna')
+
+        # Cek jika satu-satunya superuser
+        if target_user.is_superuser and User.objects.filter(is_superuser=True).count() <= 1:
+            messages.error(request, "Tidak dapat menghapus satu-satunya Superuser dalam sistem.")
+            return redirect('/admin-dashboard/?tab=pengguna')
+
+        username = target_user.username
+        target_user.delete()
+        messages.success(request, f"Pengguna '{username}' berhasil dihapus dari sistem.")
+
+    return redirect('/admin-dashboard/?tab=pengguna')

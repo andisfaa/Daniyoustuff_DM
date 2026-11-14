@@ -51,6 +51,7 @@ class Product(models.Model):
     description = models.TextField()
     features = models.JSONField(default=list)
     gradient = models.CharField(max_length=200)
+    image = models.ImageField(upload_to='products/', blank=True, null=True, verbose_name="Foto Utama Produk")
     available = models.BooleanField(default=True)
     stock = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -64,13 +65,18 @@ class Product(models.Model):
         return self.name
 
     def get_images(self):
-        return list(self.images.values_list('path', flat=True))
+        imgs = []
+        if self.image:
+            imgs.append(self.image.url)
+        imgs.extend(list(self.images.values_list('path', flat=True)))
+        return imgs
 
 
 class ProductImage(models.Model):
     """Gambar Produk"""
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
-    path = models.CharField(max_length=300)
+    image = models.ImageField(upload_to='products/', blank=True, null=True, verbose_name="Foto Produk")
+    path = models.CharField(max_length=300, blank=True)
     order = models.IntegerField(default=0)
 
     class Meta:
@@ -207,7 +213,7 @@ class GalleryItem(models.Model):
 
     title = models.CharField(max_length=150, blank=True, verbose_name="Judul / Keterangan Foto", default="Papan Akrilik")
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default='Papan Bulat', verbose_name="Kategori Papan")
-    image = models.FileField(upload_to='gallery/', blank=True, null=True, verbose_name="Upload Foto Baru")
+    image = models.ImageField(upload_to='gallery/', blank=True, null=True, verbose_name="Upload Foto Baru")
     static_path = models.CharField(max_length=300, blank=True, verbose_name="Atau Path Foto Statis", help_text="Contoh: img/Katalog Daniyou/PAPAN BULAT/Bulat (1).jpeg")
     order = models.IntegerField(default=0, verbose_name="Urutan Tampil")
     is_active = models.BooleanField(default=True, verbose_name="Tampilkan di Web")
