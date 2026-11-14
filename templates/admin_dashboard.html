@@ -658,7 +658,7 @@
             <th>Kategori & Bentuk</th>
             <th>Harga Sewa</th>
             <th>Stok</th>
-            <th>Ketersediaan</th>
+            <th>Status Ketersediaan</th>
             <th>Aksi</th>
           </tr>
         </thead>
@@ -679,11 +679,17 @@
             <td><strong>{{ prod.price|format_price }}</strong></td>
             <td>{{ prod.stock }} unit</td>
             <td>
-              <!-- Tampilan status dengan Checkbox Indikator (tidak langsung ubah tak sengaja) -->
-              <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:0.82rem;font-weight:600;padding:4px 8px;border-radius:6px;background:{% if prod.available %}#e8f5e9{% else %}#ffebee{% endif %};color:{% if prod.available %}#2e7d32{% else %}#c62828{% endif %};">
-                <input type="checkbox" {% if prod.available %}checked{% endif %} disabled style="cursor:default;">
-                {% if prod.available %}Tersedia{% else %}Habis{% endif %}
-              </label>
+              <!-- Form Toggle Status Ketersediaan Produk (langsung pencet seperti testimoni & galeri) -->
+              <form method="POST" action="{% url 'admin_product_toggle' prod.id %}" style="display:inline-block;">
+                {% csrf_token %}
+                <button type="submit" class="btn-admin btn-admin--sm {% if prod.available %}btn-admin--secondary{% else %}btn-admin--danger{% endif %}" title="Klik untuk ubah status ketersediaan">
+                  {% if prod.available %}
+                    🟢 Tersedia
+                  {% else %}
+                    🔴 Habis
+                  {% endif %}
+                </button>
+              </form>
             </td>
             <td>
               <div style="display:flex;gap:6px;flex-wrap:wrap;">
