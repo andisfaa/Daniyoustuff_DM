@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from . import admin_views
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -37,10 +38,23 @@ urlpatterns = [
     path('akun/update', views.profile_update_view),
     path('order/<str:order_code>/', views.order_detail_view, name='order_detail'),
     path('order/<str:order_code>', views.order_detail_view),
-    path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('img/<path:filename>', views.serve_img, name='serve_img'),
 
-    # ── Artikel / Blog ──────────────────────────────────────
+    # ── PANEL ADMIN IN-WEBSITE (NATIVE UI/UX) ──────────────────
+    path('admin-dashboard/', admin_views.admin_dashboard, name='admin_dashboard'),
+    path('admin-dashboard', admin_views.admin_dashboard),
+    path('admin-dashboard/order/<int:order_id>/status/', admin_views.admin_order_update_status, name='admin_order_update_status'),
+    path('admin-dashboard/article/save/', admin_views.admin_article_save, name='admin_article_save'),
+    path('admin-dashboard/article/<int:article_id>/delete/', admin_views.admin_article_delete, name='admin_article_delete'),
+    path('admin-dashboard/product/save/', admin_views.admin_product_save, name='admin_product_save'),
+    path('admin-dashboard/product/<int:product_id>/toggle/', admin_views.admin_product_toggle, name='admin_product_toggle'),
+    path('admin-dashboard/product/<int:product_id>/delete/', admin_views.admin_product_delete, name='admin_product_delete'),
+    path('admin-dashboard/testimonial/save/', admin_views.admin_testimonial_save, name='admin_testimonial_save'),
+    path('admin-dashboard/testimonial/<int:item_id>/delete/', admin_views.admin_testimonial_delete, name='admin_testimonial_delete'),
+    path('admin-dashboard/gallery/save/', admin_views.admin_gallery_save, name='admin_gallery_save'),
+    path('admin-dashboard/gallery/<int:item_id>/delete/', admin_views.admin_gallery_delete, name='admin_gallery_delete'),
+
+    # ── Artikel / Blog ─────────────────────────────────────────
     path('artikel/', views.article_list, name='article_list'),
     path('artikel', views.article_list),
     path('artikel/<slug:slug>/', views.article_detail, name='article_detail'),

@@ -290,7 +290,7 @@
 
 <!-- Admin Shortcut FAB -->
 {% if user.is_staff %}
-<a href="/admin/store/article/add/" class="admin-fab" title="Tambah Artikel Baru">
+<a href="{% url 'admin_dashboard' %}?tab=artikel" class="admin-fab" title="Tulis Artikel Baru di Dashboard Admin">
   ✏️ Tulis Artikel
 </a>
 {% endif %}

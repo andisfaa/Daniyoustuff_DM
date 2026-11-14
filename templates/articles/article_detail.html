@@ -229,7 +229,7 @@
     ⚠️
     <span>
       Artikel ini berstatus <strong>{{ article.get_status_display }}</strong> dan tidak terlihat oleh pengunjung umum.
-      <a href="/admin/store/article/{{ article.pk }}/change/" class="admin-edit-btn" style="margin-left:12px;">✏️ Edit di Admin</a>
+      <a href="{% url 'admin_dashboard' %}?tab=artikel" class="admin-edit-btn" style="margin-left:12px;">✏️ Kelola di Panel Admin</a>
     </span>
   </div>
   {% endif %}
@@ -269,7 +269,7 @@
     </div>
     {% endif %}
     {% if user.is_staff %}
-    <a href="/admin/store/article/{{ article.pk }}/change/" class="admin-edit-btn">✏️ Edit Artikel</a>
+    <a href="{% url 'admin_dashboard' %}?tab=artikel" class="admin-edit-btn">✏️ Kelola di Panel Admin</a>
     {% endif %}
   </div>
 

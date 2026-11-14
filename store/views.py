@@ -568,7 +568,8 @@ def order_detail_view(request, order_code):
 
 
 def admin_dashboard(request):
-    return redirect('/admin/')
+    from . import admin_views
+    return admin_views.admin_dashboard(request)
 
 
 def track(request):
