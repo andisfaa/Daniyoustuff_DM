@@ -277,8 +277,6 @@ def admin_product_save(request):
         stock = request.POST.get('stock', '10').strip()
         description = request.POST.get('description', '').strip()
         gradient = request.POST.get('gradient', 'linear-gradient(135deg, #FFB6C1 0%, #FF69B4 100%)').strip()
-        # Ketersediaan dari checkbox (bisa 'on', '1', atau ada di POST)
-        available = ('available' in request.POST)
 
         if not name:
             messages.error(request, "Nama produk wajib diisi.")
@@ -301,7 +299,7 @@ def admin_product_save(request):
             while Product.objects.filter(id_slug=id_slug).exists():
                 id_slug = f"{base_slug}-{c}"
                 c += 1
-            product = Product(id_slug=id_slug)
+            product = Product(id_slug=id_slug, available=True)
             is_new = True
 
         product.name = name
@@ -312,7 +310,7 @@ def admin_product_save(request):
         product.stock = stock_val
         product.description = description
         product.gradient = gradient
-        product.available = available
+        # Ketersediaan tidak ditimpa di form modal (dikelola langsung melalui tombol di tabel produk)
 
         # Handle foto langsung ke ImageField produk
         if 'image' in request.FILES:

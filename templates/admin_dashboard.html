@@ -1199,11 +1199,6 @@
         <label class="form-label-admin">Foto Produk (ImageField)</label>
         <input type="file" name="image" accept="image/*" class="form-control-admin">
       </div>
-      <div class="form-group-admin">
-        <label style="display:flex;align-items:center;gap:8px;font-weight:600;font-size:0.88rem;color:#5a3f22;cursor:pointer;">
-          <input type="checkbox" name="available" checked> Status: Tersedia untuk Disewa
-        </label>
-      </div>
       <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
         <button type="button" class="btn-admin btn-admin--secondary" onclick="closeModal('modalProduct')">Batal</button>
         <button type="submit" class="btn-admin btn-admin--primary">Simpan Produk</button>
@@ -1268,11 +1263,6 @@
         <label class="form-label-admin">Ganti Foto Produk (ImageField - Opsional)</label>
         <input type="file" name="image" accept="image/*" class="form-control-admin">
         <small style="color:#888;font-size:0.75rem;">Biarkan kosong jika tidak ingin mengubah foto produk.</small>
-      </div>
-      <div class="form-group-admin">
-        <label style="display:flex;align-items:center;gap:8px;font-weight:600;font-size:0.88rem;color:#5a3f22;cursor:pointer;">
-          <input type="checkbox" name="available" id="editProdAvailable"> Status: Tersedia untuk Disewa
-        </label>
       </div>
       <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
         <button type="button" class="btn-admin btn-admin--secondary" onclick="closeModal('modalProductEdit')">Batal</button>
@@ -1515,7 +1505,6 @@
     document.getElementById('editProdPrice').value = p.price;
     document.getElementById('editProdStock').value = p.stock;
     document.getElementById('editProdDesc').value = p.description || '';
-    document.getElementById('editProdAvailable').checked = (p.available === true || p.available === 'true');
     openModal('modalProductEdit');
   }
 
