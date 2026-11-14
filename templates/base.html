@@ -35,6 +35,7 @@
       <a href="{% url 'home' %}" class="navbar__link {% if request.resolver_match.url_name == 'home' %}navbar__link--active{% endif %}">Beranda</a>
       <a href="{% url 'catalog' %}" class="navbar__link {% if request.resolver_match.url_name == 'catalog' %}navbar__link--active{% endif %}">Katalog</a>
       <a href="{% url 'about' %}" class="navbar__link {% if request.resolver_match.url_name == 'about' %}navbar__link--active{% endif %}">About</a>
+      <a href="{% url 'article_list' %}" class="navbar__link {% if request.resolver_match.url_name == 'article_list' or request.resolver_match.url_name == 'article_detail' %}navbar__link--active{% endif %}">Artikel</a>
       <a href="{% url 'track' %}" class="navbar__link {% if request.resolver_match.url_name == 'track' %}navbar__link--active{% endif %}">Lacak Pesanan</a>
     </nav>
 
@@ -114,6 +115,7 @@
   <a href="{% url 'home' %}" class="mobile-menu__link">Beranda</a>
   <a href="{% url 'catalog' %}" class="mobile-menu__link">Katalog</a>
   <a href="{% url 'about' %}" class="mobile-menu__link">About</a>
+  <a href="{% url 'article_list' %}" class="mobile-menu__link">Artikel</a>
   <a href="{% url 'track' %}" class="mobile-menu__link">Lacak Pesanan</a>
   <div class="mobile-menu__actions">
     {% if user.is_authenticated %}

@@ -229,3 +229,80 @@ class GalleryItem(models.Model):
             return self.static_path
         return ''
 
+
+# ─────────────────────────────────────────────────────────────
+#  ARTIKEL / BLOG
+# ─────────────────────────────────────────────────────────────
+
+class ArticleTag(models.Model):
+    """Tag / Label untuk Artikel"""
+    name = models.CharField(max_length=50, unique=True, verbose_name="Nama Tag")
+    slug = models.SlugField(max_length=60, unique=True, verbose_name="Slug Tag")
+
+    class Meta:
+        db_table = 'store_article_tag'
+        verbose_name = 'Tag Artikel'
+        verbose_name_plural = 'Daftar Tag Artikel'
+
+    def __str__(self):
+        return self.name
+
+
+class Article(models.Model):
+    """Model Artikel / Blog DaniyouStuff.co"""
+    STATUS_CHOICES = [
+        ('draft', 'Draft (Belum Terbit)'),
+        ('published', 'Dipublikasikan'),
+        ('archived', 'Diarsipkan'),
+    ]
+
+    title = models.CharField(max_length=200, verbose_name="Judul Artikel")
+    slug = models.SlugField(
+        max_length=220, unique=True, verbose_name="Slug URL",
+        help_text="Otomatis tersinkronisasi dari judul. Gunakan huruf kecil dan tanda hubung."
+    )
+    thumbnail = models.FileField(
+        upload_to='articles/thumbnails/', blank=True, null=True,
+        verbose_name="Thumbnail / Gambar Utama"
+    )
+    summary = models.TextField(
+        max_length=500, verbose_name="Ringkasan Artikel",
+        help_text="Ringkasan singkat yang muncul di daftar artikel (maks. 500 karakter)."
+    )
+    content = models.TextField(verbose_name="Isi Artikel Lengkap")
+    tags = models.ManyToManyField(
+        ArticleTag, blank=True, verbose_name="Tags Artikel",
+        related_name='articles'
+    )
+    status = models.CharField(
+        max_length=20, choices=STATUS_CHOICES, default='draft',
+        verbose_name="Status Publikasi"
+    )
+    published_at = models.DateTimeField(
+        null=True, blank=True, verbose_name="Jadwal / Waktu Terbit",
+        help_text="Kosongkan untuk menyimpan sebagai draft. Isi jadwal untuk terbit otomatis."
+    )
+    author = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True,
+        verbose_name="Penulis"
+    )
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Dibuat")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Diperbarui")
+
+    class Meta:
+        db_table = 'store_article'
+        ordering = ['-published_at', '-created_at']
+        verbose_name = 'Artikel'
+        verbose_name_plural = 'Daftar Artikel'
+
+    def __str__(self):
+        return f"{self.title} [{self.get_status_display()}]"
+
+    def is_live(self):
+        """Cek apakah artikel sudah tayang (published + waktu terbit sudah lewat)."""
+        from django.utils import timezone
+        return (
+            self.status == 'published'
+            and (self.published_at is None or self.published_at <= timezone.now())
+        )
+

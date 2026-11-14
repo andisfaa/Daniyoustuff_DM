@@ -10,7 +10,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 import os
 
-from .models import Product, Order, OrderItem, UserProfile, Testimonial, GalleryItem
+from .models import Product, Order, OrderItem, UserProfile, Testimonial, GalleryItem, Article, ArticleTag
+from django.db.models import Q
 from datetime import datetime
 import uuid
 
@@ -588,3 +589,59 @@ def serve_img(request, filename):
     if os.path.exists(filepath):
         return FileResponse(open(filepath, 'rb'))
     raise Http404
+
+
+# ─────────────────────────────────────────────────────────────
+#  ARTIKEL / BLOG VIEWS
+# ─────────────────────────────────────────────────────────────
+
+def article_list(request):
+    """Halaman daftar artikel yang sudah published."""
+    from django.utils import timezone
+    tag_slug = request.GET.get('tag', '')
+
+    articles = Article.objects.filter(
+        status='published'
+    ).filter(
+        Q(published_at__isnull=True) | Q(published_at__lte=timezone.now())
+    ).prefetch_related('tags', 'author').order_by('-published_at', '-created_at')
+
+    # Semua tag yang dipakai artikel live
+    tags = ArticleTag.objects.filter(articles__in=articles).distinct().order_by('name')
+
+    # Filter berdasarkan tag yang dipilih
+    active_tag = None
+    if tag_slug:
+        articles = articles.filter(tags__slug=tag_slug)
+        active_tag = ArticleTag.objects.filter(slug=tag_slug).first()
+
+    return render(request, 'articles/article_list.html', {
+        'articles': articles,
+        'tags': tags,
+        'active_tag': active_tag,
+    })
+
+
+def article_detail(request, slug):
+    """Halaman detail satu artikel."""
+    from django.utils import timezone
+    article = get_object_or_404(Article, slug=slug)
+
+    # Non-staff hanya bisa lihat artikel published yang sudah waktunya
+    if not request.user.is_staff:
+        if article.status != 'published':
+            raise Http404
+        if article.published_at and article.published_at > timezone.now():
+            raise Http404
+
+    related = Article.objects.filter(
+        status='published',
+        tags__in=article.tags.all()
+    ).exclude(id=article.id).filter(
+        Q(published_at__isnull=True) | Q(published_at__lte=timezone.now())
+    ).distinct()[:3]
+
+    return render(request, 'articles/article_detail.html', {
+        'article': article,
+        'related': related,
+    })

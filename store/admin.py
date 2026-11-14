@@ -5,7 +5,8 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import (
     Product, ProductImage, ProductVariant,
     Order, OrderItem, UserProfile,
-    Testimonial, GalleryItem
+    Testimonial, GalleryItem,
+    ArticleTag, Article
 )
 
 
@@ -200,6 +201,49 @@ class GalleryItemAdmin(admin.ModelAdmin):
             src, src
         )
     thumb_preview.short_description = 'Pratinjau Foto'
+
+
+# ─────────────────────────────────────────────────────────────
+#  ARTIKEL / BLOG
+# ─────────────────────────────────────────────────────────────
+
+@admin.register(ArticleTag)
+class ArticleTagAdmin(admin.ModelAdmin):
+    list_display = ['name', 'slug']
+    prepopulated_fields = {'slug': ('name',)}
+    search_fields = ['name']
+
+
+@admin.register(Article)
+class ArticleAdmin(admin.ModelAdmin):
+    list_display = ['title', 'status', 'published_at', 'author', 'created_at']
+    list_filter = ['status', 'tags', 'created_at']
+    search_fields = ['title', 'summary', 'content']
+    prepopulated_fields = {'slug': ('title',)}
+    list_editable = ['status']
+    filter_horizontal = ['tags']
+    readonly_fields = ['created_at', 'updated_at', 'thumbnail_preview']
+    fieldsets = (
+        ('Konten Artikel', {
+            'fields': ('title', 'slug', 'thumbnail', 'thumbnail_preview', 'summary', 'content')
+        }),
+        ('Metadata & Publikasi', {
+            'fields': ('tags', 'status', 'published_at', 'author')
+        }),
+        ('Info Waktu (Readonly)', {
+            'classes': ('collapse',),
+            'fields': ('created_at', 'updated_at')
+        }),
+    )
+
+    def thumbnail_preview(self, obj):
+        if obj.thumbnail:
+            return format_html(
+                '<img src="{}" style="max-width:220px;border-radius:8px;border:1px solid #ddd;margin-top:4px;"/>',
+                obj.thumbnail.url
+            )
+        return format_html('<span style="color:#aaa;font-style:italic;">Belum ada thumbnail</span>')
+    thumbnail_preview.short_description = 'Pratinjau Thumbnail'
 
 
 admin.site.site_header = "DaniyouStuff.co — Panel Admin"

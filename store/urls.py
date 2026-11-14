@@ -39,4 +39,10 @@ urlpatterns = [
     path('order/<str:order_code>', views.order_detail_view),
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('img/<path:filename>', views.serve_img, name='serve_img'),
+
+    # ── Artikel / Blog ──────────────────────────────────────
+    path('artikel/', views.article_list, name='article_list'),
+    path('artikel', views.article_list),
+    path('artikel/<slug:slug>/', views.article_detail, name='article_detail'),
+    path('artikel/<slug:slug>', views.article_detail),
 ]
