@@ -1,1611 +1,1608 @@
-{% extends "base.html" %}
-{% load static store_extras %}
-
-{% block title %}Dashboard Admin — DaniyouStuff.co{% endblock %}
-
-{% block head %}
-<style>
-  /* ── ADMIN DASHBOARD STYLES ──────────────────────────────── */
-  .admin-wrap {
-    max-width: 1240px;
-    margin: 0 auto;
-    padding: 36px 20px 80px;
-  }
-
-  /* Header banner */
-  .admin-header {
-    background: linear-gradient(135deg, #f5f1e8 0%, #eeebda 100%);
-    border: 1px solid #e0d9c6;
-    border-radius: 20px;
-    padding: 32px 36px;
-    margin-bottom: 28px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 20px;
-    box-shadow: 0 4px 20px rgba(90, 63, 34, 0.05);
-  }
-  .admin-header__title {
-    font-family: 'Playfair Display', serif;
-    font-size: 2rem;
-    color: #3b2a1a;
-    margin: 0 0 6px;
-  }
-  .admin-header__sub {
-    color: #7a6248;
-    font-size: 0.95rem;
-    margin: 0;
-  }
-  .admin-header__badge {
-    background: #715330;
-    color: #fff;
-    padding: 8px 18px;
-    border-radius: 999px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  /* Flash Alert */
-  .admin-alert {
-    padding: 14px 20px;
-    border-radius: 12px;
-    margin-bottom: 24px;
-    font-size: 0.92rem;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
-  }
-  .admin-alert--success {
-    background: #eef8ee;
-    color: #2e7d32;
-    border: 1px solid #c8e6c9;
-  }
-  .admin-alert--error {
-    background: #fdeeee;
-    color: #c62828;
-    border: 1px solid #ffcdd2;
-  }
-
-  /* Navigation Tabs */
-  .admin-tabs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 28px;
-    padding-bottom: 8px;
-    border-bottom: 1.5px solid #e8e0d0;
-  }
-  .admin-tab {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    border-radius: 999px;
-    background: #fff;
-    color: #715330;
-    border: 1.5px solid #dcd2be;
-    font-size: 0.88rem;
-    font-weight: 600;
-    text-decoration: none;
-    transition: all 0.2s ease;
-  }
-  .admin-tab:hover {
-    background: #f7f3ea;
-    border-color: #715330;
-  }
-  .admin-tab.active {
-    background: #715330;
-    color: #fff;
-    border-color: #715330;
-    box-shadow: 0 4px 14px rgba(113, 83, 48, 0.25);
-  }
-  .admin-tab__count {
-    background: rgba(0,0,0,0.08);
-    color: inherit;
-    padding: 2px 8px;
-    border-radius: 999px;
-    font-size: 0.75rem;
-    font-weight: 700;
-  }
-  .admin-tab.active .admin-tab__count {
-    background: rgba(255,255,255,0.25);
-    color: #fff;
-  }
-
-  /* KPI Grid */
-  .kpi-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-    gap: 18px;
-    margin-bottom: 32px;
-  }
-  .kpi-card {
-    background: #fff;
-    border-radius: 16px;
-    padding: 22px 24px;
-    border: 1px solid #ebd9c0;
-    box-shadow: 0 2px 12px rgba(90, 63, 34, 0.04);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-  .kpi-card__icon {
-    font-size: 1.8rem;
-    margin-bottom: 12px;
-  }
-  .kpi-card__value {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.7rem;
-    color: #3b2a1a;
-    font-weight: 700;
-    margin-bottom: 4px;
-  }
-  .kpi-card__label {
-    font-size: 0.85rem;
-    color: #7a6248;
-    font-weight: 500;
-  }
-
-  /* Content Panel / Card */
-  .admin-panel {
-    background: #fff;
-    border-radius: 18px;
-    border: 1px solid #e8e0d0;
-    box-shadow: 0 4px 20px rgba(90, 63, 34, 0.05);
-    padding: 28px;
-    margin-bottom: 36px;
-  }
-  .admin-panel__top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 16px;
-    margin-bottom: 22px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid #f0eadc;
-  }
-  .admin-panel__title {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.35rem;
-    color: #3b2a1a;
-    margin: 0;
-  }
-
-  /* Buttons */
-  .btn-admin {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 9px 18px;
-    border-radius: 999px;
-    font-size: 0.86rem;
-    font-weight: 600;
-    text-decoration: none;
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s ease;
-  }
-  .btn-admin--primary {
-    background: #715330;
-    color: #fff;
-  }
-  .btn-admin--primary:hover {
-    background: #5a3f22;
-    color: #fff;
-  }
-  .btn-admin--secondary {
-    background: #f4ede0;
-    color: #715330;
-    border: 1px solid #d5c7b0;
-  }
-  .btn-admin--secondary:hover {
-    background: #e8ddca;
-  }
-  .btn-admin--danger {
-    background: #fde8e8;
-    color: #c62828;
-    border: 1px solid #f8b4b4;
-  }
-  .btn-admin--danger:hover {
-    background: #fbd5d5;
-  }
-  .btn-admin--sm {
-    padding: 5px 12px;
-    font-size: 0.78rem;
-  }
-
-  /* Table styling */
-  .admin-table-wrap {
-    overflow-x: auto;
-  }
-  .admin-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    font-size: 0.88rem;
-    text-align: left;
-  }
-  .admin-table th {
-    background: #f9f6ef;
-    color: #5a3f22;
-    font-weight: 600;
-    padding: 12px 14px;
-    border-bottom: 1.5px solid #e0d5c0;
-    white-space: nowrap;
-  }
-  .admin-table td {
-    padding: 14px;
-    border-bottom: 1px solid #f2ece0;
-    color: #4a3728;
-    vertical-align: middle;
-  }
-  .admin-table tr:hover td {
-    background: #fcfbf8;
-  }
-
-  /* Badges */
-  .status-pill {
-    display: inline-block;
-    padding: 4px 10px;
-    border-radius: 999px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: .04em;
-    white-space: nowrap;
-  }
-  .status-pill--pending { background: #fff8e1; color: #f57f17; border: 1px solid #ffe082; }
-  .status-pill--confirmed { background: #e3f2fd; color: #1565c0; border: 1px solid #90caf9; }
-  .status-pill--processing { background: #f3e5f5; color: #7b1fa2; border: 1px solid #ce93d8; }
-  .status-pill--ready { background: #e0f2f1; color: #00695c; border: 1px solid #80cbc4; }
-  .status-pill--completed { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
-  .status-pill--cancelled { background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; }
-  .status-pill--published { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
-  .status-pill--draft { background: #fff8e1; color: #f57f17; border: 1px solid #ffe082; }
-  .status-pill--archived { background: #eceff1; color: #455a64; border: 1px solid #cfd8dc; }
-
-  /* Search & Filter Bar */
-  .admin-filter-bar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 20px;
-    align-items: center;
-  }
-  .admin-input {
-    padding: 8px 14px;
-    border-radius: 999px;
-    border: 1.5px solid #d5c7b0;
-    font-size: 0.85rem;
-    background: #fff;
-    outline: none;
-    color: #4a3728;
-  }
-  .admin-input:focus {
-    border-color: #715330;
-  }
-  .admin-select {
-    padding: 8px 14px;
-    border-radius: 999px;
-    border: 1.5px solid #d5c7b0;
-    font-size: 0.85rem;
-    background: #fff;
-    outline: none;
-    color: #4a3728;
-  }
-
-  /* Form modal popup */
-  .admin-modal {
-    display: none;
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(40, 28, 15, 0.6);
-    z-index: 9999;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    backdrop-filter: blur(4px);
-  }
-  .admin-modal.show {
-    display: flex;
-  }
-  .admin-modal__box {
-    background: #fff;
-    border-radius: 20px;
-    max-width: 680px;
-    width: 100%;
-    max-height: 90vh;
-    overflow-y: auto;
-    padding: 30px;
-    box-shadow: 0 16px 48px rgba(0,0,0,0.2);
-    border: 1px solid #e8e0d0;
-  }
-  .admin-modal__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid #ebd9c0;
-  }
-  .admin-modal__title {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.4rem;
-    color: #3b2a1a;
-    margin: 0;
-  }
-  .admin-modal__close {
-    background: none;
-    border: none;
-    font-size: 1.6rem;
-    cursor: pointer;
-    color: #9d8367;
-  }
-  .form-group-admin {
-    margin-bottom: 16px;
-  }
-  .form-label-admin {
-    display: block;
-    font-weight: 600;
-    font-size: 0.84rem;
-    color: #5a3f22;
-    margin-bottom: 6px;
-  }
-  .form-control-admin {
-    width: 100%;
-    padding: 10px 14px;
-    border-radius: 10px;
-    border: 1.5px solid #dcd2be;
-    font-size: 0.9rem;
-    font-family: inherit;
-    outline: none;
-    box-sizing: border-box;
-  }
-  .form-control-admin:focus {
-    border-color: #715330;
-  }
-</style>
-{% endblock %}
-
-{% block content %}
-<div class="admin-wrap">
-
-  <!-- Header Banner -->
-  <div class="admin-header">
-    <div>
-      <h1 class="admin-header__title">Panel Admin Toko</h1>
-      <p class="admin-header__sub">Manajemen pesanan, katalog produk, artikel blog, portofolio, dan ulasan pelanggan secara langsung.</p>
-    </div>
-    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-      <span class="admin-header__badge">
-        👑 {{ user.first_name|default:user.username }} (Admin)
-      </span>
-      <a href="{% url 'home' %}" class="btn-admin btn-admin--secondary">
-        🌐 Lihat Website
-      </a>
-    </div>
-  </div>
-
-  <!-- Messages Flash Alerts -->
-  {% if messages %}
-    {% for message in messages %}
-      <div class="admin-alert {% if message.tags == 'error' %}admin-alert--error{% else %}admin-alert--success{% endif %}">
-        <span>{% if message.tags == 'error' %}⚠️{% else %}✅{% endif %}</span>
-        <span>{{ message }}</span>
-      </div>
-    {% endfor %}
-  {% endif %}
-
-  <!-- Tab Navigation -->
-  <div class="admin-tabs">
-    <a href="{% url 'admin_dashboard' %}?tab=ringkasan" class="admin-tab {% if active_tab == 'ringkasan' %}active{% endif %}">
-      📊 Ringkasan
-    </a>
-    <a href="{% url 'admin_dashboard' %}?tab=pesanan" class="admin-tab {% if active_tab == 'pesanan' %}active{% endif %}">
-      📦 Pesanan <span class="admin-tab__count">{{ total_orders }}</span>
-    </a>
-    <a href="{% url 'admin_dashboard' %}?tab=produk" class="admin-tab {% if active_tab == 'produk' %}active{% endif %}">
-      🛍️ Produk <span class="admin-tab__count">{{ total_products }}</span>
-    </a>
-    <a href="{% url 'admin_dashboard' %}?tab=artikel" class="admin-tab {% if active_tab == 'artikel' %}active{% endif %}">
-      📰 Artikel <span class="admin-tab__count">{{ total_articles }}</span>
-    </a>
-    <a href="{% url 'admin_dashboard' %}?tab=testimoni" class="admin-tab {% if active_tab == 'testimoni' %}active{% endif %}">
-      💬 Testimoni <span class="admin-tab__count">{{ total_testimonials }}</span>
-    </a>
-    <a href="{% url 'admin_dashboard' %}?tab=galeri" class="admin-tab {% if active_tab == 'galeri' %}active{% endif %}">
-      🖼️ Galeri Foto <span class="admin-tab__count">{{ total_gallery }}</span>
-    </a>
-    <a href="{% url 'admin_dashboard' %}?tab=pengguna" class="admin-tab {% if active_tab == 'pengguna' %}active{% endif %}">
-      👥 Pengguna <span class="admin-tab__count">{{ total_users }}</span>
-    </a>
-  </div>
-
-
-  <!-- ══════════════════════════════════════════════════════════════
-       TAB 1: RINGKASAN
-  ══════════════════════════════════════════════════════════════ -->
-  {% if active_tab == 'ringkasan' %}
-  <!-- KPI Metrics -->
-  <div class="kpi-grid">
-    <div class="kpi-card">
-      <div class="kpi-card__icon">💰</div>
-      <div class="kpi-card__value">{{ total_revenue|format_price }}</div>
-      <div class="kpi-card__label">Total Omzet Pesanan</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-card__icon">⏳</div>
-      <div class="kpi-card__value">{{ pending_orders }}</div>
-      <div class="kpi-card__label">Pesanan Menunggu Verifikasi</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-card__icon">📦</div>
-      <div class="kpi-card__value">{{ total_orders }}</div>
-      <div class="kpi-card__label">Total Seluruh Pesanan</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-card__icon">🛍️</div>
-      <div class="kpi-card__value">{{ active_products }} <small style="font-size:0.9rem;font-weight:400;color:#888;">/ {{ total_products }}</small></div>
-      <div class="kpi-card__label">Produk Aktif Sewa</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-card__icon">📰</div>
-      <div class="kpi-card__value">{{ published_articles }} <small style="font-size:0.9rem;font-weight:400;color:#888;">/ {{ total_articles }}</small></div>
-      <div class="kpi-card__label">Artikel Tayang</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-card__icon">👥</div>
-      <div class="kpi-card__value">{{ total_users }}</div>
-      <div class="kpi-card__label">Pelanggan Terdaftar</div>
-    </div>
-  </div>
-
-  <!-- Recent Orders Table -->
-  <div class="admin-panel">
-    <div class="admin-panel__top">
-      <h2 class="admin-panel__title">Pesanan Terbaru</h2>
-      <a href="{% url 'admin_dashboard' %}?tab=pesanan" class="btn-admin btn-admin--secondary">
-        Lihat Semua Pesanan &rarr;
-      </a>
-    </div>
-
-    <div class="admin-table-wrap">
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th>Kode</th>
-            <th>Pelanggan</th>
-            <th>Acara</th>
-            <th>Total</th>
-            <th>Pembayaran</th>
-            <th>Status</th>
-            <th>Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for ord in recent_orders %}
-          <tr>
-            <td><strong>{{ ord.order_code }}</strong></td>
-            <td>
-              <div>{{ ord.customer_name }}</div>
-              <small style="color:#888;"><a href="https://wa.me/{{ ord.customer_phone }}" target="_blank" style="color:#715330;">📱 {{ ord.customer_phone }}</a></small>
-            </td>
-            <td>{{ ord.event_date|date:"j N Y"|default:"-" }}</td>
-            <td><strong>{{ ord.subtotal|format_price }}</strong></td>
-            <td><span style="text-transform:uppercase;font-size:0.75rem;font-weight:600;">{{ ord.payment_method }}</span></td>
-            <td>
-              <span class="status-pill status-pill--{{ ord.status }}">{{ ord.get_status_display }}</span>
-            </td>
-            <td>
-              <a href="{% url 'order_detail' ord.order_code %}" target="_blank" class="btn-admin btn-admin--secondary btn-admin--sm">
-                Lihat Detail
-              </a>
-            </td>
-          </tr>
-          {% empty %}
-          <tr><td colspan="7" style="text-align:center;color:#999;padding:28px;">Belum ada pesanan terbaru.</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- Quick Shortcut Cards -->
-  <div class="admin-panel">
-    <div class="admin-panel__top">
-      <h2 class="admin-panel__title">Aksi Cepat Manajemen</h2>
-    </div>
-    <div style="display:flex;flex-wrap:wrap;gap:14px;">
-      <a href="{% url 'admin_dashboard' %}?tab=artikel" class="btn-admin btn-admin--primary">
-        ✍️ Tulis Artikel Baru
-      </a>
-      <a href="{% url 'admin_dashboard' %}?tab=produk" class="btn-admin btn-admin--primary">
-        ➕ Tambah Produk
-      </a>
-      <a href="{% url 'admin_dashboard' %}?tab=galeri" class="btn-admin btn-admin--secondary">
-        📷 Upload Foto Galeri
-      </a>
-      <a href="{% url 'admin_dashboard' %}?tab=testimoni" class="btn-admin btn-admin--secondary">
-        ⭐ Tambah Testimoni
-      </a>
-    </div>
-  </div>
-  {% endif %}
-
-
-  <!-- ══════════════════════════════════════════════════════════════
-       TAB 2: PESANAN
-  ══════════════════════════════════════════════════════════════ -->
-  {% if active_tab == 'pesanan' %}
-  <div class="admin-panel">
-    <div class="admin-panel__top">
-      <h2 class="admin-panel__title">Daftar Pesanan Pelanggan</h2>
-    </div>
-
-    <!-- Filter & Search -->
-    <form method="GET" action="{% url 'admin_dashboard' %}" class="admin-filter-bar">
-      <input type="hidden" name="tab" value="pesanan">
-      <input type="text" name="q" value="{{ q }}" placeholder="Cari kode pesanan, nama, no HP..." class="admin-input" style="min-width:260px;">
-      
-      <select name="status" class="admin-select" onchange="this.form.submit()">
-        <option value="">Semua Status</option>
-        {% for st_val, st_lbl in status_choices %}
-        <option value="{{ st_val }}" {% if status_filter == st_val %}selected{% endif %}>{{ st_lbl }}</option>
-        {% endfor %}
-      </select>
-
-      <button type="submit" class="btn-admin btn-admin--primary">Cari</button>
-      {% if q or status_filter %}
-      <a href="{% url 'admin_dashboard' %}?tab=pesanan" class="btn-admin btn-admin--secondary">Reset</a>
-      {% endif %}
-    </form>
-
-    <div class="admin-table-wrap">
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th>Kode</th>
-            <th>Pelanggan</th>
-            <th>Tgl Acara</th>
-            <th>Total</th>
-            <th>Metode & Bukti</th>
-            <th>Status</th>
-            <th>Ubah Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for ord in orders %}
-          <tr>
-            <td>
-              <strong>{{ ord.order_code }}</strong><br>
-              <small style="color:#999;">{{ ord.created_at|date:"j N Y, H:i" }}</small>
-            </td>
-            <td>
-              <div style="font-weight:600;">{{ ord.customer_name }}</div>
-              <small><a href="https://wa.me/{{ ord.customer_phone }}" target="_blank" style="color:#715330;">📱 {{ ord.customer_phone }}</a></small><br>
-              <small style="color:#777;">{{ ord.customer_address|truncatechars:35 }}</small>
-            </td>
-            <td>{{ ord.event_date|date:"j N Y"|default:"-" }}</td>
-            <td><strong>{{ ord.subtotal|format_price }}</strong></td>
-            <td>
-              <span style="font-size:0.8rem;font-weight:600;">{{ ord.get_payment_method_display }}</span><br>
-              {% if ord.payment_proof %}
-              <a href="{{ ord.payment_proof.url }}" target="_blank" class="btn-admin btn-admin--secondary btn-admin--sm" style="margin-top:4px;">
-                🖼️ Lihat Bukti QRIS
-              </a>
-              {% else %}
-              <small style="color:#aaa;">Tanpa Bukti</small>
-              {% endif %}
-            </td>
-            <td>
-              <span class="status-pill status-pill--{{ ord.status }}">{{ ord.get_status_display }}</span>
-            </td>
-            <td>
-              <!-- Quick update form -->
-              <form method="POST" action="{% url 'admin_order_update_status' ord.id %}" style="display:flex;gap:6px;align-items:center;">
-                {% csrf_token %}
-                <select name="status" class="admin-select" style="font-size:0.75rem;padding:4px 8px;">
-                  {% for s_val, s_lbl in status_choices %}
-                  <option value="{{ s_val }}" {% if ord.status == s_val %}selected{% endif %}>{{ s_lbl }}</option>
-                  {% endfor %}
-                </select>
-                <button type="submit" class="btn-admin btn-admin--primary btn-admin--sm">Simpan</button>
-              </form>
-            </td>
-          </tr>
-          {% empty %}
-          <tr><td colspan="7" style="text-align:center;color:#999;padding:32px;">Tidak ditemukan pesanan yang sesuai filter.</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-  {% endif %}
-
-
-  <!-- ══════════════════════════════════════════════════════════════
-       TAB 3: PRODUK (KATALOG)
-  ══════════════════════════════════════════════════════════════ -->
-  {% if active_tab == 'produk' %}
-  <div class="admin-panel">
-    <div class="admin-panel__top">
-      <h2 class="admin-panel__title">Katalog Produk Papan Akrilik</h2>
-      <button onclick="openModal('modalProduct')" class="btn-admin btn-admin--primary">
-        ➕ Tambah Produk Baru
-      </button>
-    </div>
-
-    <!-- Filter -->
-    <form method="GET" action="{% url 'admin_dashboard' %}" class="admin-filter-bar">
-      <input type="hidden" name="tab" value="produk">
-      <input type="text" name="q" value="{{ q }}" placeholder="Cari nama produk, kategori..." class="admin-input" style="min-width:240px;">
-      <button type="submit" class="btn-admin btn-admin--primary">Cari</button>
-      {% if q %}<a href="{% url 'admin_dashboard' %}?tab=produk" class="btn-admin btn-admin--secondary">Reset</a>{% endif %}
-    </form>
-
-    <div class="admin-table-wrap">
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th>Foto</th>
-            <th>Nama Produk</th>
-            <th>Kategori & Bentuk</th>
-            <th>Harga Sewa</th>
-            <th>Stok</th>
-            <th>Status Ketersediaan</th>
-            <th>Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for prod in products %}
-          <tr>
-            <td>
-              <img src="{% product_img prod %}" alt="{{ prod.name }}" style="width:52px;height:52px;object-fit:cover;border-radius:8px;border:1px solid #ebd9c0;">
-            </td>
-            <td>
-              <strong>{{ prod.name }}</strong><br>
-              <small style="color:#888;">Slug: {{ prod.id_slug }}</small>
-            </td>
-            <td>
-              {{ prod.category }}<br>
-              <small style="color:#715330;font-weight:600;">{{ prod.get_shape_display }}</small>
-            </td>
-            <td><strong>{{ prod.price|format_price }}</strong></td>
-            <td>{{ prod.stock }} unit</td>
-            <td>
-              <!-- Form Toggle Status Ketersediaan Produk (langsung pencet seperti testimoni & galeri) -->
-              <form method="POST" action="{% url 'admin_product_toggle' prod.id %}" style="display:inline-block;">
-                {% csrf_token %}
-                <button type="submit" class="btn-admin btn-admin--sm {% if prod.available %}btn-admin--secondary{% else %}btn-admin--danger{% endif %}" title="Klik untuk ubah status ketersediaan">
-                  {% if prod.available %}
-                    🟢 Tersedia
-                  {% else %}
-                    🔴 Habis
-                  {% endif %}
-                </button>
-              </form>
-            </td>
-            <td>
-              <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                <!-- Tombol EDIT Detail Produk -->
-                <button type="button" class="btn-admin btn-admin--secondary btn-admin--sm"
-                  onclick="openEditProduct({
-                    id: '{{ prod.id }}',
-                    name: '{{ prod.name|escapejs }}',
-                    category: '{{ prod.category|escapejs }}',
-                    shape: '{{ prod.shape|escapejs }}',
-                    size: '{{ prod.size|escapejs }}',
-                    price: '{{ prod.price }}',
-                    stock: '{{ prod.stock }}',
-                    description: '{{ prod.description|escapejs }}',
-                    available: {{ prod.available|yesno:'true,false' }}
-                  })">
-                  ✏️ Edit
-                </button>
-
-                <!-- Tombol Lihat di Web -->
-                <a href="{% url 'product_detail' prod.id_slug %}" target="_blank" class="btn-admin btn-admin--secondary btn-admin--sm">
-                  👁️ Lihat
-                </a>
-
-                <!-- Tombol Hapus Produk -->
-                <form method="POST" action="{% url 'admin_product_delete' prod.id %}" onsubmit="return confirm('Yakin ingin menghapus produk {{ prod.name|escapejs }}?')">
-                  {% csrf_token %}
-                  <button type="submit" class="btn-admin btn-admin--danger btn-admin--sm">Hapus</button>
-                </form>
-              </div>
-            </td>
-          </tr>
-          {% empty %}
-          <tr><td colspan="7" style="text-align:center;color:#999;padding:32px;">Belum ada produk.</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-  {% endif %}
-
-
-  <!-- ══════════════════════════════════════════════════════════════
-       TAB 4: ARTIKEL / BLOG
-  ══════════════════════════════════════════════════════════════ -->
-  {% if active_tab == 'artikel' %}
-  <div class="admin-panel">
-    <div class="admin-panel__top">
-      <h2 class="admin-panel__title">Manajemen Artikel & Tips</h2>
-      <button onclick="openModal('modalArticle')" class="btn-admin btn-admin--primary">
-        ✍️ Tulis Artikel Baru
-      </button>
-    </div>
-
-    <!-- Filter -->
-    <form method="GET" action="{% url 'admin_dashboard' %}" class="admin-filter-bar">
-      <input type="hidden" name="tab" value="artikel">
-      <input type="text" name="q" value="{{ q }}" placeholder="Cari judul artikel, tag..." class="admin-input" style="min-width:240px;">
-      <select name="status" class="admin-select" onchange="this.form.submit()">
-        <option value="">Semua Status</option>
-        {% for st_val, st_lbl in article_status_choices %}
-        <option value="{{ st_val }}" {% if status_filter == st_val %}selected{% endif %}>{{ st_lbl }}</option>
-        {% endfor %}
-      </select>
-      <button type="submit" class="btn-admin btn-admin--primary">Cari</button>
-      {% if q or status_filter %}<a href="{% url 'admin_dashboard' %}?tab=artikel" class="btn-admin btn-admin--secondary">Reset</a>{% endif %}
-    </form>
-
-    <div class="admin-table-wrap">
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th>Thumbnail</th>
-            <th>Judul & Tautan (Slug)</th>
-            <th>Tags</th>
-            <th>Status</th>
-            <th>Jadwal Terbit</th>
-            <th>Penulis</th>
-            <th>Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for art in articles %}
-          <tr>
-            <td>
-              {% if art.thumbnail %}
-              <img src="{{ art.thumbnail.url }}" alt="{{ art.title }}" style="width:64px;height:42px;object-fit:cover;border-radius:6px;border:1px solid #ebd9c0;">
-              {% else %}
-              <div style="width:64px;height:42px;background:#eee;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;">📰</div>
-              {% endif %}
-            </td>
-            <td>
-              <div style="font-weight:600;font-size:0.95rem;">{{ art.title }}</div>
-              <small style="color:#715330;">/artikel/{{ art.slug }}/</small>
-            </td>
-            <td>
-              {% for t in art.tags.all %}
-              <span class="status-pill" style="background:#f5f0e6;color:#715330;font-size:0.7rem;margin:1px;">{{ t.name }}</span>
-              {% empty %}
-              <small style="color:#aaa;">-</small>
-              {% endfor %}
-            </td>
-            <td>
-              <span class="status-pill status-pill--{{ art.status }}">{{ art.get_status_display }}</span>
-            </td>
-            <td>
-              {% if art.published_at %}
-                {{ art.published_at|date:"j N Y, H:i" }}
-              {% else %}
-                <small style="color:#aaa;">Draft</small>
-              {% endif %}
-            </td>
-            <td>{{ art.author.username|default:"-" }}</td>
-            <td>
-              <div style="display:flex;gap:6px;">
-                <a href="{% url 'article_detail' art.slug %}" target="_blank" class="btn-admin btn-admin--secondary btn-admin--sm">Lihat</a>
-                <form method="POST" action="{% url 'admin_article_delete' art.id %}" onsubmit="return confirm('Hapus artikel ini?')">
-                  {% csrf_token %}
-                  <button type="submit" class="btn-admin btn-admin--danger btn-admin--sm">Hapus</button>
-                </form>
-              </div>
-            </td>
-          </tr>
-          {% empty %}
-          <tr><td colspan="7" style="text-align:center;color:#999;padding:32px;">Belum ada artikel. Klik "Tulis Artikel Baru" untuk membuat berita pertama.</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-  {% endif %}
-
-
-  <!-- ══════════════════════════════════════════════════════════════
-       TAB 5: TESTIMONI
-  ══════════════════════════════════════════════════════════════ -->
-  {% if active_tab == 'testimoni' %}
-  <div class="admin-panel">
-    <div class="admin-panel__top">
-      <h2 class="admin-panel__title">Testimoni & Cerita Pelanggan</h2>
-      <button onclick="openModal('modalTestimonial')" class="btn-admin btn-admin--primary">
-        ⭐ Tambah Testimoni Baru
-      </button>
-    </div>
-
-    <div class="admin-table-wrap">
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th>Avatar</th>
-            <th>Nama & Momen</th>
-            <th>Rating</th>
-            <th>Isi Ulasan</th>
-            <th>Status Tampil</th>
-            <th>Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for t in testimonials %}
-          <tr>
-            <td>
-              <div style="width:34px;height:34px;border-radius:50%;background:{{ t.color }};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;">
-                {{ t.initial }}
-              </div>
-            </td>
-            <td>
-              <strong>{{ t.name }}</strong><br>
-              <small style="color:#715330;">{{ t.event }}</small>
-            </td>
-            <td>
-              <span style="color:#fbc02d;">★</span> {{ t.rating }}/5
-            </td>
-            <td style="max-width:300px;">
-              <small style="color:#555;">“{{ t.text|truncatechars:100 }}”</small>
-            </td>
-            <td>
-              <!-- Form Toggle Status Tampilkan / Tidak Tampilkan -->
-              <form method="POST" action="{% url 'admin_testimonial_toggle' t.id %}" style="display:inline-block;">
-                {% csrf_token %}
-                <button type="submit" class="btn-admin btn-admin--sm {% if t.is_active %}btn-admin--secondary{% else %}btn-admin--danger{% endif %}" title="Klik untuk ubah status tampil di web">
-                  {% if t.is_active %}
-                    👁️ Ditampilkan
-                  {% else %}
-                    🙈 Disembunyikan
-                  {% endif %}
-                </button>
-              </form>
-            </td>
-            <td>
-              <div style="display:flex;gap:6px;">
-                <!-- Tombol Edit Testimoni -->
-                <button type="button" class="btn-admin btn-admin--secondary btn-admin--sm"
-                  onclick="openEditTestimonial({
-                    id: '{{ t.id }}',
-                    name: '{{ t.name|escapejs }}',
-                    event: '{{ t.event|escapejs }}',
-                    rating: '{{ t.rating }}',
-                    text: '{{ t.text|escapejs }}',
-                    avatar_color: '{{ t.avatar_color|default:"#715330" }}',
-                    is_active: {{ t.is_active|yesno:'true,false' }},
-                    order: '{{ t.order }}'
-                  })">
-                  ✏️ Edit
-                </button>
-
-                <!-- Tombol Hapus Testimoni -->
-                <form method="POST" action="{% url 'admin_testimonial_delete' t.id %}" onsubmit="return confirm('Hapus ulasan dari {{ t.name|escapejs }}?')">
-                  {% csrf_token %}
-                  <button type="submit" class="btn-admin btn-admin--danger btn-admin--sm">Hapus</button>
-                </form>
-              </div>
-            </td>
-          </tr>
-          {% empty %}
-          <tr><td colspan="6" style="text-align:center;color:#999;padding:32px;">Belum ada testimoni.</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-  {% endif %}
-
-
-  <!-- ══════════════════════════════════════════════════════════════
-       TAB 6: GALERI FOTO (PORTOFOLIO)
-  ══════════════════════════════════════════════════════════════ -->
-  {% if active_tab == 'galeri' %}
-  <div class="admin-panel">
-    <div class="admin-panel__top">
-      <h2 class="admin-panel__title">Portofolio & Galeri Foto</h2>
-      <button onclick="openModal('modalGallery')" class="btn-admin btn-admin--primary">
-        📷 Upload Foto Galeri Baru
-      </button>
-    </div>
-
-    <!-- Filter Kategori -->
-    <form method="GET" action="{% url 'admin_dashboard' %}" class="admin-filter-bar">
-      <input type="hidden" name="tab" value="galeri">
-      <select name="status" class="admin-select" onchange="this.form.submit()">
-        <option value="">Semua Kategori</option>
-        {% for cat_val, cat_lbl in gallery_categories %}
-        <option value="{{ cat_val }}" {% if status_filter == cat_val %}selected{% endif %}>{{ cat_lbl }}</option>
-        {% endfor %}
-      </select>
-    </form>
-
-    <div class="admin-table-wrap">
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th>Foto (ImageField)</th>
-            <th>Keterangan / Judul</th>
-            <th>Kategori</th>
-            <th>Urutan</th>
-            <th>Status Tampil</th>
-            <th>Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for g in gallery_items %}
-          <tr>
-            <td>
-              {% if g.get_src %}
-              <img src="{{ g.get_src }}" alt="{{ g.title }}" style="width:54px;height:54px;object-fit:cover;border-radius:8px;border:1px solid #ebd9c0;">
-              {% else %}
-              <div style="width:54px;height:54px;background:#eee;border-radius:8px;display:flex;align-items:center;justify-content:center;">🖼️</div>
-              {% endif %}
-            </td>
-            <td><strong>{{ g.title|default:"Papan Akrilik" }}</strong></td>
-            <td><span class="status-pill status-pill--confirmed">{{ g.category }}</span></td>
-            <td>{{ g.order }}</td>
-            <td>
-              <!-- Form Toggle Status Tampilkan / Tidak Tampilkan Galeri -->
-              <form method="POST" action="{% url 'admin_gallery_toggle' g.id %}" style="display:inline-block;">
-                {% csrf_token %}
-                <button type="submit" class="btn-admin btn-admin--sm {% if g.is_active %}btn-admin--secondary{% else %}btn-admin--danger{% endif %}" title="Klik untuk ubah status tampil di galeri">
-                  {% if g.is_active %}
-                    👁️ Ditampilkan
-                  {% else %}
-                    🙈 Disembunyikan
-                  {% endif %}
-                </button>
-              </form>
-            </td>
-            <td>
-              <div style="display:flex;gap:6px;">
-                <!-- Tombol Edit Foto Galeri -->
-                <button type="button" class="btn-admin btn-admin--secondary btn-admin--sm"
-                  onclick="openEditGallery({
-                    id: '{{ g.id }}',
-                    title: '{{ g.title|escapejs }}',
-                    category: '{{ g.category|escapejs }}',
-                    order: '{{ g.order }}',
-                    is_active: {{ g.is_active|yesno:'true,false' }}
-                  })">
-                  ✏️ Edit
-                </button>
-
-                <!-- Tombol Hapus Galeri -->
-                <form method="POST" action="{% url 'admin_gallery_delete' g.id %}" onsubmit="return confirm('Hapus foto {{ g.title|escapejs }} dari galeri?')">
-                  {% csrf_token %}
-                  <button type="submit" class="btn-admin btn-admin--danger btn-admin--sm">Hapus</button>
-                </form>
-              </div>
-            </td>
-          </tr>
-          {% empty %}
-          <tr><td colspan="6" style="text-align:center;color:#999;padding:32px;">Belum ada item galeri.</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-  {% endif %}
-
-
-  <!-- ══════════════════════════════════════════════════════════════
-       TAB 7: PENGGUNA (DENGAN AKSI HAPUS)
-  ══════════════════════════════════════════════════════════════ -->
-  {% if active_tab == 'pengguna' %}
-  <div class="admin-panel">
-    <div class="admin-panel__top">
-      <h2 class="admin-panel__title">Daftar Pengguna & Pelanggan</h2>
-      {% if user.is_superuser %}
-      <button onclick="openModal('modalUserAdd')" class="btn-admin btn-admin--primary">
-        👑 + Tambah Pengguna / Admin
-      </button>
-      {% endif %}
-    </div>
-
-    <!-- Filter & Pencarian Pengguna -->
-    <form method="GET" action="{% url 'admin_dashboard' %}" class="admin-filter-bar">
-      <input type="hidden" name="tab" value="pengguna">
-      <input type="text" name="q" value="{{ q }}" placeholder="Cari username, email, nama, no HP..." class="admin-input" style="min-width:260px;">
-      <button type="submit" class="btn-admin btn-admin--primary">Cari</button>
-      {% if q %}<a href="{% url 'admin_dashboard' %}?tab=pengguna" class="btn-admin btn-admin--secondary">Reset</a>{% endif %}
-    </form>
-
-    <div class="admin-table-wrap">
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th>Username & Email</th>
-            <th>Nama Lengkap</th>
-            <th>No. WhatsApp</th>
-            <th>Role Akun</th>
-            <th>Bergabung</th>
-            <th>Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for u in users_list %}
-          <tr>
-            <td>
-              <strong>{{ u.username }}</strong><br>
-              <small style="color:#777;">{{ u.email|default:"(Belum set email)" }}</small>
-            </td>
-            <td>{{ u.first_name|default:"-" }} {{ u.last_name }}</td>
-            <td>{{ u.profile.phone_number|default:"-" }}</td>
-            <td>
-              {% if u.is_superuser %}
-              <span class="status-pill status-pill--processing">Superuser</span>
-              {% elif u.is_staff %}
-              <span class="status-pill status-pill--confirmed">Admin Staff</span>
-              {% else %}
-              <span class="status-pill status-pill--published">Pelanggan</span>
-              {% endif %}
-            </td>
-            <td>{{ u.date_joined|date:"j N Y" }}</td>
-            <td>
-              {% if u.id == user.id %}
-              <small style="color:#715330;font-weight:600;">(Akun Anda)</small>
-              {% elif user.is_superuser %}
-              <form method="POST" action="{% url 'admin_user_delete' u.id %}" onsubmit="return confirm('Peringatan: Yakin ingin menghapus pengguna {{ u.username|escapejs }}? Tindakan ini tidak dapat dibatalkan.')">
-                {% csrf_token %}
-                <button type="submit" class="btn-admin btn-admin--danger btn-admin--sm">
-                  🗑️ Hapus
-                </button>
-              </form>
-              {% else %}
-              <small style="color:#aaa;">-</small>
-              {% endif %}
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-  {% endif %}
-
-</div>
-
-
-<!-- ══════════════════════════════════════════════════════════════
-     MODAL: TULIS ARTIKEL BARU
-══════════════════════════════════════════════════════════════ -->
-<div id="modalArticle" class="admin-modal">
-  <div class="admin-modal__box">
-    <div class="admin-modal__header">
-      <h3 class="admin-modal__title">✍️ Tulis Artikel Baru</h3>
-      <button type="button" class="admin-modal__close" onclick="closeModal('modalArticle')">&times;</button>
-    </div>
-
-    <form method="POST" action="{% url 'admin_article_save' %}" enctype="multipart/form-data">
-      {% csrf_token %}
-      <input type="hidden" name="article_id" id="artId" value="">
-
-      <div class="form-group-admin">
-        <label class="form-label-admin">Judul Artikel *</label>
-        <input type="text" name="title" id="artTitle" class="form-control-admin" placeholder="Contoh: Tips Memilih Warna Bunga Papan Akrilik" required>
-      </div>
-
-      <div class="form-group-admin">
-        <label class="form-label-admin">Alamat Tautan (Slug URL) — Disinkronkan Otomatis</label>
-        <input type="text" name="slug" id="artSlug" class="form-control-admin" placeholder="tips-memilih-warna-bunga-papan-akrilik">
-        <small style="color:#888;font-size:0.75rem;">URL SEO-friendly untuk pembaca website.</small>
-      </div>
-
-      <div class="form-group-admin">
-        <label class="form-label-admin">Thumbnail / Gambar Utama</label>
-        <input type="file" name="thumbnail" accept="image/*" class="form-control-admin">
-      </div>
-
-      <div class="form-group-admin">
-        <label class="form-label-admin">Ringkasan Berita (Excerpt)</label>
-        <textarea name="summary" rows="2" class="form-control-admin" placeholder="Ringkasan singkat yang menarik minat pembaca di halaman katalog artikel..."></textarea>
-      </div>
-
-      <div class="form-group-admin">
-        <label class="form-label-admin">Isi Berita Lengkap *</label>
-        <textarea name="content" rows="6" class="form-control-admin" placeholder="Tuliskan berita atau panduan lengkap di sini..." required></textarea>
-      </div>
-
-      <div class="form-group-admin">
-        <label class="form-label-admin">Tags Berita (Pisahkan dengan koma)</label>
-        <input type="text" name="tags_input" class="form-control-admin" placeholder="Contoh: Tips, Wisuda, Desain, Promo">
-      </div>
-
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-        <div class="form-group-admin">
-          <label class="form-label-admin">Status Publikasi</label>
-          <select name="status" class="form-control-admin">
-            <option value="draft">Draft (Belum Terbit)</option>
-            <option value="published" selected>Dipublikasikan</option>
-            <option value="archived">Diarsipkan</option>
-          </select>
-        </div>
-        <div class="form-group-admin">
-          <label class="form-label-admin">Jadwal Terbit (Opsional)</label>
-          <input type="datetime-local" name="published_at" class="form-control-admin">
-        </div>
-      </div>
-
-      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
-        <button type="button" class="btn-admin btn-admin--secondary" onclick="closeModal('modalArticle')">Batal</button>
-        <button type="submit" class="btn-admin btn-admin--primary">Simpan &amp; Terbitkan</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-
-<!-- ══════════════════════════════════════════════════════════════
-     MODAL: TAMBAH PRODUK BARU
-══════════════════════════════════════════════════════════════ -->
-<div id="modalProduct" class="admin-modal">
-  <div class="admin-modal__box">
-    <div class="admin-modal__header">
-      <h3 class="admin-modal__title">➕ Tambah Produk Baru</h3>
-      <button type="button" class="admin-modal__close" onclick="closeModal('modalProduct')">&times;</button>
-    </div>
-
-    <form method="POST" action="{% url 'admin_product_save' %}" enctype="multipart/form-data">
-      {% csrf_token %}
-      <div class="form-group-admin">
-        <label class="form-label-admin">Nama Produk *</label>
-        <input type="text" name="name" class="form-control-admin" placeholder="Contoh: Papan Akrilik Bulat Rose Gold" required>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-        <div class="form-group-admin">
-          <label class="form-label-admin">Kategori</label>
-          <input type="text" name="category" class="form-control-admin" placeholder="Papan Bulat / Flowerbox">
-        </div>
-        <div class="form-group-admin">
-          <label class="form-label-admin">Bentuk Papan</label>
-          <select name="shape" class="form-control-admin">
-            <option value="round">Bulat</option>
-            <option value="dome">Kubah</option>
-            <option value="box">Flowerbox</option>
-            <option value="large">Besar</option>
-          </select>
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-        <div class="form-group-admin">
-          <label class="form-label-admin">Harga Sewa (Rp) *</label>
-          <input type="number" name="price" value="50000" class="form-control-admin" required>
-        </div>
-        <div class="form-group-admin">
-          <label class="form-label-admin">Stok Siap Sewa</label>
-          <input type="number" name="stock" value="10" class="form-control-admin">
-        </div>
-      </div>
-      <div class="form-group-admin">
-        <label class="form-label-admin">Ukuran / Dimensi</label>
-        <input type="text" name="size" value="Diameter 40cm" class="form-control-admin">
-      </div>
-      <div class="form-group-admin">
-        <label class="form-label-admin">Deskripsi Produk</label>
-        <textarea name="description" rows="3" class="form-control-admin" placeholder="Keterangan bahan, kelengkapan bunga, easel..."></textarea>
-      </div>
-      <div class="form-group-admin">
-        <label class="form-label-admin">Foto Produk (ImageField)</label>
-        <input type="file" name="image" accept="image/*" class="form-control-admin">
-      </div>
-      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
-        <button type="button" class="btn-admin btn-admin--secondary" onclick="closeModal('modalProduct')">Batal</button>
-        <button type="submit" class="btn-admin btn-admin--primary">Simpan Produk</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-
-<!-- ══════════════════════════════════════════════════════════════
-     MODAL: EDIT DETAIL PRODUK
-══════════════════════════════════════════════════════════════ -->
-<div id="modalProductEdit" class="admin-modal">
-  <div class="admin-modal__box">
-    <div class="admin-modal__header">
-      <h3 class="admin-modal__title">✏️ Edit Detail Produk</h3>
-      <button type="button" class="admin-modal__close" onclick="closeModal('modalProductEdit')">&times;</button>
-    </div>
-
-    <form method="POST" action="{% url 'admin_product_save' %}" enctype="multipart/form-data">
-      {% csrf_token %}
-      <input type="hidden" name="product_id" id="editProdId" value="">
-
-      <div class="form-group-admin">
-        <label class="form-label-admin">Nama Produk *</label>
-        <input type="text" name="name" id="editProdName" class="form-control-admin" required>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-        <div class="form-group-admin">
-          <label class="form-label-admin">Kategori</label>
-          <input type="text" name="category" id="editProdCategory" class="form-control-admin">
-        </div>
-        <div class="form-group-admin">
-          <label class="form-label-admin">Bentuk Papan</label>
-          <select name="shape" id="editProdShape" class="form-control-admin">
-            <option value="round">Bulat</option>
-            <option value="dome">Kubah</option>
-            <option value="box">Flowerbox</option>
-            <option value="large">Besar</option>
-          </select>
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-        <div class="form-group-admin">
-          <label class="form-label-admin">Harga Sewa (Rp) *</label>
-          <input type="number" name="price" id="editProdPrice" class="form-control-admin" required>
-        </div>
-        <div class="form-group-admin">
-          <label class="form-label-admin">Stok Siap Sewa</label>
-          <input type="number" name="stock" id="editProdStock" class="form-control-admin">
-        </div>
-      </div>
-      <div class="form-group-admin">
-        <label class="form-label-admin">Ukuran / Dimensi</label>
-        <input type="text" name="size" id="editProdSize" class="form-control-admin">
-      </div>
-      <div class="form-group-admin">
-        <label class="form-label-admin">Deskripsi Produk</label>
-        <textarea name="description" id="editProdDesc" rows="3" class="form-control-admin"></textarea>
-      </div>
-      <div class="form-group-admin">
-        <label class="form-label-admin">Ganti Foto Produk (ImageField - Opsional)</label>
-        <input type="file" name="image" accept="image/*" class="form-control-admin">
-        <small style="color:#888;font-size:0.75rem;">Biarkan kosong jika tidak ingin mengubah foto produk.</small>
-      </div>
-      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
-        <button type="button" class="btn-admin btn-admin--secondary" onclick="closeModal('modalProductEdit')">Batal</button>
-        <button type="submit" class="btn-admin btn-admin--primary">Simpan Perubahan</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-
-<!-- ══════════════════════════════════════════════════════════════
-     MODAL: TAMBAH TESTIMONI BARU
-══════════════════════════════════════════════════════════════ -->
-<div id="modalTestimonial" class="admin-modal">
-  <div class="admin-modal__box">
-    <div class="admin-modal__header">
-      <h3 class="admin-modal__title">⭐ Tambah Testimoni Pelanggan</h3>
-      <button type="button" class="admin-modal__close" onclick="closeModal('modalTestimonial')">&times;</button>
-    </div>
-
-    <form method="POST" action="{% url 'admin_testimonial_save' %}">
-      {% csrf_token %}
-      <div class="form-group-admin">
-        <label class="form-label-admin">Nama Pelanggan *</label>
-        <input type="text" name="name" class="form-control-admin" placeholder="Contoh: Sifa Ramadani" required>
-      </div>
-      <div class="form-group-admin">
-        <label class="form-label-admin">Momen / Acara *</label>
-        <input type="text" name="event" class="form-control-admin" placeholder="Contoh: Wisuda S1 UNHAS 2024" required>
-      </div>
-      <div class="form-group-admin">
-        <label class="form-label-admin">Rating Bintang (1 - 5)</label>
-        <select name="rating" class="form-control-admin">
-          <option value="5" selected>⭐⭐⭐⭐⭐ (5 Bintang)</option>
-          <option value="4">⭐⭐⭐⭐ (4 Bintang)</option>
-          <option value="3">⭐⭐⭐ (3 Bintang)</option>
-        </select>
-      </div>
-      <div class="form-group-admin">
-        <label class="form-label-admin">Isi Ulasan *</label>
-        <textarea name="text" rows="3" class="form-control-admin" placeholder="Papan akriliknya sangat cantik dan rapi..." required></textarea>
-      </div>
-      <div class="form-group-admin">
-        <label class="form-label-admin">Warna Lingkaran Avatar (HEX)</label>
-        <input type="color" name="avatar_color" value="#715330" style="width:100%;height:40px;border:none;border-radius:8px;cursor:pointer;">
-      </div>
-      <div class="form-group-admin">
-        <label style="display:flex;align-items:center;gap:8px;font-weight:600;font-size:0.85rem;color:#5a3f22;cursor:pointer;">
-          <input type="checkbox" name="is_active" checked> Tampilkan di Website
-        </label>
-      </div>
-      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
-        <button type="button" class="btn-admin btn-admin--secondary" onclick="closeModal('modalTestimonial')">Batal</button>
-        <button type="submit" class="btn-admin btn-admin--primary">Simpan Testimoni</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-
-<!-- ══════════════════════════════════════════════════════════════
-     MODAL: EDIT TESTIMONI
-══════════════════════════════════════════════════════════════ -->
-<div id="modalTestimonialEdit" class="admin-modal">
-  <div class="admin-modal__box">
-    <div class="admin-modal__header">
-      <h3 class="admin-modal__title">✏️ Edit Testimoni Pelanggan</h3>
-      <button type="button" class="admin-modal__close" onclick="closeModal('modalTestimonialEdit')">&times;</button>
-    </div>
-
-    <form method="POST" action="{% url 'admin_testimonial_save' %}">
-      {% csrf_token %}
-      <input type="hidden" name="item_id" id="editTestId" value="">
-
-      <div class="form-group-admin">
-        <label class="form-label-admin">Nama Pelanggan *</label>
-        <input type="text" name="name" id="editTestName" class="form-control-admin" required>
-      </div>
-      <div class="form-group-admin">
-        <label class="form-label-admin">Momen / Acara *</label>
-        <input type="text" name="event" id="editTestEvent" class="form-control-admin" required>
-      </div>
-      <div class="form-group-admin">
-        <label class="form-label-admin">Rating Bintang (1 - 5)</label>
-        <select name="rating" id="editTestRating" class="form-control-admin">
-          <option value="5">⭐⭐⭐⭐⭐ (5 Bintang)</option>
-          <option value="4">⭐⭐⭐⭐ (4 Bintang)</option>
-          <option value="3">⭐⭐⭐ (3 Bintang)</option>
-        </select>
-      </div>
-      <div class="form-group-admin">
-        <label class="form-label-admin">Isi Ulasan *</label>
-        <textarea name="text" id="editTestText" rows="3" class="form-control-admin" required></textarea>
-      </div>
-      <div class="form-group-admin">
-        <label class="form-label-admin">Warna Lingkaran Avatar (HEX)</label>
-        <input type="color" name="avatar_color" id="editTestColor" style="width:100%;height:40px;border:none;border-radius:8px;cursor:pointer;">
-      </div>
-      <div class="form-group-admin">
-        <label style="display:flex;align-items:center;gap:8px;font-weight:600;font-size:0.85rem;color:#5a3f22;cursor:pointer;">
-          <input type="checkbox" name="is_active" id="editTestActive"> Tampilkan di Website
-        </label>
-      </div>
-      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
-        <button type="button" class="btn-admin btn-admin--secondary" onclick="closeModal('modalTestimonialEdit')">Batal</button>
-        <button type="submit" class="btn-admin btn-admin--primary">Simpan Perubahan</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-
-<!-- ══════════════════════════════════════════════════════════════
-     MODAL: UPLOAD GALERI FOTO BARU
-══════════════════════════════════════════════════════════════ -->
-<div id="modalGallery" class="admin-modal">
-  <div class="admin-modal__box">
-    <div class="admin-modal__header">
-      <h3 class="admin-modal__title">📷 Upload Foto Portofolio Galeri</h3>
-      <button type="button" class="admin-modal__close" onclick="closeModal('modalGallery')">&times;</button>
-    </div>
-
-    <form method="POST" action="{% url 'admin_gallery_save' %}" enctype="multipart/form-data">
-      {% csrf_token %}
-      <div class="form-group-admin">
-        <label class="form-label-admin">Kategori Papan *</label>
-        <select name="category" class="form-control-admin" required>
-          <option value="Papan Bulat">Papan Bulat</option>
-          <option value="Papan Kubah">Papan Kubah</option>
-          <option value="Flowerbox">Flowerbox</option>
-          <option value="Papan Besar">Papan Besar</option>
-        </select>
-      </div>
-      <div class="form-group-admin">
-        <label class="form-label-admin">Keterangan / Judul Foto</label>
-        <input type="text" name="title" class="form-control-admin" placeholder="Contoh: Semhas Nurul Ramadhani">
-      </div>
-      <div class="form-group-admin">
-        <label class="form-label-admin">File Foto (ImageField) *</label>
-        <input type="file" name="image" accept="image/*" class="form-control-admin" required>
-      </div>
-      <div class="form-group-admin">
-        <label class="form-label-admin">Urutan Tampil</label>
-        <input type="number" name="order" value="0" class="form-control-admin">
-      </div>
-      <div class="form-group-admin">
-        <label style="display:flex;align-items:center;gap:8px;font-weight:600;font-size:0.85rem;color:#5a3f22;cursor:pointer;">
-          <input type="checkbox" name="is_active" checked> Tampilkan di Galeri Foto
-        </label>
-      </div>
-      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
-        <button type="button" class="btn-admin btn-admin--secondary" onclick="closeModal('modalGallery')">Batal</button>
-        <button type="submit" class="btn-admin btn-admin--primary">Upload Foto</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-
-<!-- ══════════════════════════════════════════════════════════════
-     MODAL: EDIT FOTO GALERI
-══════════════════════════════════════════════════════════════ -->
-<div id="modalGalleryEdit" class="admin-modal">
-  <div class="admin-modal__box">
-    <div class="admin-modal__header">
-      <h3 class="admin-modal__title">✏️ Edit Foto Galeri</h3>
-      <button type="button" class="admin-modal__close" onclick="closeModal('modalGalleryEdit')">&times;</button>
-    </div>
-
-    <form method="POST" action="{% url 'admin_gallery_save' %}" enctype="multipart/form-data">
-      {% csrf_token %}
-      <input type="hidden" name="item_id" id="editGalId" value="">
-
-      <div class="form-group-admin">
-        <label class="form-label-admin">Kategori Papan *</label>
-        <select name="category" id="editGalCategory" class="form-control-admin" required>
-          <option value="Papan Bulat">Papan Bulat</option>
-          <option value="Papan Kubah">Papan Kubah</option>
-          <option value="Flowerbox">Flowerbox</option>
-          <option value="Papan Besar">Papan Besar</option>
-        </select>
-      </div>
-      <div class="form-group-admin">
-        <label class="form-label-admin">Keterangan / Judul Foto</label>
-        <input type="text" name="title" id="editGalTitle" class="form-control-admin">
-      </div>
-      <div class="form-group-admin">
-        <label class="form-label-admin">Ganti Foto (ImageField - Opsional)</label>
-        <input type="file" name="image" accept="image/*" class="form-control-admin">
-        <small style="color:#888;font-size:0.75rem;">Biarkan kosong jika tidak ingin mengganti foto.</small>
-      </div>
-      <div class="form-group-admin">
-        <label class="form-label-admin">Urutan Tampil</label>
-        <input type="number" name="order" id="editGalOrder" class="form-control-admin">
-      </div>
-      <div class="form-group-admin">
-        <label style="display:flex;align-items:center;gap:8px;font-weight:600;font-size:0.85rem;color:#5a3f22;cursor:pointer;">
-          <input type="checkbox" name="is_active" id="editGalActive"> Tampilkan di Galeri Foto
-        </label>
-      </div>
-      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
-        <button type="button" class="btn-admin btn-admin--secondary" onclick="closeModal('modalGalleryEdit')">Batal</button>
-        <button type="submit" class="btn-admin btn-admin--primary">Simpan Perubahan</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-
-<!-- ══════════════════════════════════════════════════════════════
-     MODAL: TAMBAH USER / ADMIN BARU (KHUSUS SUPERUSER)
-══════════════════════════════════════════════════════════════ -->
-{% if user.is_superuser %}
-<div id="modalUserAdd" class="admin-modal">
-  <div class="admin-modal__box">
-    <div class="admin-modal__header">
-      <h3 class="admin-modal__title">👑 Tambah Pengguna / Admin Baru</h3>
-      <button type="button" class="admin-modal__close" onclick="closeModal('modalUserAdd')">&times;</button>
-    </div>
-
-    <form method="POST" action="{% url 'admin_user_save' %}">
-      {% csrf_token %}
-
-      <div style="background:#fcfbf8;border:1px solid #ebd9c0;border-radius:10px;padding:12px 16px;margin-bottom:18px;font-size:0.83rem;color:#7a6248;">
-        💡 <strong>Hak Akses Superuser:</strong> Anda dapat membuat akun pengguna baru dan menentukan apakah akun tersebut sebagai <strong>Admin Staff</strong> (dapat mengelola pesanan, katalog, artikel, portofolio) atau <strong>Superuser</strong>.
-      </div>
-
-      <div class="form-group-admin">
-        <label class="form-label-admin">Username *</label>
-        <input type="text" name="username" class="form-control-admin" placeholder="Contoh: staff_admin" required autocomplete="off">
-      </div>
-
-      <div class="form-group-admin">
-        <label class="form-label-admin">Alamat Email *</label>
-        <input type="email" name="email" class="form-control-admin" placeholder="admin@daniyoustuff.co" required>
-        <small style="color:#888;font-size:0.75rem;">Email ini digunakan juga untuk login akun.</small>
-      </div>
-
-      <div class="form-group-admin">
-        <label class="form-label-admin">Nama Lengkap</label>
-        <input type="text" name="full_name" class="form-control-admin" placeholder="Contoh: Sifa Ramadani">
-      </div>
-
-      <div class="form-group-admin">
-        <label class="form-label-admin">Kata Sandi (Password) *</label>
-        <input type="password" name="password" class="form-control-admin" placeholder="Minimal 6 karakter" required minlength="6" autocomplete="new-password">
-      </div>
-
-      <div class="form-group-admin">
-        <label class="form-label-admin">No. WhatsApp / HP</label>
-        <input type="tel" name="phone_number" class="form-control-admin" placeholder="081234567890">
-      </div>
-
-      <!-- PILIHAN ROLE / HAK AKSES -->
-      <div class="form-group-admin">
-        <label class="form-label-admin">Role Akun &amp; Hak Akses *</label>
-        <select name="role" class="form-control-admin" style="font-weight:600;">
-          <option value="staff" selected>🛡️ Admin Staff (Akses Dashboard Pengelola Toko)</option>
-          <option value="superuser">👑 Superuser (Akses Penuh Seluruh Sistem &amp; Kelola Admin)</option>
-          <option value="customer">👤 Pelanggan Biasa (Tanpa Akses Admin)</option>
-        </select>
-      </div>
-
-      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:22px;">
-        <button type="button" class="btn-admin btn-admin--secondary" onclick="closeModal('modalUserAdd')">Batal</button>
-        <button type="submit" class="btn-admin btn-admin--primary">Simpan &amp; Buat Akun</button>
-      </div>
-    </form>
-  </div>
-</div>
-{% endif %}
-
-
-<script>
-  function openModal(id) {
-    var m = document.getElementById(id);
-    if (m) m.classList.add('show');
-  }
-  function closeModal(id) {
-    var m = document.getElementById(id);
-    if (m) m.classList.remove('show');
-  }
-
-  // Live Slug Generator saat mengetik Judul Artikel
-  var titleInput = document.getElementById('artTitle');
-  var slugInput = document.getElementById('artSlug');
-  if (titleInput && slugInput) {
-    titleInput.addEventListener('input', function() {
-      var text = this.value.toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, '')
-        .trim()
-        .replace(/\s+/g, '-');
-      slugInput.value = text;
-    });
-  }
-
-  // Populate data ke Modal Edit Produk
-  function openEditProduct(p) {
-    document.getElementById('editProdId').value = p.id;
-    document.getElementById('editProdName').value = p.name;
-    document.getElementById('editProdCategory').value = p.category;
-    document.getElementById('editProdShape').value = p.shape;
-    document.getElementById('editProdSize').value = p.size;
-    document.getElementById('editProdPrice').value = p.price;
-    document.getElementById('editProdStock').value = p.stock;
-    document.getElementById('editProdDesc').value = p.description || '';
-    openModal('modalProductEdit');
-  }
-
-  // Populate data ke Modal Edit Testimoni
-  function openEditTestimonial(t) {
-    document.getElementById('editTestId').value = t.id;
-    document.getElementById('editTestName').value = t.name;
-    document.getElementById('editTestEvent').value = t.event;
-    document.getElementById('editTestRating').value = t.rating;
-    document.getElementById('editTestText').value = t.text;
-    document.getElementById('editTestColor').value = t.avatar_color || '#715330';
-    document.getElementById('editTestActive').checked = (t.is_active === true || t.is_active === 'true');
-    openModal('modalTestimonialEdit');
-  }
-
-  // Populate data ke Modal Edit Galeri Foto
-  function openEditGallery(g) {
-    document.getElementById('editGalId').value = g.id;
-    document.getElementById('editGalTitle').value = g.title || '';
-    document.getElementById('editGalCategory').value = g.category;
-    document.getElementById('editGalOrder').value = g.order || 0;
-    document.getElementById('editGalActive').checked = (g.is_active === true || g.is_active === 'true');
-    openModal('modalGalleryEdit');
-  }
-
-  // Close modal when click outside box
-  window.addEventListener('click', function(e) {
-    if (e.target.classList.contains('admin-modal')) {
-      e.target.classList.remove('show');
-    }
-  });
-</script>
-{% endblock %}
+{% extends "base.html" %}
+{% load static store_extras %}
+
+{% block title %}Dashboard Admin — DaniyouStuff.co{% endblock %}
+
+{% block head %}
+<style>
+  /* ── ADMIN DASHBOARD STYLES ──────────────────────────────── */
+  .admin-wrap {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 36px 20px 80px;
+  }
+
+  /* Header banner */
+  .admin-header {
+    background: linear-gradient(135deg, #f5f1e8 0%, #eeebda 100%);
+    border: 1px solid #e0d9c6;
+    border-radius: 20px;
+    padding: 32px 36px;
+    margin-bottom: 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    box-shadow: 0 4px 20px rgba(90, 63, 34, 0.05);
+  }
+  .admin-header__title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: #3b2a1a;
+    margin: 0 0 6px;
+  }
+  .admin-header__sub {
+    color: #7a6248;
+    font-size: 0.95rem;
+    margin: 0;
+  }
+  .admin-header__badge {
+    background: #715330;
+    color: #fff;
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Flash Alert */
+  .admin-alert {
+    padding: 14px 20px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    font-size: 0.92rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+  }
+  .admin-alert--success {
+    background: #eef8ee;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
+  }
+  .admin-alert--error {
+    background: #fdeeee;
+    color: #c62828;
+    border: 1px solid #ffcdd2;
+  }
+
+  /* Navigation Tabs */
+  .admin-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 28px;
+    padding-bottom: 8px;
+    border-bottom: 1.5px solid #e8e0d0;
+  }
+  .admin-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 999px;
+    background: #fff;
+    color: #715330;
+    border: 1.5px solid #dcd2be;
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+  .admin-tab:hover {
+    background: #f7f3ea;
+    border-color: #715330;
+  }
+  .admin-tab.active {
+    background: #715330;
+    color: #fff;
+    border-color: #715330;
+    box-shadow: 0 4px 14px rgba(113, 83, 48, 0.25);
+  }
+  .admin-tab__count {
+    background: rgba(0,0,0,0.08);
+    color: inherit;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+  .admin-tab.active .admin-tab__count {
+    background: rgba(255,255,255,0.25);
+    color: #fff;
+  }
+
+  /* KPI Grid */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 18px;
+    margin-bottom: 32px;
+  }
+  .kpi-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px 26px;
+    border: 1px solid #ebd9c0;
+    box-shadow: 0 2px 12px rgba(90, 63, 34, 0.04);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .kpi-card__label {
+    font-size: 0.82rem;
+    color: #8c7358;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  .kpi-card__value {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.85rem;
+    color: #3b2a1a;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  /* Content Panel / Card */
+  .admin-panel {
+    background: #fff;
+    border-radius: 18px;
+    border: 1px solid #e8e0d0;
+    box-shadow: 0 4px 20px rgba(90, 63, 34, 0.05);
+    padding: 28px;
+    margin-bottom: 36px;
+  }
+  .admin-panel__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 22px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #f0eadc;
+  }
+  .admin-panel__title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.35rem;
+    color: #3b2a1a;
+    margin: 0;
+  }
+
+  /* Buttons */
+  .btn-admin {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 18px;
+    border-radius: 999px;
+    font-size: 0.86rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+  }
+  .btn-admin--primary {
+    background: #715330;
+    color: #fff;
+  }
+  .btn-admin--primary:hover {
+    background: #5a3f22;
+    color: #fff;
+  }
+  .btn-admin--secondary {
+    background: #f4ede0;
+    color: #715330;
+    border: 1px solid #d5c7b0;
+  }
+  .btn-admin--secondary:hover {
+    background: #e8ddca;
+  }
+  .btn-admin--danger {
+    background: #fde8e8;
+    color: #c62828;
+    border: 1px solid #f8b4b4;
+  }
+  .btn-admin--danger:hover {
+    background: #fbd5d5;
+  }
+  .btn-admin--sm {
+    padding: 5px 12px;
+    font-size: 0.78rem;
+  }
+
+  /* Table styling */
+  .admin-table-wrap {
+    overflow-x: auto;
+  }
+  .admin-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.88rem;
+    text-align: left;
+  }
+  .admin-table th {
+    background: #f9f6ef;
+    color: #5a3f22;
+    font-weight: 600;
+    padding: 12px 14px;
+    border-bottom: 1.5px solid #e0d5c0;
+    white-space: nowrap;
+  }
+  .admin-table td {
+    padding: 14px;
+    border-bottom: 1px solid #f2ece0;
+    color: #4a3728;
+    vertical-align: middle;
+  }
+  .admin-table tr:hover td {
+    background: #fcfbf8;
+  }
+
+  /* Badges */
+  .status-pill {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    white-space: nowrap;
+  }
+  .status-pill--pending { background: #fff8e1; color: #f57f17; border: 1px solid #ffe082; }
+  .status-pill--confirmed { background: #e3f2fd; color: #1565c0; border: 1px solid #90caf9; }
+  .status-pill--processing { background: #f3e5f5; color: #7b1fa2; border: 1px solid #ce93d8; }
+  .status-pill--ready { background: #e0f2f1; color: #00695c; border: 1px solid #80cbc4; }
+  .status-pill--completed { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+  .status-pill--cancelled { background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; }
+  .status-pill--published { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+  .status-pill--draft { background: #fff8e1; color: #f57f17; border: 1px solid #ffe082; }
+  .status-pill--archived { background: #eceff1; color: #455a64; border: 1px solid #cfd8dc; }
+
+  /* Search & Filter Bar */
+  .admin-filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+    align-items: center;
+  }
+  .admin-input {
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1.5px solid #d5c7b0;
+    font-size: 0.85rem;
+    background: #fff;
+    outline: none;
+    color: #4a3728;
+  }
+  .admin-input:focus {
+    border-color: #715330;
+  }
+  .admin-select {
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1.5px solid #d5c7b0;
+    font-size: 0.85rem;
+    background: #fff;
+    outline: none;
+    color: #4a3728;
+  }
+
+  /* Form modal popup */
+  .admin-modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(40, 28, 15, 0.6);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    backdrop-filter: blur(4px);
+  }
+  .admin-modal.show {
+    display: flex;
+  }
+  .admin-modal__box {
+    background: #fff;
+    border-radius: 20px;
+    max-width: 680px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 30px;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+    border: 1px solid #e8e0d0;
+  }
+  .admin-modal__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #ebd9c0;
+  }
+  .admin-modal__title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: #3b2a1a;
+    margin: 0;
+  }
+  .admin-modal__close {
+    background: none;
+    border: none;
+    font-size: 1.6rem;
+    cursor: pointer;
+    color: #9d8367;
+  }
+  .form-group-admin {
+    margin-bottom: 16px;
+  }
+  .form-label-admin {
+    display: block;
+    font-weight: 600;
+    font-size: 0.84rem;
+    color: #5a3f22;
+    margin-bottom: 6px;
+  }
+  .form-control-admin {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1.5px solid #dcd2be;
+    font-size: 0.9rem;
+    font-family: inherit;
+    outline: none;
+    box-sizing: border-box;
+  }
+  .form-control-admin:focus {
+    border-color: #715330;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-wrap">
+
+  <!-- Header Banner -->
+  <div class="admin-header">
+    <div>
+      <h1 class="admin-header__title">Panel Admin Toko</h1>
+      <p class="admin-header__sub">Manajemen pesanan, katalog produk, artikel blog, portofolio, dan ulasan pelanggan secara langsung.</p>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <span class="admin-header__badge">
+        {% if user.is_superuser %}
+          {{ user.first_name|default:user.username }} (Superadmin)
+        {% else %}
+          {{ user.first_name|default:user.username }} (Admin)
+        {% endif %}
+      </span>
+      <a href="{% url 'home' %}" class="btn-admin btn-admin--secondary">
+        Lihat Website
+      </a>
+    </div>
+  </div>
+
+  <!-- Messages Flash Alerts -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="admin-alert {% if message.tags == 'error' %}admin-alert--error{% else %}admin-alert--success{% endif %}">
+        
+        <span>{{ message }}</span>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- Tab Navigation -->
+  <div class="admin-tabs">
+    <a href="{% url 'admin_dashboard' %}?tab=ringkasan" class="admin-tab {% if active_tab == 'ringkasan' %}active{% endif %}">
+      Ringkasan
+    </a>
+    <a href="{% url 'admin_dashboard' %}?tab=pesanan" class="admin-tab {% if active_tab == 'pesanan' %}active{% endif %}">
+      Pesanan <span class="admin-tab__count">{{ total_orders }}</span>
+    </a>
+    <a href="{% url 'admin_dashboard' %}?tab=produk" class="admin-tab {% if active_tab == 'produk' %}active{% endif %}">
+      Produk <span class="admin-tab__count">{{ total_products }}</span>
+    </a>
+    <a href="{% url 'admin_dashboard' %}?tab=artikel" class="admin-tab {% if active_tab == 'artikel' %}active{% endif %}">
+      Artikel <span class="admin-tab__count">{{ total_articles }}</span>
+    </a>
+    <a href="{% url 'admin_dashboard' %}?tab=testimoni" class="admin-tab {% if active_tab == 'testimoni' %}active{% endif %}">
+      Testimoni <span class="admin-tab__count">{{ total_testimonials }}</span>
+    </a>
+    <a href="{% url 'admin_dashboard' %}?tab=galeri" class="admin-tab {% if active_tab == 'galeri' %}active{% endif %}">
+      Galeri Foto <span class="admin-tab__count">{{ total_gallery }}</span>
+    </a>
+    <a href="{% url 'admin_dashboard' %}?tab=pengguna" class="admin-tab {% if active_tab == 'pengguna' %}active{% endif %}">
+      Pengguna <span class="admin-tab__count">{{ total_users }}</span>
+    </a>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════════════════════
+       TAB 1: RINGKASAN
+  ══════════════════════════════════════════════════════════════ -->
+  {% if active_tab == 'ringkasan' %}
+  <!-- KPI Metrics -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-card__label">Total Omzet Pesanan</div>
+      <div class="kpi-card__value">{{ total_revenue|format_price }}</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-card__label">Pesanan Menunggu Verifikasi</div>
+      <div class="kpi-card__value">{{ pending_orders }}</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-card__label">Total Seluruh Pesanan</div>
+      <div class="kpi-card__value">{{ total_orders }}</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-card__label">Produk Aktif Sewa</div>
+      <div class="kpi-card__value">{{ active_products }} <small style="font-size:0.9rem;font-weight:400;color:#888;">/ {{ total_products }}</small></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-card__label">Artikel Tayang</div>
+      <div class="kpi-card__value">{{ published_articles }} <small style="font-size:0.9rem;font-weight:400;color:#888;">/ {{ total_articles }}</small></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-card__label">Pengguna Terdaftar</div>
+      <div class="kpi-card__value">{{ total_users }}</div>
+    </div>
+  </div>
+
+  <!-- Recent Orders Table -->
+  <div class="admin-panel">
+    <div class="admin-panel__top">
+      <h2 class="admin-panel__title">Pesanan Terbaru</h2>
+      <a href="{% url 'admin_dashboard' %}?tab=pesanan" class="btn-admin btn-admin--secondary">
+        Lihat Semua Pesanan &rarr;
+      </a>
+    </div>
+
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Kode</th>
+            <th>Pelanggan</th>
+            <th>Acara</th>
+            <th>Total</th>
+            <th>Pembayaran</th>
+            <th>Status</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ord in recent_orders %}
+          <tr>
+            <td><strong>{{ ord.order_code }}</strong></td>
+            <td>
+              <div>{{ ord.customer_name }}</div>
+              <small style="color:#888;"><a href="https://wa.me/{{ ord.customer_phone }}" target="_blank" style="color:#715330;">📱 {{ ord.customer_phone }}</a></small>
+            </td>
+            <td>{{ ord.event_date|date:"j N Y"|default:"-" }}</td>
+            <td><strong>{{ ord.subtotal|format_price }}</strong></td>
+            <td><span style="text-transform:uppercase;font-size:0.75rem;font-weight:600;">{{ ord.payment_method }}</span></td>
+            <td>
+              <span class="status-pill status-pill--{{ ord.status }}">{{ ord.get_status_display }}</span>
+            </td>
+            <td>
+              <a href="{% url 'order_detail' ord.order_code %}" target="_blank" class="btn-admin btn-admin--secondary btn-admin--sm">
+                Lihat Detail
+              </a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="7" style="text-align:center;color:#999;padding:28px;">Belum ada pesanan terbaru.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Quick Shortcut Cards -->
+  <div class="admin-panel">
+    <div class="admin-panel__top">
+      <h2 class="admin-panel__title">Aksi Cepat Manajemen</h2>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:14px;">
+      <a href="{% url 'admin_dashboard' %}?tab=artikel" class="btn-admin btn-admin--primary">
+        Tulis Artikel Baru
+      </a>
+      <a href="{% url 'admin_dashboard' %}?tab=produk" class="btn-admin btn-admin--primary">
+        Tambah Produk
+      </a>
+      <a href="{% url 'admin_dashboard' %}?tab=galeri" class="btn-admin btn-admin--secondary">
+        Upload Foto Galeri
+      </a>
+      <a href="{% url 'admin_dashboard' %}?tab=testimoni" class="btn-admin btn-admin--secondary">
+        Tambah Testimoni
+      </a>
+    </div>
+  </div>
+  {% endif %}
+
+
+  <!-- ══════════════════════════════════════════════════════════════
+       TAB 2: PESANAN
+  ══════════════════════════════════════════════════════════════ -->
+  {% if active_tab == 'pesanan' %}
+  <div class="admin-panel">
+    <div class="admin-panel__top">
+      <h2 class="admin-panel__title">Daftar Pesanan Pelanggan</h2>
+    </div>
+
+    <!-- Filter & Search -->
+    <form method="GET" action="{% url 'admin_dashboard' %}" class="admin-filter-bar">
+      <input type="hidden" name="tab" value="pesanan">
+      <input type="text" name="q" value="{{ q }}" placeholder="Cari kode pesanan, nama, no HP..." class="admin-input" style="min-width:260px;">
+      
+      <select name="status" class="admin-select" onchange="this.form.submit()">
+        <option value="">Semua Status</option>
+        {% for st_val, st_lbl in status_choices %}
+        <option value="{{ st_val }}" {% if status_filter == st_val %}selected{% endif %}>{{ st_lbl }}</option>
+        {% endfor %}
+      </select>
+
+      <button type="submit" class="btn-admin btn-admin--primary">Cari</button>
+      {% if q or status_filter %}
+      <a href="{% url 'admin_dashboard' %}?tab=pesanan" class="btn-admin btn-admin--secondary">Reset</a>
+      {% endif %}
+    </form>
+
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Kode</th>
+            <th>Pelanggan</th>
+            <th>Tgl Acara</th>
+            <th>Total</th>
+            <th>Metode & Bukti</th>
+            <th>Status</th>
+            <th>Ubah Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ord in orders %}
+          <tr>
+            <td>
+              <strong>{{ ord.order_code }}</strong><br>
+              <small style="color:#999;">{{ ord.created_at|date:"j N Y, H:i" }}</small>
+            </td>
+            <td>
+              <div style="font-weight:600;">{{ ord.customer_name }}</div>
+              <small><a href="https://wa.me/{{ ord.customer_phone }}" target="_blank" style="color:#715330;">📱 {{ ord.customer_phone }}</a></small><br>
+              <small style="color:#777;">{{ ord.customer_address|truncatechars:35 }}</small>
+            </td>
+            <td>{{ ord.event_date|date:"j N Y"|default:"-" }}</td>
+            <td><strong>{{ ord.subtotal|format_price }}</strong></td>
+            <td>
+              <span style="font-size:0.8rem;font-weight:600;">{{ ord.get_payment_method_display }}</span><br>
+              {% if ord.payment_proof %}
+              <a href="{{ ord.payment_proof.url }}" target="_blank" class="btn-admin btn-admin--secondary btn-admin--sm" style="margin-top:4px;">
+                Lihat Bukti QRIS
+              </a>
+              {% else %}
+              <small style="color:#aaa;">Tanpa Bukti</small>
+              {% endif %}
+            </td>
+            <td>
+              <span class="status-pill status-pill--{{ ord.status }}">{{ ord.get_status_display }}</span>
+            </td>
+            <td>
+              <!-- Quick update form -->
+              <form method="POST" action="{% url 'admin_order_update_status' ord.id %}" style="display:flex;gap:6px;align-items:center;">
+                {% csrf_token %}
+                <select name="status" class="admin-select" style="font-size:0.75rem;padding:4px 8px;">
+                  {% for s_val, s_lbl in status_choices %}
+                  <option value="{{ s_val }}" {% if ord.status == s_val %}selected{% endif %}>{{ s_lbl }}</option>
+                  {% endfor %}
+                </select>
+                <button type="submit" class="btn-admin btn-admin--primary btn-admin--sm">Simpan</button>
+              </form>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="7" style="text-align:center;color:#999;padding:32px;">Tidak ditemukan pesanan yang sesuai filter.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+
+  <!-- ══════════════════════════════════════════════════════════════
+       TAB 3: PRODUK (KATALOG)
+  ══════════════════════════════════════════════════════════════ -->
+  {% if active_tab == 'produk' %}
+  <div class="admin-panel">
+    <div class="admin-panel__top">
+      <h2 class="admin-panel__title">Katalog Produk Papan Akrilik</h2>
+      <button onclick="openModal('modalProduct')" class="btn-admin btn-admin--primary">
+        Tambah Produk Baru
+      </button>
+    </div>
+
+    <!-- Filter -->
+    <form method="GET" action="{% url 'admin_dashboard' %}" class="admin-filter-bar">
+      <input type="hidden" name="tab" value="produk">
+      <input type="text" name="q" value="{{ q }}" placeholder="Cari nama produk, kategori..." class="admin-input" style="min-width:240px;">
+      <button type="submit" class="btn-admin btn-admin--primary">Cari</button>
+      {% if q %}<a href="{% url 'admin_dashboard' %}?tab=produk" class="btn-admin btn-admin--secondary">Reset</a>{% endif %}
+    </form>
+
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Foto</th>
+            <th>Nama Produk</th>
+            <th>Kategori & Bentuk</th>
+            <th>Harga Sewa</th>
+            <th>Stok</th>
+            <th>Status Ketersediaan</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for prod in products %}
+          <tr>
+            <td>
+              <img src="{% product_img prod %}" alt="{{ prod.name }}" style="width:52px;height:52px;object-fit:cover;border-radius:8px;border:1px solid #ebd9c0;">
+            </td>
+            <td>
+              <strong>{{ prod.name }}</strong><br>
+              <small style="color:#888;">Slug: {{ prod.id_slug }}</small>
+            </td>
+            <td>
+              {{ prod.category }}<br>
+              <small style="color:#715330;font-weight:600;">{{ prod.get_shape_display }}</small>
+            </td>
+            <td><strong>{{ prod.price|format_price }}</strong></td>
+            <td>{{ prod.stock }} unit</td>
+            <td>
+              <!-- Form Toggle Status Ketersediaan Produk (langsung pencet seperti testimoni & galeri) -->
+              <form method="POST" action="{% url 'admin_product_toggle' prod.id %}" style="display:inline-block;">
+                {% csrf_token %}
+                <button type="submit" class="btn-admin btn-admin--sm {% if prod.available %}btn-admin--secondary{% else %}btn-admin--danger{% endif %}" title="Klik untuk ubah status ketersediaan">
+                  {% if prod.available %}
+                    Tersedia
+                  {% else %}
+                    Habis
+                  {% endif %}
+                </button>
+              </form>
+            </td>
+            <td>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                <!-- Tombol EDIT Detail Produk -->
+                <button type="button" class="btn-admin btn-admin--secondary btn-admin--sm"
+                  onclick="openEditProduct({
+                    id: '{{ prod.id }}',
+                    name: '{{ prod.name|escapejs }}',
+                    category: '{{ prod.category|escapejs }}',
+                    shape: '{{ prod.shape|escapejs }}',
+                    size: '{{ prod.size|escapejs }}',
+                    price: '{{ prod.price }}',
+                    stock: '{{ prod.stock }}',
+                    description: '{{ prod.description|escapejs }}',
+                    available: {{ prod.available|yesno:'true,false' }}
+                  })">
+                  Edit
+                </button>
+
+                <!-- Tombol Lihat di Web -->
+                <a href="{% url 'product_detail' prod.id_slug %}" target="_blank" class="btn-admin btn-admin--secondary btn-admin--sm">
+                  Lihat
+                </a>
+
+                <!-- Tombol Hapus Produk -->
+                <form method="POST" action="{% url 'admin_product_delete' prod.id %}" onsubmit="return confirm('Yakin ingin menghapus produk {{ prod.name|escapejs }}?')">
+                  {% csrf_token %}
+                  <button type="submit" class="btn-admin btn-admin--danger btn-admin--sm">Hapus</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="7" style="text-align:center;color:#999;padding:32px;">Belum ada produk.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+
+  <!-- ══════════════════════════════════════════════════════════════
+       TAB 4: ARTIKEL / BLOG
+  ══════════════════════════════════════════════════════════════ -->
+  {% if active_tab == 'artikel' %}
+  <div class="admin-panel">
+    <div class="admin-panel__top">
+      <h2 class="admin-panel__title">Manajemen Artikel & Tips</h2>
+      <button onclick="openModal('modalArticle')" class="btn-admin btn-admin--primary">
+        Tulis Artikel Baru
+      </button>
+    </div>
+
+    <!-- Filter -->
+    <form method="GET" action="{% url 'admin_dashboard' %}" class="admin-filter-bar">
+      <input type="hidden" name="tab" value="artikel">
+      <input type="text" name="q" value="{{ q }}" placeholder="Cari judul artikel, tag..." class="admin-input" style="min-width:240px;">
+      <select name="status" class="admin-select" onchange="this.form.submit()">
+        <option value="">Semua Status</option>
+        {% for st_val, st_lbl in article_status_choices %}
+        <option value="{{ st_val }}" {% if status_filter == st_val %}selected{% endif %}>{{ st_lbl }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="btn-admin btn-admin--primary">Cari</button>
+      {% if q or status_filter %}<a href="{% url 'admin_dashboard' %}?tab=artikel" class="btn-admin btn-admin--secondary">Reset</a>{% endif %}
+    </form>
+
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Thumbnail</th>
+            <th>Judul & Tautan (Slug)</th>
+            <th>Tags</th>
+            <th>Status</th>
+            <th>Jadwal Terbit</th>
+            <th>Penulis</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for art in articles %}
+          <tr>
+            <td>
+              {% if art.thumbnail %}
+              <img src="{{ art.thumbnail.url }}" alt="{{ art.title }}" style="width:64px;height:42px;object-fit:cover;border-radius:6px;border:1px solid #ebd9c0;">
+              {% else %}
+              <div style="width:64px;height:42px;background:#eee;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;">📰</div>
+              {% endif %}
+            </td>
+            <td>
+              <div style="font-weight:600;font-size:0.95rem;">{{ art.title }}</div>
+              <small style="color:#715330;">/artikel/{{ art.slug }}/</small>
+            </td>
+            <td>
+              {% for t in art.tags.all %}
+              <span class="status-pill" style="background:#f5f0e6;color:#715330;font-size:0.7rem;margin:1px;">{{ t.name }}</span>
+              {% empty %}
+              <small style="color:#aaa;">-</small>
+              {% endfor %}
+            </td>
+            <td>
+              <span class="status-pill status-pill--{{ art.status }}">{{ art.get_status_display }}</span>
+            </td>
+            <td>
+              {% if art.published_at %}
+                {{ art.published_at|date:"j N Y, H:i" }}
+              {% else %}
+                <small style="color:#aaa;">Draft</small>
+              {% endif %}
+            </td>
+            <td>{{ art.author.username|default:"-" }}</td>
+            <td>
+              <div style="display:flex;gap:6px;">
+                <a href="{% url 'article_detail' art.slug %}" target="_blank" class="btn-admin btn-admin--secondary btn-admin--sm">Lihat</a>
+                <form method="POST" action="{% url 'admin_article_delete' art.id %}" onsubmit="return confirm('Hapus artikel ini?')">
+                  {% csrf_token %}
+                  <button type="submit" class="btn-admin btn-admin--danger btn-admin--sm">Hapus</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="7" style="text-align:center;color:#999;padding:32px;">Belum ada artikel. Klik "Tulis Artikel Baru" untuk membuat berita pertama.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+
+  <!-- ══════════════════════════════════════════════════════════════
+       TAB 5: TESTIMONI
+  ══════════════════════════════════════════════════════════════ -->
+  {% if active_tab == 'testimoni' %}
+  <div class="admin-panel">
+    <div class="admin-panel__top">
+      <h2 class="admin-panel__title">Testimoni & Cerita Pelanggan</h2>
+      <button onclick="openModal('modalTestimonial')" class="btn-admin btn-admin--primary">
+        Tambah Testimoni Baru
+      </button>
+    </div>
+
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Avatar</th>
+            <th>Nama & Momen</th>
+            <th>Rating</th>
+            <th>Isi Ulasan</th>
+            <th>Status Tampil</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in testimonials %}
+          <tr>
+            <td>
+              <div style="width:34px;height:34px;border-radius:50%;background:{{ t.color }};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;">
+                {{ t.initial }}
+              </div>
+            </td>
+            <td>
+              <strong>{{ t.name }}</strong><br>
+              <small style="color:#715330;">{{ t.event }}</small>
+            </td>
+            <td>
+              <span style="color:#fbc02d;">★</span> {{ t.rating }}/5
+            </td>
+            <td style="max-width:300px;">
+              <small style="color:#555;">“{{ t.text|truncatechars:100 }}”</small>
+            </td>
+            <td>
+              <!-- Form Toggle Status Tampilkan / Tidak Tampilkan -->
+              <form method="POST" action="{% url 'admin_testimonial_toggle' t.id %}" style="display:inline-block;">
+                {% csrf_token %}
+                <button type="submit" class="btn-admin btn-admin--sm {% if t.is_active %}btn-admin--secondary{% else %}btn-admin--danger{% endif %}" title="Klik untuk ubah status tampil di web">
+                  {% if t.is_active %}
+                    Ditampilkan
+                  {% else %}
+                    Disembunyikan
+                  {% endif %}
+                </button>
+              </form>
+            </td>
+            <td>
+              <div style="display:flex;gap:6px;">
+                <!-- Tombol Edit Testimoni -->
+                <button type="button" class="btn-admin btn-admin--secondary btn-admin--sm"
+                  onclick="openEditTestimonial({
+                    id: '{{ t.id }}',
+                    name: '{{ t.name|escapejs }}',
+                    event: '{{ t.event|escapejs }}',
+                    rating: '{{ t.rating }}',
+                    text: '{{ t.text|escapejs }}',
+                    avatar_color: '{{ t.avatar_color|default:"#715330" }}',
+                    is_active: {{ t.is_active|yesno:'true,false' }},
+                    order: '{{ t.order }}'
+                  })">
+                  Edit
+                </button>
+
+                <!-- Tombol Hapus Testimoni -->
+                <form method="POST" action="{% url 'admin_testimonial_delete' t.id %}" onsubmit="return confirm('Hapus ulasan dari {{ t.name|escapejs }}?')">
+                  {% csrf_token %}
+                  <button type="submit" class="btn-admin btn-admin--danger btn-admin--sm">Hapus</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="6" style="text-align:center;color:#999;padding:32px;">Belum ada testimoni.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+
+  <!-- ══════════════════════════════════════════════════════════════
+       TAB 6: GALERI FOTO (PORTOFOLIO)
+  ══════════════════════════════════════════════════════════════ -->
+  {% if active_tab == 'galeri' %}
+  <div class="admin-panel">
+    <div class="admin-panel__top">
+      <h2 class="admin-panel__title">Portofolio & Galeri Foto</h2>
+      <button onclick="openModal('modalGallery')" class="btn-admin btn-admin--primary">
+        Upload Foto Galeri Baru
+      </button>
+    </div>
+
+    <!-- Filter Kategori -->
+    <form method="GET" action="{% url 'admin_dashboard' %}" class="admin-filter-bar">
+      <input type="hidden" name="tab" value="galeri">
+      <select name="status" class="admin-select" onchange="this.form.submit()">
+        <option value="">Semua Kategori</option>
+        {% for cat_val, cat_lbl in gallery_categories %}
+        <option value="{{ cat_val }}" {% if status_filter == cat_val %}selected{% endif %}>{{ cat_lbl }}</option>
+        {% endfor %}
+      </select>
+    </form>
+
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Foto (ImageField)</th>
+            <th>Keterangan / Judul</th>
+            <th>Kategori</th>
+            <th>Urutan</th>
+            <th>Status Tampil</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for g in gallery_items %}
+          <tr>
+            <td>
+              {% if g.get_src %}
+              <img src="{{ g.get_src }}" alt="{{ g.title }}" style="width:54px;height:54px;object-fit:cover;border-radius:8px;border:1px solid #ebd9c0;">
+              {% else %}
+              <div style="width:54px;height:54px;background:#eee;border-radius:8px;display:flex;align-items:center;justify-content:center;">🖼️</div>
+              {% endif %}
+            </td>
+            <td><strong>{{ g.title|default:"Papan Akrilik" }}</strong></td>
+            <td><span class="status-pill status-pill--confirmed">{{ g.category }}</span></td>
+            <td>{{ g.order }}</td>
+            <td>
+              <!-- Form Toggle Status Tampilkan / Tidak Tampilkan Galeri -->
+              <form method="POST" action="{% url 'admin_gallery_toggle' g.id %}" style="display:inline-block;">
+                {% csrf_token %}
+                <button type="submit" class="btn-admin btn-admin--sm {% if g.is_active %}btn-admin--secondary{% else %}btn-admin--danger{% endif %}" title="Klik untuk ubah status tampil di galeri">
+                  {% if g.is_active %}
+                    Ditampilkan
+                  {% else %}
+                    Disembunyikan
+                  {% endif %}
+                </button>
+              </form>
+            </td>
+            <td>
+              <div style="display:flex;gap:6px;">
+                <!-- Tombol Edit Foto Galeri -->
+                <button type="button" class="btn-admin btn-admin--secondary btn-admin--sm"
+                  onclick="openEditGallery({
+                    id: '{{ g.id }}',
+                    title: '{{ g.title|escapejs }}',
+                    category: '{{ g.category|escapejs }}',
+                    order: '{{ g.order }}',
+                    is_active: {{ g.is_active|yesno:'true,false' }}
+                  })">
+                  Edit
+                </button>
+
+                <!-- Tombol Hapus Galeri -->
+                <form method="POST" action="{% url 'admin_gallery_delete' g.id %}" onsubmit="return confirm('Hapus foto {{ g.title|escapejs }} dari galeri?')">
+                  {% csrf_token %}
+                  <button type="submit" class="btn-admin btn-admin--danger btn-admin--sm">Hapus</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="6" style="text-align:center;color:#999;padding:32px;">Belum ada item galeri.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+
+  <!-- ══════════════════════════════════════════════════════════════
+       TAB 7: PENGGUNA (DENGAN AKSI HAPUS)
+  ══════════════════════════════════════════════════════════════ -->
+  {% if active_tab == 'pengguna' %}
+  <div class="admin-panel">
+    <div class="admin-panel__top">
+      <h2 class="admin-panel__title">Daftar Pengguna & Pelanggan</h2>
+      {% if user.is_superuser %}
+      <button onclick="openModal('modalUserAdd')" class="btn-admin btn-admin--primary">
+        + Tambah Pengguna / Admin
+      </button>
+      {% endif %}
+    </div>
+
+    <!-- Filter & Pencarian Pengguna -->
+    <form method="GET" action="{% url 'admin_dashboard' %}" class="admin-filter-bar">
+      <input type="hidden" name="tab" value="pengguna">
+      <input type="text" name="q" value="{{ q }}" placeholder="Cari username, email, nama, no HP..." class="admin-input" style="min-width:260px;">
+      <button type="submit" class="btn-admin btn-admin--primary">Cari</button>
+      {% if q %}<a href="{% url 'admin_dashboard' %}?tab=pengguna" class="btn-admin btn-admin--secondary">Reset</a>{% endif %}
+    </form>
+
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Username & Email</th>
+            <th>Nama Lengkap</th>
+            <th>No. WhatsApp</th>
+            <th>Role Akun</th>
+            <th>Bergabung</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in users_list %}
+          <tr>
+            <td>
+              <strong>{{ u.username }}</strong><br>
+              <small style="color:#777;">{{ u.email|default:"(Belum set email)" }}</small>
+            </td>
+            <td>{{ u.first_name|default:"-" }} {{ u.last_name }}</td>
+            <td>{{ u.profile.phone_number|default:"-" }}</td>
+            <td>
+              {% if u.is_superuser %}
+              <span class="status-pill status-pill--processing">Superadmin</span>
+              {% elif u.is_staff %}
+              <span class="status-pill status-pill--confirmed">Admin</span>
+              {% else %}
+              <span class="status-pill status-pill--published">Pelanggan</span>
+              {% endif %}
+            </td>
+            <td>{{ u.date_joined|date:"j N Y" }}</td>
+            <td>
+              {% if u.id == user.id %}
+              <small style="color:#715330;font-weight:600;">(Akun Anda)</small>
+              {% elif user.is_superuser %}
+              <form method="POST" action="{% url 'admin_user_delete' u.id %}" onsubmit="return confirm('Peringatan: Yakin ingin menghapus pengguna {{ u.username|escapejs }}? Tindakan ini tidak dapat dibatalkan.')">
+                {% csrf_token %}
+                <button type="submit" class="btn-admin btn-admin--danger btn-admin--sm">
+                  Hapus
+                </button>
+              </form>
+              {% else %}
+              <small style="color:#aaa;">-</small>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     MODAL: TULIS ARTIKEL BARU
+══════════════════════════════════════════════════════════════ -->
+<div id="modalArticle" class="admin-modal">
+  <div class="admin-modal__box">
+    <div class="admin-modal__header">
+      <h3 class="admin-modal__title">Tulis Artikel Baru</h3>
+      <button type="button" class="admin-modal__close" onclick="closeModal('modalArticle')">&times;</button>
+    </div>
+
+    <form method="POST" action="{% url 'admin_article_save' %}" enctype="multipart/form-data">
+      {% csrf_token %}
+      <input type="hidden" name="article_id" id="artId" value="">
+
+      <div class="form-group-admin">
+        <label class="form-label-admin">Judul Artikel *</label>
+        <input type="text" name="title" id="artTitle" class="form-control-admin" placeholder="Contoh: Tips Memilih Warna Bunga Papan Akrilik" required>
+      </div>
+
+      <div class="form-group-admin">
+        <label class="form-label-admin">Alamat Tautan (Slug URL) — Disinkronkan Otomatis</label>
+        <input type="text" name="slug" id="artSlug" class="form-control-admin" placeholder="tips-memilih-warna-bunga-papan-akrilik">
+        <small style="color:#888;font-size:0.75rem;">URL SEO-friendly untuk pembaca website.</small>
+      </div>
+
+      <div class="form-group-admin">
+        <label class="form-label-admin">Thumbnail / Gambar Utama</label>
+        <input type="file" name="thumbnail" accept="image/*" class="form-control-admin">
+      </div>
+
+      <div class="form-group-admin">
+        <label class="form-label-admin">Ringkasan Berita (Excerpt)</label>
+        <textarea name="summary" rows="2" class="form-control-admin" placeholder="Ringkasan singkat yang menarik minat pembaca di halaman katalog artikel..."></textarea>
+      </div>
+
+      <div class="form-group-admin">
+        <label class="form-label-admin">Isi Berita Lengkap *</label>
+        <textarea name="content" rows="6" class="form-control-admin" placeholder="Tuliskan berita atau panduan lengkap di sini..." required></textarea>
+      </div>
+
+      <div class="form-group-admin">
+        <label class="form-label-admin">Tags Berita (Pisahkan dengan koma)</label>
+        <input type="text" name="tags_input" class="form-control-admin" placeholder="Contoh: Tips, Wisuda, Desain, Promo">
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="form-group-admin">
+          <label class="form-label-admin">Status Publikasi</label>
+          <select name="status" class="form-control-admin">
+            <option value="draft">Draft (Belum Terbit)</option>
+            <option value="published" selected>Dipublikasikan</option>
+            <option value="archived">Diarsipkan</option>
+          </select>
+        </div>
+        <div class="form-group-admin">
+          <label class="form-label-admin">Jadwal Terbit (Opsional)</label>
+          <input type="datetime-local" name="published_at" class="form-control-admin">
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
+        <button type="button" class="btn-admin btn-admin--secondary" onclick="closeModal('modalArticle')">Batal</button>
+        <button type="submit" class="btn-admin btn-admin--primary">Simpan &amp; Terbitkan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     MODAL: TAMBAH PRODUK BARU
+══════════════════════════════════════════════════════════════ -->
+<div id="modalProduct" class="admin-modal">
+  <div class="admin-modal__box">
+    <div class="admin-modal__header">
+      <h3 class="admin-modal__title">Tambah Produk Baru</h3>
+      <button type="button" class="admin-modal__close" onclick="closeModal('modalProduct')">&times;</button>
+    </div>
+
+    <form method="POST" action="{% url 'admin_product_save' %}" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="form-group-admin">
+        <label class="form-label-admin">Nama Produk *</label>
+        <input type="text" name="name" class="form-control-admin" placeholder="Contoh: Papan Akrilik Bulat Rose Gold" required>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="form-group-admin">
+          <label class="form-label-admin">Kategori</label>
+          <input type="text" name="category" class="form-control-admin" placeholder="Papan Bulat / Flowerbox">
+        </div>
+        <div class="form-group-admin">
+          <label class="form-label-admin">Bentuk Papan</label>
+          <select name="shape" class="form-control-admin">
+            <option value="round">Bulat</option>
+            <option value="dome">Kubah</option>
+            <option value="box">Flowerbox</option>
+            <option value="large">Besar</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="form-group-admin">
+          <label class="form-label-admin">Harga Sewa (Rp) *</label>
+          <input type="number" name="price" value="50000" class="form-control-admin" required>
+        </div>
+        <div class="form-group-admin">
+          <label class="form-label-admin">Stok Siap Sewa</label>
+          <input type="number" name="stock" value="10" class="form-control-admin">
+        </div>
+      </div>
+      <div class="form-group-admin">
+        <label class="form-label-admin">Ukuran / Dimensi</label>
+        <input type="text" name="size" value="Diameter 40cm" class="form-control-admin">
+      </div>
+      <div class="form-group-admin">
+        <label class="form-label-admin">Deskripsi Produk</label>
+        <textarea name="description" rows="3" class="form-control-admin" placeholder="Keterangan bahan, kelengkapan bunga, easel..."></textarea>
+      </div>
+      <div class="form-group-admin">
+        <label class="form-label-admin">Foto Produk (ImageField)</label>
+        <input type="file" name="image" accept="image/*" class="form-control-admin">
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
+        <button type="button" class="btn-admin btn-admin--secondary" onclick="closeModal('modalProduct')">Batal</button>
+        <button type="submit" class="btn-admin btn-admin--primary">Simpan Produk</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     MODAL: EDIT DETAIL PRODUK
+══════════════════════════════════════════════════════════════ -->
+<div id="modalProductEdit" class="admin-modal">
+  <div class="admin-modal__box">
+    <div class="admin-modal__header">
+      <h3 class="admin-modal__title">Edit Detail Produk</h3>
+      <button type="button" class="admin-modal__close" onclick="closeModal('modalProductEdit')">&times;</button>
+    </div>
+
+    <form method="POST" action="{% url 'admin_product_save' %}" enctype="multipart/form-data">
+      {% csrf_token %}
+      <input type="hidden" name="product_id" id="editProdId" value="">
+
+      <div class="form-group-admin">
+        <label class="form-label-admin">Nama Produk *</label>
+        <input type="text" name="name" id="editProdName" class="form-control-admin" required>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="form-group-admin">
+          <label class="form-label-admin">Kategori</label>
+          <input type="text" name="category" id="editProdCategory" class="form-control-admin">
+        </div>
+        <div class="form-group-admin">
+          <label class="form-label-admin">Bentuk Papan</label>
+          <select name="shape" id="editProdShape" class="form-control-admin">
+            <option value="round">Bulat</option>
+            <option value="dome">Kubah</option>
+            <option value="box">Flowerbox</option>
+            <option value="large">Besar</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="form-group-admin">
+          <label class="form-label-admin">Harga Sewa (Rp) *</label>
+          <input type="number" name="price" id="editProdPrice" class="form-control-admin" required>
+        </div>
+        <div class="form-group-admin">
+          <label class="form-label-admin">Stok Siap Sewa</label>
+          <input type="number" name="stock" id="editProdStock" class="form-control-admin">
+        </div>
+      </div>
+      <div class="form-group-admin">
+        <label class="form-label-admin">Ukuran / Dimensi</label>
+        <input type="text" name="size" id="editProdSize" class="form-control-admin">
+      </div>
+      <div class="form-group-admin">
+        <label class="form-label-admin">Deskripsi Produk</label>
+        <textarea name="description" id="editProdDesc" rows="3" class="form-control-admin"></textarea>
+      </div>
+      <div class="form-group-admin">
+        <label class="form-label-admin">Ganti Foto Produk (ImageField - Opsional)</label>
+        <input type="file" name="image" accept="image/*" class="form-control-admin">
+        <small style="color:#888;font-size:0.75rem;">Biarkan kosong jika tidak ingin mengubah foto produk.</small>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
+        <button type="button" class="btn-admin btn-admin--secondary" onclick="closeModal('modalProductEdit')">Batal</button>
+        <button type="submit" class="btn-admin btn-admin--primary">Simpan Perubahan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     MODAL: TAMBAH TESTIMONI BARU
+══════════════════════════════════════════════════════════════ -->
+<div id="modalTestimonial" class="admin-modal">
+  <div class="admin-modal__box">
+    <div class="admin-modal__header">
+      <h3 class="admin-modal__title">Tambah Testimoni Pelanggan</h3>
+      <button type="button" class="admin-modal__close" onclick="closeModal('modalTestimonial')">&times;</button>
+    </div>
+
+    <form method="POST" action="{% url 'admin_testimonial_save' %}">
+      {% csrf_token %}
+      <div class="form-group-admin">
+        <label class="form-label-admin">Nama Pelanggan *</label>
+        <input type="text" name="name" class="form-control-admin" placeholder="Contoh: Sifa Ramadani" required>
+      </div>
+      <div class="form-group-admin">
+        <label class="form-label-admin">Momen / Acara *</label>
+        <input type="text" name="event" class="form-control-admin" placeholder="Contoh: Wisuda S1 UNHAS 2024" required>
+      </div>
+      <div class="form-group-admin">
+        <label class="form-label-admin">Rating Bintang (1 - 5)</label>
+        <select name="rating" class="form-control-admin">
+          <option value="5" selected>5 Bintang (Sangat Puas)</option>
+          <option value="4">4 Bintang (Puas)</option>
+          <option value="3">3 Bintang (Cukup)</option>
+        </select>
+      </div>
+      <div class="form-group-admin">
+        <label class="form-label-admin">Isi Ulasan *</label>
+        <textarea name="text" rows="3" class="form-control-admin" placeholder="Papan akriliknya sangat cantik dan rapi..." required></textarea>
+      </div>
+      <div class="form-group-admin">
+        <label class="form-label-admin">Warna Lingkaran Avatar (HEX)</label>
+        <input type="color" name="avatar_color" value="#715330" style="width:100%;height:40px;border:none;border-radius:8px;cursor:pointer;">
+      </div>
+      <div class="form-group-admin">
+        <label style="display:flex;align-items:center;gap:8px;font-weight:600;font-size:0.85rem;color:#5a3f22;cursor:pointer;">
+          <input type="checkbox" name="is_active" checked> Tampilkan di Website
+        </label>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
+        <button type="button" class="btn-admin btn-admin--secondary" onclick="closeModal('modalTestimonial')">Batal</button>
+        <button type="submit" class="btn-admin btn-admin--primary">Simpan Testimoni</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     MODAL: EDIT TESTIMONI
+══════════════════════════════════════════════════════════════ -->
+<div id="modalTestimonialEdit" class="admin-modal">
+  <div class="admin-modal__box">
+    <div class="admin-modal__header">
+      <h3 class="admin-modal__title">Edit Testimoni Pelanggan</h3>
+      <button type="button" class="admin-modal__close" onclick="closeModal('modalTestimonialEdit')">&times;</button>
+    </div>
+
+    <form method="POST" action="{% url 'admin_testimonial_save' %}">
+      {% csrf_token %}
+      <input type="hidden" name="item_id" id="editTestId" value="">
+
+      <div class="form-group-admin">
+        <label class="form-label-admin">Nama Pelanggan *</label>
+        <input type="text" name="name" id="editTestName" class="form-control-admin" required>
+      </div>
+      <div class="form-group-admin">
+        <label class="form-label-admin">Momen / Acara *</label>
+        <input type="text" name="event" id="editTestEvent" class="form-control-admin" required>
+      </div>
+      <div class="form-group-admin">
+        <label class="form-label-admin">Rating Bintang (1 - 5)</label>
+        <select name="rating" id="editTestRating" class="form-control-admin">
+          <option value="5">5 Bintang (Sangat Puas)</option>
+          <option value="4">4 Bintang (Puas)</option>
+          <option value="3">3 Bintang (Cukup)</option>
+        </select>
+      </div>
+      <div class="form-group-admin">
+        <label class="form-label-admin">Isi Ulasan *</label>
+        <textarea name="text" id="editTestText" rows="3" class="form-control-admin" required></textarea>
+      </div>
+      <div class="form-group-admin">
+        <label class="form-label-admin">Warna Lingkaran Avatar (HEX)</label>
+        <input type="color" name="avatar_color" id="editTestColor" style="width:100%;height:40px;border:none;border-radius:8px;cursor:pointer;">
+      </div>
+      <div class="form-group-admin">
+        <label style="display:flex;align-items:center;gap:8px;font-weight:600;font-size:0.85rem;color:#5a3f22;cursor:pointer;">
+          <input type="checkbox" name="is_active" id="editTestActive"> Tampilkan di Website
+        </label>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
+        <button type="button" class="btn-admin btn-admin--secondary" onclick="closeModal('modalTestimonialEdit')">Batal</button>
+        <button type="submit" class="btn-admin btn-admin--primary">Simpan Perubahan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     MODAL: UPLOAD GALERI FOTO BARU
+══════════════════════════════════════════════════════════════ -->
+<div id="modalGallery" class="admin-modal">
+  <div class="admin-modal__box">
+    <div class="admin-modal__header">
+      <h3 class="admin-modal__title">Upload Foto Portofolio Galeri</h3>
+      <button type="button" class="admin-modal__close" onclick="closeModal('modalGallery')">&times;</button>
+    </div>
+
+    <form method="POST" action="{% url 'admin_gallery_save' %}" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="form-group-admin">
+        <label class="form-label-admin">Kategori Papan *</label>
+        <select name="category" class="form-control-admin" required>
+          <option value="Papan Bulat">Papan Bulat</option>
+          <option value="Papan Kubah">Papan Kubah</option>
+          <option value="Flowerbox">Flowerbox</option>
+          <option value="Papan Besar">Papan Besar</option>
+        </select>
+      </div>
+      <div class="form-group-admin">
+        <label class="form-label-admin">Keterangan / Judul Foto</label>
+        <input type="text" name="title" class="form-control-admin" placeholder="Contoh: Semhas Nurul Ramadhani">
+      </div>
+      <div class="form-group-admin">
+        <label class="form-label-admin">File Foto (ImageField) *</label>
+        <input type="file" name="image" accept="image/*" class="form-control-admin" required>
+      </div>
+      <div class="form-group-admin">
+        <label class="form-label-admin">Urutan Tampil</label>
+        <input type="number" name="order" value="0" class="form-control-admin">
+      </div>
+      <div class="form-group-admin">
+        <label style="display:flex;align-items:center;gap:8px;font-weight:600;font-size:0.85rem;color:#5a3f22;cursor:pointer;">
+          <input type="checkbox" name="is_active" checked> Tampilkan di Galeri Foto
+        </label>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
+        <button type="button" class="btn-admin btn-admin--secondary" onclick="closeModal('modalGallery')">Batal</button>
+        <button type="submit" class="btn-admin btn-admin--primary">Upload Foto</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     MODAL: EDIT FOTO GALERI
+══════════════════════════════════════════════════════════════ -->
+<div id="modalGalleryEdit" class="admin-modal">
+  <div class="admin-modal__box">
+    <div class="admin-modal__header">
+      <h3 class="admin-modal__title">Edit Foto Galeri</h3>
+      <button type="button" class="admin-modal__close" onclick="closeModal('modalGalleryEdit')">&times;</button>
+    </div>
+
+    <form method="POST" action="{% url 'admin_gallery_save' %}" enctype="multipart/form-data">
+      {% csrf_token %}
+      <input type="hidden" name="item_id" id="editGalId" value="">
+
+      <div class="form-group-admin">
+        <label class="form-label-admin">Kategori Papan *</label>
+        <select name="category" id="editGalCategory" class="form-control-admin" required>
+          <option value="Papan Bulat">Papan Bulat</option>
+          <option value="Papan Kubah">Papan Kubah</option>
+          <option value="Flowerbox">Flowerbox</option>
+          <option value="Papan Besar">Papan Besar</option>
+        </select>
+      </div>
+      <div class="form-group-admin">
+        <label class="form-label-admin">Keterangan / Judul Foto</label>
+        <input type="text" name="title" id="editGalTitle" class="form-control-admin">
+      </div>
+      <div class="form-group-admin">
+        <label class="form-label-admin">Ganti Foto (ImageField - Opsional)</label>
+        <input type="file" name="image" accept="image/*" class="form-control-admin">
+        <small style="color:#888;font-size:0.75rem;">Biarkan kosong jika tidak ingin mengganti foto.</small>
+      </div>
+      <div class="form-group-admin">
+        <label class="form-label-admin">Urutan Tampil</label>
+        <input type="number" name="order" id="editGalOrder" class="form-control-admin">
+      </div>
+      <div class="form-group-admin">
+        <label style="display:flex;align-items:center;gap:8px;font-weight:600;font-size:0.85rem;color:#5a3f22;cursor:pointer;">
+          <input type="checkbox" name="is_active" id="editGalActive"> Tampilkan di Galeri Foto
+        </label>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
+        <button type="button" class="btn-admin btn-admin--secondary" onclick="closeModal('modalGalleryEdit')">Batal</button>
+        <button type="submit" class="btn-admin btn-admin--primary">Simpan Perubahan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     MODAL: TAMBAH USER / ADMIN BARU (KHUSUS SUPERUSER)
+══════════════════════════════════════════════════════════════ -->
+{% if user.is_superuser %}
+<div id="modalUserAdd" class="admin-modal">
+  <div class="admin-modal__box">
+    <div class="admin-modal__header">
+      <h3 class="admin-modal__title">Tambah Pengguna / Admin Baru</h3>
+      <button type="button" class="admin-modal__close" onclick="closeModal('modalUserAdd')">&times;</button>
+    </div>
+
+    <form method="POST" action="{% url 'admin_user_save' %}">
+      {% csrf_token %}
+
+      <div style="background:#fcfbf8;border:1px solid #ebd9c0;border-radius:10px;padding:12px 16px;margin-bottom:18px;font-size:0.83rem;color:#7a6248;">
+        <strong>Hak Akses Superadmin:</strong> Anda dapat membuat akun pengguna baru dan menentukan apakah akun tersebut sebagai <strong>Admin</strong> (dapat mengelola pesanan, katalog, artikel, portofolio) atau <strong>Superadmin</strong>.
+      </div>
+
+      <div class="form-group-admin">
+        <label class="form-label-admin">Username *</label>
+        <input type="text" name="username" class="form-control-admin" placeholder="Contoh: staff_admin" required autocomplete="off">
+      </div>
+
+      <div class="form-group-admin">
+        <label class="form-label-admin">Alamat Email *</label>
+        <input type="email" name="email" class="form-control-admin" placeholder="admin@daniyoustuff.co" required>
+        <small style="color:#888;font-size:0.75rem;">Email ini digunakan juga untuk login akun.</small>
+      </div>
+
+      <div class="form-group-admin">
+        <label class="form-label-admin">Nama Lengkap</label>
+        <input type="text" name="full_name" class="form-control-admin" placeholder="Contoh: Sifa Ramadani">
+      </div>
+
+      <div class="form-group-admin">
+        <label class="form-label-admin">Kata Sandi (Password) *</label>
+        <input type="password" name="password" class="form-control-admin" placeholder="Minimal 6 karakter" required minlength="6" autocomplete="new-password">
+      </div>
+
+      <div class="form-group-admin">
+        <label class="form-label-admin">No. WhatsApp / HP</label>
+        <input type="tel" name="phone_number" class="form-control-admin" placeholder="081234567890">
+      </div>
+
+      <!-- PILIHAN ROLE / HAK AKSES -->
+      <div class="form-group-admin">
+        <label class="form-label-admin">Role Akun &amp; Hak Akses *</label>
+        <select name="role" class="form-control-admin" style="font-weight:600;">
+          <option value="staff" selected>Admin (Akses Dashboard Pengelola Toko)</option>
+          <option value="superuser">Superadmin (Akses Penuh Seluruh Sistem &amp; Kelola Admin)</option>
+          <option value="customer">Pelanggan Biasa (Tanpa Akses Admin)</option>
+        </select>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:22px;">
+        <button type="button" class="btn-admin btn-admin--secondary" onclick="closeModal('modalUserAdd')">Batal</button>
+        <button type="submit" class="btn-admin btn-admin--primary">Simpan &amp; Buat Akun</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endif %}
+
+
+<script>
+  function openModal(id) {
+    var m = document.getElementById(id);
+    if (m) m.classList.add('show');
+  }
+  function closeModal(id) {
+    var m = document.getElementById(id);
+    if (m) m.classList.remove('show');
+  }
+
+  // Live Slug Generator saat mengetik Judul Artikel
+  var titleInput = document.getElementById('artTitle');
+  var slugInput = document.getElementById('artSlug');
+  if (titleInput && slugInput) {
+    titleInput.addEventListener('input', function() {
+      var text = this.value.toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .trim()
+        .replace(/\s+/g, '-');
+      slugInput.value = text;
+    });
+  }
+
+  // Populate data ke Modal Edit Produk
+  function openEditProduct(p) {
+    document.getElementById('editProdId').value = p.id;
+    document.getElementById('editProdName').value = p.name;
+    document.getElementById('editProdCategory').value = p.category;
+    document.getElementById('editProdShape').value = p.shape;
+    document.getElementById('editProdSize').value = p.size;
+    document.getElementById('editProdPrice').value = p.price;
+    document.getElementById('editProdStock').value = p.stock;
+    document.getElementById('editProdDesc').value = p.description || '';
+    openModal('modalProductEdit');
+  }
+
+  // Populate data ke Modal Edit Testimoni
+  function openEditTestimonial(t) {
+    document.getElementById('editTestId').value = t.id;
+    document.getElementById('editTestName').value = t.name;
+    document.getElementById('editTestEvent').value = t.event;
+    document.getElementById('editTestRating').value = t.rating;
+    document.getElementById('editTestText').value = t.text;
+    document.getElementById('editTestColor').value = t.avatar_color || '#715330';
+    document.getElementById('editTestActive').checked = (t.is_active === true || t.is_active === 'true');
+    openModal('modalTestimonialEdit');
+  }
+
+  // Populate data ke Modal Edit Galeri Foto
+  function openEditGallery(g) {
+    document.getElementById('editGalId').value = g.id;
+    document.getElementById('editGalTitle').value = g.title || '';
+    document.getElementById('editGalCategory').value = g.category;
+    document.getElementById('editGalOrder').value = g.order || 0;
+    document.getElementById('editGalActive').checked = (g.is_active === true || g.is_active === 'true');
+    openModal('modalGalleryEdit');
+  }
+
+  // Close modal when click outside box
+  window.addEventListener('click', function(e) {
+    if (e.target.classList.contains('admin-modal')) {
+      e.target.classList.remove('show');
+    }
+  });
+</script>
+{% endblock %}

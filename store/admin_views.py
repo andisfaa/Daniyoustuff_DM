@@ -531,11 +531,11 @@ def admin_user_save(request):
         if role == 'superuser':
             new_user.is_staff = True
             new_user.is_superuser = True
-            role_label = "Superuser (Akses Penuh)"
+            role_label = "Superadmin"
         elif role == 'staff':
             new_user.is_staff = True
             new_user.is_superuser = False
-            role_label = "Admin Staff"
+            role_label = "Admin"
         else:
             new_user.is_staff = False
             new_user.is_superuser = False
@@ -567,7 +567,7 @@ def admin_user_delete(request, user_id):
 
         # Cek jika satu-satunya superuser
         if target_user.is_superuser and User.objects.filter(is_superuser=True).count() <= 1:
-            messages.error(request, "Tidak dapat menghapus satu-satunya Superuser dalam sistem.")
+            messages.error(request, "Tidak dapat menghapus satu-satunya Superadmin dalam sistem.")
             return redirect('/admin-dashboard/?tab=pengguna')
 
         username = target_user.username
