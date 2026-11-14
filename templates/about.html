@@ -2,6 +2,52 @@
 {% load static store_extras %}
 {% block title %}About & Gallery — DaniyouStuff.co{% endblock %}
 
+{% block head %}
+<style>
+  /* ── TOMBOL BAR AKSES PENGELOLA (HIGH CONTRAST) ── */
+  .admin-bar-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 7px 16px;
+    border-radius: 999px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1.5px solid #715330;
+  }
+  .admin-bar-btn--outline {
+    background: #ffffff;
+    color: #715330;
+  }
+  .admin-bar-btn--outline:hover,
+  .admin-bar-btn--outline:focus,
+  .admin-bar-btn--outline:active {
+    background: #715330 !important;
+    color: #ffffff !important;
+    border-color: #715330 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(113, 83, 48, 0.25);
+  }
+  .admin-bar-btn--primary {
+    background: #715330;
+    color: #ffffff;
+    border-color: #715330;
+  }
+  .admin-bar-btn--primary:hover,
+  .admin-bar-btn--primary:focus,
+  .admin-bar-btn--primary:active {
+    background: #5a3f22 !important;
+    color: #ffffff !important;
+    border-color: #5a3f22 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(90, 63, 34, 0.3);
+  }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="about-page">
 
@@ -13,13 +59,13 @@
     <span><strong>Akses Pengelola:</strong> Anda dapat menambah, mengubah, dan menghapus isi foto galeri & ulasan pelanggan melalui Admin.</span>
   </div>
   <div style="display:flex;gap:8px;flex-wrap:wrap;">
-    <a href="{% url 'admin_dashboard' %}?tab=galeri" class="btn btn-outline" style="font-size:0.78rem;padding:6px 14px;background:#fff;">
+    <a href="{% url 'admin_dashboard' %}?tab=galeri" class="admin-bar-btn admin-bar-btn--outline">
       📸 Kelola Foto Galeri
     </a>
-    <a href="{% url 'admin_dashboard' %}?tab=testimoni" class="btn btn-outline" style="font-size:0.78rem;padding:6px 14px;background:#fff;">
+    <a href="{% url 'admin_dashboard' %}?tab=testimoni" class="admin-bar-btn admin-bar-btn--outline">
       💬 Kelola Testimoni
     </a>
-    <a href="{% url 'admin_dashboard' %}" class="btn btn-primary" style="font-size:0.78rem;padding:6px 14px;">
+    <a href="{% url 'admin_dashboard' %}" class="admin-bar-btn admin-bar-btn--primary">
       Buka Dashboard Admin &rarr;
     </a>
   </div>
@@ -103,7 +149,7 @@
       <p class="section-desc">Kumpulan foto terbaik dari momen-momen istimewa pelanggan kami</p>
       {% if user.is_staff %}
       <div style="margin-top:8px;">
-        <a href="{% url 'admin_dashboard' %}?tab=galeri" class="btn btn-outline" style="font-size:0.75rem;padding:4px 14px;background:#fff;border-color:var(--clr-brown);color:var(--clr-brown);">
+        <a href="{% url 'admin_dashboard' %}?tab=galeri" class="admin-bar-btn admin-bar-btn--outline" style="font-size:0.75rem;padding:5px 14px;">
           📸 + Kelola Foto Galeri di Dashboard Admin
         </a>
       </div>
@@ -137,7 +183,7 @@
       <h2 class="section-title">Cerita Pelanggan Kami</h2>
       {% if user.is_staff %}
       <div style="margin-top:8px;">
-        <a href="{% url 'admin_dashboard' %}?tab=testimoni" class="btn btn-outline" style="font-size:0.75rem;padding:4px 14px;background:#fff;border-color:var(--clr-brown);color:var(--clr-brown);">
+        <a href="{% url 'admin_dashboard' %}?tab=testimoni" class="admin-bar-btn admin-bar-btn--outline" style="font-size:0.75rem;padding:5px 14px;">
           💬 + Kelola Testimoni di Dashboard Admin
         </a>
       </div>
