@@ -554,7 +554,7 @@ def admin_user_save(request):
     return redirect('/admin-dashboard/?tab=pengguna')
 
 
-@staff_required
+@superuser_required
 def admin_user_delete(request, user_id):
     """Hapus akun pengguna dari sistem."""
     if request.method == 'POST':

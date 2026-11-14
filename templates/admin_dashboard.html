@@ -1062,13 +1062,15 @@
             <td>
               {% if u.id == user.id %}
               <small style="color:#715330;font-weight:600;">(Akun Anda)</small>
-              {% else %}
+              {% elif user.is_superuser %}
               <form method="POST" action="{% url 'admin_user_delete' u.id %}" onsubmit="return confirm('Peringatan: Yakin ingin menghapus pengguna {{ u.username|escapejs }}? Tindakan ini tidak dapat dibatalkan.')">
                 {% csrf_token %}
                 <button type="submit" class="btn-admin btn-admin--danger btn-admin--sm">
                   🗑️ Hapus
                 </button>
               </form>
+              {% else %}
+              <small style="color:#aaa;">-</small>
               {% endif %}
             </td>
           </tr>
