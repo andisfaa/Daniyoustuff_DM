@@ -509,7 +509,7 @@
             <td><strong>{{ ord.order_code }}</strong></td>
             <td>
               <div>{{ ord.customer_name }}</div>
-              <small style="color:#888;"><a href="https://wa.me/{{ ord.customer_phone }}" target="_blank" style="color:#715330;">📱 {{ ord.customer_phone }}</a></small>
+              <small style="color:#888;"><a href="https://wa.me/{{ ord.customer_phone }}" target="_blank" style="color:#715330;">{{ ord.customer_phone }}</a></small>
             </td>
             <td>{{ ord.event_date|date:"j N Y"|default:"-" }}</td>
             <td><strong>{{ ord.subtotal|format_price }}</strong></td>
@@ -603,7 +603,7 @@
             </td>
             <td>
               <div style="font-weight:600;">{{ ord.customer_name }}</div>
-              <small><a href="https://wa.me/{{ ord.customer_phone }}" target="_blank" style="color:#715330;">📱 {{ ord.customer_phone }}</a></small><br>
+              <small><a href="https://wa.me/{{ ord.customer_phone }}" target="_blank" style="color:#715330;">{{ ord.customer_phone }}</a></small><br>
               <small style="color:#777;">{{ ord.customer_address|truncatechars:35 }}</small>
             </td>
             <td>{{ ord.event_date|date:"j N Y"|default:"-" }}</td>

@@ -175,11 +175,13 @@
 
         {% else %}
         <!-- Empty State -->
-        <div style="text-align:center;padding:48px 16px;">
-          <div style="font-size:3rem;margin-bottom:12px;">🛍️</div>
+        <div style="text-align:center;padding:52px 20px;">
+          <div style="width:64px;height:64px;margin:0 auto 16px;border-radius:50%;background:rgba(113,83,48,0.08);display:flex;align-items:center;justify-content:center;color:var(--clr-brown);">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          </div>
           <h3 style="font-family:var(--font-heading);font-size:1.25rem;color:var(--clr-brown-dark);margin-bottom:8px;">Belum Ada Riwayat Pesanan</h3>
-          <p style="color:var(--clr-grey-dark);font-size:0.88rem;max-width:360px;margin:0 auto 20px;">
-            Anda belum pernah memesan atau menyewa papan akrilik di DaniyouStuff.co. Buat momen wisuda atau acaramu lebih berkesan sekarang!
+          <p style="color:var(--clr-grey-dark);font-size:0.88rem;max-width:380px;margin:0 auto 22px;line-height:1.6;">
+            Anda belum memiliki riwayat pesanan sewa papan akrilik di DaniyouStuff.co. Buat momen wisuda atau acaramu lebih berkesan sekarang!
           </p>
           <a href="{% url 'catalog' %}" class="btn btn-primary">
             Lihat Katalog Papan Akrilik
