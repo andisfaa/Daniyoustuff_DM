@@ -11,17 +11,17 @@ Tampilan antarmuka mengusung tema *warm earthy aesthetic* (`#EEEBDA`, `#715330`)
 ### Cara 1: Menggunakan file Batch (Paling Mudah)
 Cukup double-click file:
 ```
-d:\DANIYOU PROJECT\envsifaa\run.bat
+D:\DANIYOU PROJECT\RUN_WEBSITE.bat
 ```
 
 ### Cara 2: Melalui Terminal / PowerShell
 ```powershell
 cd "d:\DANIYOU PROJECT\envsifaa"
-.\Scripts\python.exe app.py
+.\Scripts\python.exe manage.py runserver
 ```
 
 Buka browser di:
-👉 **http://127.0.0.1:5000/**
+👉 **http://127.0.0.1:8000/**
 
 ---
 
