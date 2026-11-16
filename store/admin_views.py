@@ -217,7 +217,10 @@ def admin_article_save(request):
 
         if published_at_str:
             try:
-                article.published_at = timezone.datetime.fromisoformat(published_at_str)
+                dt = timezone.datetime.fromisoformat(published_at_str)
+                if timezone.is_naive(dt):
+                    dt = timezone.make_aware(dt)
+                article.published_at = dt
             except Exception:
                 pass
         elif status == 'published' and not article.published_at:
@@ -238,6 +241,8 @@ def admin_article_save(request):
                 tag_obj, _ = ArticleTag.objects.get_or_create(slug=t_slug, defaults={'name': name})
                 tag_objs.append(tag_obj)
             article.tags.set(tag_objs)
+        elif article_id:
+            article.tags.clear()
         else:
             selected_tag_ids = request.POST.getlist('tags')
             if selected_tag_ids:

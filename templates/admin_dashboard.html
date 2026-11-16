@@ -820,12 +820,26 @@
             <td>{{ art.author.username|default:"-" }}</td>
             <td>
               <div style="display:flex;gap:6px;">
+                <button type="button" class="btn-admin btn-admin--secondary btn-admin--sm"
+                  onclick="openEditArticle({
+                    id: '{{ art.id }}',
+                    title: '{{ art.title|escapejs }}',
+                    slug: '{{ art.slug|escapejs }}',
+                    summary: '{{ art.summary|default:''|escapejs }}',
+                    content: document.getElementById('artContent_{{ art.id }}').value,
+                    tags: '{% for t in art.tags.all %}{{ t.name }}{% if not forloop.last %}, {% endif %}{% endfor %}',
+                    status: '{{ art.status }}',
+                    published_at: '{{ art.published_at|date:'Y-m-d\TH:i' }}'
+                  })">
+                  Edit
+                </button>
                 <a href="{% url 'article_detail' art.slug %}" target="_blank" class="btn-admin btn-admin--secondary btn-admin--sm">Lihat</a>
                 <form method="POST" action="{% url 'admin_article_delete' art.id %}" onsubmit="return confirm('Hapus artikel ini?')">
                   {% csrf_token %}
                   <button type="submit" class="btn-admin btn-admin--danger btn-admin--sm">Hapus</button>
                 </form>
               </div>
+              <textarea id="artContent_{{ art.id }}" style="display:none;">{{ art.content }}</textarea>
             </td>
           </tr>
           {% empty %}
@@ -1162,6 +1176,76 @@
       <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
         <button type="button" class="btn-admin btn-admin--secondary" onclick="closeModal('modalArticle')">Batal</button>
         <button type="submit" class="btn-admin btn-admin--primary">Simpan &amp; Terbitkan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     MODAL: EDIT ARTIKEL
+══════════════════════════════════════════════════════════════ -->
+<div id="modalArticleEdit" class="admin-modal">
+  <div class="admin-modal__box">
+    <div class="admin-modal__header">
+      <h3 class="admin-modal__title">Edit Artikel</h3>
+      <button type="button" class="admin-modal__close" onclick="closeModal('modalArticleEdit')">&times;</button>
+    </div>
+
+    <form method="POST" action="{% url 'admin_article_save' %}" enctype="multipart/form-data">
+      {% csrf_token %}
+      <input type="hidden" name="article_id" id="editArtId" value="">
+
+      <div class="form-group-admin">
+        <label class="form-label-admin">Judul Artikel *</label>
+        <input type="text" name="title" id="editArtTitle" class="form-control-admin" required>
+      </div>
+
+      <div class="form-group-admin">
+        <label class="form-label-admin">Alamat Tautan (Slug URL)</label>
+        <input type="text" name="slug" id="editArtSlug" class="form-control-admin">
+        <small style="color:#888;font-size:0.75rem;">URL SEO-friendly untuk artikel ini.</small>
+      </div>
+
+      <div class="form-group-admin">
+        <label class="form-label-admin">Ganti Thumbnail / Gambar Utama (Opsional)</label>
+        <input type="file" name="thumbnail" accept="image/*" class="form-control-admin">
+        <small style="color:#888;font-size:0.75rem;">Biarkan kosong jika tidak ingin mengubah thumbnail artikel.</small>
+      </div>
+
+      <div class="form-group-admin">
+        <label class="form-label-admin">Ringkasan Berita (Excerpt)</label>
+        <textarea name="summary" id="editArtSummary" rows="2" class="form-control-admin"></textarea>
+      </div>
+
+      <div class="form-group-admin">
+        <label class="form-label-admin">Isi Berita Lengkap *</label>
+        <textarea name="content" id="editArtContent" rows="8" class="form-control-admin" required></textarea>
+      </div>
+
+      <div class="form-group-admin">
+        <label class="form-label-admin">Tags Berita (Pisahkan dengan koma)</label>
+        <input type="text" name="tags_input" id="editArtTags" class="form-control-admin" placeholder="Contoh: Tips, Wisuda, Desain">
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="form-group-admin">
+          <label class="form-label-admin">Status Publikasi</label>
+          <select name="status" id="editArtStatus" class="form-control-admin">
+            <option value="draft">Draft (Belum Terbit)</option>
+            <option value="published">Dipublikasikan</option>
+            <option value="archived">Diarsipkan</option>
+          </select>
+        </div>
+        <div class="form-group-admin">
+          <label class="form-label-admin">Jadwal / Waktu Terbit</label>
+          <input type="datetime-local" name="published_at" id="editArtPublishedAt" class="form-control-admin">
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
+        <button type="button" class="btn-admin btn-admin--secondary" onclick="closeModal('modalArticleEdit')">Batal</button>
+        <button type="submit" class="btn-admin btn-admin--primary">Simpan Perubahan</button>
       </div>
     </form>
   </div>
@@ -1579,6 +1663,19 @@
         .replace(/\s+/g, '-');
       slugInput.value = text;
     });
+  }
+
+  // Populate data ke Modal Edit Artikel
+  function openEditArticle(a) {
+    document.getElementById('editArtId').value = a.id;
+    document.getElementById('editArtTitle').value = a.title;
+    document.getElementById('editArtSlug').value = a.slug;
+    document.getElementById('editArtSummary').value = a.summary || '';
+    document.getElementById('editArtContent').value = a.content || '';
+    document.getElementById('editArtTags').value = a.tags || '';
+    document.getElementById('editArtStatus').value = a.status || 'draft';
+    document.getElementById('editArtPublishedAt').value = a.published_at || '';
+    openModal('modalArticleEdit');
   }
 
   // Populate data ke Modal Edit Produk
