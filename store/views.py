@@ -363,7 +363,7 @@ def login_view(request):
                 user = None
 
         if user:
-            auth_login(request, user)
+            auth_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             return redirect(next_url or 'home')
         else:
             error = 'Email atau password salah.'
@@ -393,7 +393,7 @@ def register_view(request):
                 user.profile.save()
             else:
                 UserProfile.objects.create(user=user, phone_number=no_wa)
-            auth_login(request, user)
+            auth_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             return redirect(next_url or 'home')
 
     return render(request, 'login.html', {
