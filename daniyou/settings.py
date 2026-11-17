@@ -17,7 +17,16 @@ DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 if DEBUG:
     ALLOWED_HOSTS = ['*']
 else:
-    ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,testserver').split(',')
+    allowed = os.environ.get('ALLOWED_HOSTS', '*').split(',')
+    ALLOWED_HOSTS = [h.strip() for h in allowed if h.strip()]
+
+# CSRF Trusted Origins untuk deployment (HTTPS / live domain)
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip() for origin in os.environ.get(
+        'CSRF_TRUSTED_ORIGINS',
+        'http://127.0.0.1:8000,http://localhost:8000,https://*.onrender.com,https://*.pythonanywhere.com'
+    ).split(',') if origin.strip()
+]
 
 # ── Installed Apps ──
 INSTALLED_APPS = [
