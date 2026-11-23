@@ -1,4 +1,5 @@
 import logging
+import html
 from django.conf import settings
 import midtransclient
 
@@ -74,7 +75,7 @@ def create_order_snap_token(order, request=None):
         },
         'item_details': items,
         'customer_details': {
-            'first_name': order.customer_name or 'Pelanggan DaniyouStuff',
+            'first_name': html.unescape(order.customer_name or 'Pelanggan DaniyouStuff'),
             'email': user_email,
             'phone': order.customer_phone or '',
             'billing_address': {
