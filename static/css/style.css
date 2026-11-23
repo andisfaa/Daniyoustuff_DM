@@ -1283,7 +1283,17 @@ p { line-height: 1.7; }
 .filter-tag__remove { cursor: pointer; opacity: 0.7; }
 .filter-tag__remove:hover { opacity: 1; }
 .catalog-results-info { font-size: 0.875rem; color: var(--clr-grey-dark); margin-bottom: 20px; }
-.catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
+.catalog-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+@media (min-width: 640px) {
+  .catalog-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+  }
+}
 .catalog-empty { text-align: center; padding: 80px 24px; }
 .catalog-empty__icon { font-size: 3rem; margin-bottom: 16px; }
 .catalog-empty__title { font-family: var(--font-heading); font-size: 1.4rem; color: var(--clr-brown-dark); margin-bottom: 8px; }
