@@ -616,7 +616,7 @@
               </a>
               {% elif ord.payment_method == 'midtrans' %}
               <span style="background:rgba(46,125,50,0.1);color:#2e7d32;font-size:0.7rem;font-weight:700;padding:2px 7px;border-radius:4px;display:inline-block;margin-top:3px;">
-                ⚡ Midtrans {{ ord.payment_type|default:"Otomatis"|upper }}
+                ⚡ {{ ord.payment_type|default:"Otomatis"|upper }}
               </span>
               {% else %}
               <small style="color:#aaa;">Tanpa Bukti</small>

@@ -135,3 +135,4 @@ def get_snap_token_api(request, order_code):
         'client_key': getattr(settings, 'MIDTRANS_CLIENT_KEY', ''),
         'is_production': getattr(settings, 'MIDTRANS_IS_PRODUCTION', False),
     })
+

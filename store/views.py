@@ -465,10 +465,10 @@ def checkout_view(request):
         customer_name = request.POST.get('customer_name', '').strip()
         customer_phone = request.POST.get('customer_phone', '').strip()
         delivery_method = request.POST.get('delivery_method', 'courier').strip()
-        payment_method = request.POST.get('payment_method', 'midtrans').strip()
         customer_address = request.POST.get('customer_address', '').strip()
         event_date_str = request.POST.get('event_date', '').strip()
         notes = request.POST.get('notes', '').strip()
+        payment_method = 'midtrans'
         payment_proof = request.FILES.get('payment_proof')
 
         # Ongkir: Kurir Rp15.000, Ambil Sendiri Rp0
@@ -481,8 +481,6 @@ def checkout_view(request):
             error = 'Tanggal acara wajib dipilih/diisi.'
         elif delivery_method == 'courier' and not customer_address:
             error = 'Alamat pengantaran wajib diisi jika memilih opsi Diantar via Kurir.'
-        elif payment_method == 'qris' and not payment_proof:
-            error = 'Silakan unggah foto/screenshot bukti transfer QRIS terlebih dahulu jika memilih QRIS manual.'
         else:
             event_date = None
             try:

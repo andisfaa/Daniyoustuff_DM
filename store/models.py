@@ -119,8 +119,8 @@ class Order(models.Model):
     ]
 
     PAYMENT_CHOICES = [
-        ('midtrans', 'Midtrans (QRIS, VA Bank, E-Wallet Otomatis)'),
-        ('qris', 'QRIS Toko (Business Marni)'),
+        ('midtrans', 'QRIS & Pembayaran Digital Otomatis'),
+        ('qris', 'QRIS Manual'),
         ('transfer', 'Transfer Bank Manual'),
         ('whatsapp', 'Pesan via WhatsApp'),
     ]
