@@ -5,4 +5,7 @@ whitenoise==6.8.2
 python-dotenv==1.0.1
 gunicorn==23.0.0
 Pillow==11.0.0
+requests>=2.25.0
+midtransclient==1.4.2
+
 

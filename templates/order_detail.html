@@ -7,10 +7,20 @@
   <div class="account-card" style="text-align:center;padding:40px 32px;">
     <div style="font-size:3.5rem;margin-bottom:12px;">🎉</div>
     <h1 style="font-family:var(--font-heading);font-size:1.8rem;color:var(--clr-brown-dark);margin-bottom:8px;">
-      Pesanan Berhasil Dikirim!
+      {% if order.status == 'confirmed' %}
+        Pembayaran Berhasil Dikonfirmasi!
+      {% else %}
+        Pesanan Berhasil Dibuat!
+      {% endif %}
     </h1>
     <p style="color:var(--clr-grey-dark);font-size:0.95rem;max-width:480px;margin:0 auto 24px;">
-      Terima kasih, <strong>{{ order.customer_name }}</strong>! Bukti pembayaran QRIS Anda telah kami terima dan sedang dalam antrean verifikasi admin.
+      {% if order.status == 'confirmed' %}
+        Terima kasih, <strong>{{ order.customer_name }}</strong>! Pembayaran pesanan Anda telah berhasil terverifikasi. Tim kami segera menyiapkan papan pesanan Anda.
+      {% elif order.payment_method == 'midtrans' %}
+        Terima kasih, <strong>{{ order.customer_name }}</strong>! Silakan selesaikan pembayaran melalui popup Midtrans di bawah ini.
+      {% else %}
+        Terima kasih, <strong>{{ order.customer_name }}</strong>! Bukti pembayaran QRIS Anda telah kami terima dan sedang dalam antrean verifikasi admin.
+      {% endif %}
     </p>
 
     <!-- Order Code Pill -->
@@ -21,7 +31,7 @@
       </div>
       <div style="margin-top:6px;">
         {% if order.status == 'pending' %}
-        <span class="status-badge badge-pending">⏳ Menunggu Verifikasi Pembayaran</span>
+        <span class="status-badge badge-pending">⏳ Menunggu Pembayaran / Verifikasi</span>
         {% elif order.status == 'confirmed' %}
         <span class="status-badge badge-confirmed">✅ Pembayaran Dikonfirmasi</span>
         {% elif order.status == 'processing' %}
@@ -39,6 +49,28 @@
         {% endif %}
       </div>
     </div>
+
+    <!-- ── BLOK PEMBAYARAN MIDTRANS JIKA MASIH PENDING ── -->
+    {% if order.payment_method == 'midtrans' and order.status == 'pending' %}
+    <div id="midtransPayBox" style="background:linear-gradient(135deg, rgba(113,83,48,0.08), rgba(201,168,76,0.14));border:2px solid var(--clr-brown);border-radius:var(--radius-lg);padding:26px 20px;margin-bottom:28px;text-align:center;">
+      <div style="font-size:2.2rem;margin-bottom:6px;">💳</div>
+      <h3 style="font-family:var(--font-heading);font-size:1.35rem;color:var(--clr-brown-dark);margin-bottom:6px;">
+        Selesaikan Pembayaran Anda
+      </h3>
+      <p style="font-size:0.88rem;color:var(--clr-grey-dark);max-width:480px;margin:0 auto 16px;line-height:1.5;">
+        Pilih bayar via <strong>QRIS Otomatis</strong>, <strong>GoPay</strong>, <strong>ShopeePay</strong>, atau <strong>Virtual Account (BCA, Mandiri, BRI, BNI)</strong>. Pembayaran Anda langsung terverifikasi secara instan!
+      </p>
+
+      <button type="button" id="payButton" class="btn btn-primary btn-lg" style="padding:14px 32px;font-size:1.05rem;font-weight:700;box-shadow:0 4px 14px rgba(113,83,48,0.3);cursor:pointer;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        Bayar Sekarang via Midtrans ({{ order.subtotal|format_price }})
+      </button>
+
+      <div style="font-size:0.75rem;color:var(--clr-grey);margin-top:10px;">
+        🔒 Transaksi aman & terenkripsi oleh Midtrans Sandbox Payment Gateway
+      </div>
+    </div>
+    {% endif %}
 
     <!-- Detail Items Box -->
     <div style="text-align:left;background:var(--clr-cream-light);border-radius:var(--radius-lg);padding:24px;margin-bottom:24px;">
@@ -62,6 +94,17 @@
         <div>
           <span style="color:var(--clr-grey-dark)">Biaya Kurir:</span><br>
           <strong>{{ order.shipping_fee|format_price }}</strong>
+        </div>
+        <div>
+          <span style="color:var(--clr-grey-dark)">Metode Pembayaran:</span><br>
+          <strong>{{ order.get_payment_method_display }}</strong>
+          {% if order.payment_type %}
+            <span style="font-size:0.75rem;color:var(--clr-brown);display:block;">Tipe: {{ order.payment_type|upper }}</span>
+          {% endif %}
+        </div>
+        <div>
+          <span style="color:var(--clr-grey-dark)">Waktu Pemesanan:</span><br>
+          <strong>{{ order.created_at|date:"d M Y, H:i" }}</strong>
         </div>
         <div style="grid-column:1 / -1;">
           <span style="color:var(--clr-grey-dark)">Alamat / Lokasi:</span><br>
@@ -121,7 +164,7 @@
       <a href="{% url 'akun' %}" class="btn btn-outline">
         Lihat Semua Pesanan di Akun
       </a>
-      <a href="https://wa.me/6281356942724?text=Halo%20Admin%20DaniyouStuff%2C%20saya%20sudah%20melakukan%20checkout%20QRIS%20dengan%20Kode%20Pesanan%20*{{ order.order_code }}*." target="_blank" class="btn btn-whatsapp">
+      <a href="https://wa.me/6281356942724?text=Halo%20Admin%20DaniyouStuff%2C%20saya%20sudah%20membuat%20pesanan%20dengan%20Kode%20Pesanan%20*{{ order.order_code }}*." target="_blank" class="btn btn-whatsapp">
         Hubungi Admin WA
       </a>
     </div>
@@ -129,3 +172,93 @@
 </div>
 {% endblock %}
 
+{% block scripts %}
+{% if order.payment_method == 'midtrans' and order.status == 'pending' %}
+<script src="{% if midtrans_is_production %}https://app.midtrans.com/snap/snap.js{% else %}https://app.sandbox.midtrans.com/snap/snap.js{% endif %}" data-client-key="{{ midtrans_client_key }}"></script>
+<script>
+let currentSnapToken = "{{ order.snap_token|default:'' }}";
+const orderCode = "{{ order.order_code }}";
+
+function triggerMidtransPay() {
+  const payBtn = document.getElementById('payButton');
+  if (payBtn) {
+    payBtn.disabled = true;
+    payBtn.textContent = 'Memuat Midtrans...';
+  }
+
+  if (!currentSnapToken) {
+    fetch(`/midtrans/token/${orderCode}/`)
+      .then(r => r.json())
+      .then(data => {
+        if (payBtn) {
+          payBtn.disabled = false;
+          payBtn.textContent = 'Bayar Sekarang via Midtrans ({{ order.subtotal|format_price }})';
+        }
+        if (data.snap_token) {
+          currentSnapToken = data.snap_token;
+          launchSnap(data.snap_token);
+        } else {
+          alert('Gagal memuat Snap Token: ' + (data.error || 'Silakan coba lagi'));
+        }
+      })
+      .catch(err => {
+        if (payBtn) {
+          payBtn.disabled = false;
+          payBtn.textContent = 'Bayar Sekarang via Midtrans ({{ order.subtotal|format_price }})';
+        }
+        alert('Terjadi kesalahan jaringan.');
+      });
+  } else {
+    if (payBtn) {
+      payBtn.disabled = false;
+      payBtn.textContent = 'Bayar Sekarang via Midtrans ({{ order.subtotal|format_price }})';
+    }
+    launchSnap(currentSnapToken);
+  }
+}
+
+function launchSnap(token) {
+  window.snap.pay(token, {
+    onSuccess: function(result) {
+      console.log('Payment success:', result);
+      fetch('/midtrans/finish/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order_code: orderCode, result_status: 'success', result: result })
+      }).then(() => {
+        window.location.href = window.location.pathname; // refresh tanpa query param
+      }).catch(() => {
+        window.location.href = window.location.pathname;
+      });
+    },
+    onPending: function(result) {
+      console.log('Payment pending:', result);
+      fetch('/midtrans/finish/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order_code: orderCode, result_status: 'pending', result: result })
+      }).then(() => {
+        window.location.href = window.location.pathname;
+      }).catch(() => {
+        window.location.href = window.location.pathname;
+      });
+    },
+    onError: function(result) {
+      console.error('Payment error:', result);
+      alert('Pembayaran gagal atau dibatalkan.');
+    },
+    onClose: function() {
+      console.log('Customer closed popup.');
+    }
+  });
+}
+
+document.getElementById('payButton')?.addEventListener('click', triggerMidtransPay);
+
+// Jika ada parameter auto_pay di URL, otomatis buka popup snap
+if (window.location.search.includes('auto_pay=1')) {
+  setTimeout(triggerMidtransPay, 700);
+}
+</script>
+{% endif %}
+{% endblock %}

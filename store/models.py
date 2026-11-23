@@ -119,6 +119,7 @@ class Order(models.Model):
     ]
 
     PAYMENT_CHOICES = [
+        ('midtrans', 'Midtrans (QRIS, VA Bank, E-Wallet Otomatis)'),
         ('qris', 'QRIS Toko (Business Marni)'),
         ('transfer', 'Transfer Bank Manual'),
         ('whatsapp', 'Pesan via WhatsApp'),
@@ -142,6 +143,9 @@ class Order(models.Model):
     status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='pending', verbose_name="Status Pesanan")
     payment_method = models.CharField(max_length=20, choices=PAYMENT_CHOICES, default='qris', verbose_name="Metode Pembayaran")
     payment_proof = models.FileField(upload_to='payment_proofs/', blank=True, null=True, verbose_name="Bukti Pembayaran QRIS")
+    snap_token = models.CharField(max_length=255, blank=True, null=True, verbose_name="Midtrans Snap Token")
+    midtrans_transaction_id = models.CharField(max_length=100, blank=True, null=True, verbose_name="ID Transaksi Midtrans")
+    payment_type = models.CharField(max_length=50, blank=True, null=True, verbose_name="Tipe Pembayaran Midtrans")
     admin_notes = models.TextField(blank=True, verbose_name="Catatan Admin")
     wa_message = models.TextField(blank=True, verbose_name="Draft Pesan WhatsApp")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Waktu Pemesanan")

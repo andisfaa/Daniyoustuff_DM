@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static store_extras %}
-{% block title %}Checkout & Pembayaran QRIS — DaniyouStuff.co{% endblock %}
+{% block title %}Checkout & Pembayaran — DaniyouStuff.co{% endblock %}
 
 {% block content %}
 <div class="account-container page-enter">
@@ -10,8 +10,8 @@
         &larr; Kembali ke Keranjang
       </a>
     </div>
-    <h1 class="account-header__title">Checkout & Pembayaran QRIS</h1>
-    <p class="account-header__subtitle">Lengkapi data pemesan, pilih metode pengiriman, dan transfer melalui QRIS resmi toko kami.</p>
+    <h1 class="account-header__title">Checkout & Pembayaran</h1>
+    <p class="account-header__subtitle">Lengkapi data pemesan, pilih metode pengiriman, dan selesaikan pembayaran aman.</p>
   </div>
 
   {% if error %}
@@ -110,40 +110,125 @@
           <textarea class="form-control" name="notes" rows="2" placeholder="Contoh: Nama di papan: Sarah Amelia, S.Ked / Bunga tolong nuansa pastel pink">{{ initial.notes|default:'' }}</textarea>
         </div>
 
-        <!-- Unggah Bukti Pembayaran -->
+        <!-- Pilihan Metode Pembayaran -->
         <h2 style="font-family:var(--font-heading);font-size:1.3rem;color:var(--clr-brown-dark);margin-top:28px;margin-bottom:14px;border-top:1px solid rgba(113,83,48,0.08);padding-top:24px;">
-          2. Unggah Bukti Transfer QRIS <span style="color:var(--clr-error)">*</span>
+          2. Pilih Metode Pembayaran <span style="color:var(--clr-error)">*</span>
         </h2>
-        <p style="font-size:0.85rem;color:var(--clr-grey-dark);margin-bottom:16px;">
-          Setelah melakukan pembayaran via QRIS pada kolom kanan, silakan upload bukti tangkapan layar (screenshot) transfer Anda di sini:
-        </p>
 
-        <div class="proof-upload-zone" id="dropZone">
-          <input type="file" name="payment_proof" id="proofInput" accept="image/png, image/jpeg, image/jpg" required onchange="handleProofPreview(event)">
-          <div id="uploadPrompt">
-            <div style="font-size:2.2rem;margin-bottom:8px;">📸</div>
-            <div style="font-weight:600;color:var(--clr-brown);font-size:0.95rem;">Klik untuk pilih foto bukti transfer</div>
-            <div style="font-size:0.78rem;color:var(--clr-grey);margin-top:4px;">Format JPG, JPEG, PNG (Maks 5 MB)</div>
+        <div class="delivery-options-grid" style="margin-bottom:20px;">
+          <!-- Opsi 1: Midtrans Snap (Otomatis) -->
+          <label class="delivery-option-card selected" id="optPayMidtrans" onclick="selectPaymentMethod('midtrans')">
+            <input type="radio" name="payment_method" value="midtrans" checked>
+            <div class="delivery-option-card__title">
+              <span>💳</span> Bayar Otomatis (Midtrans)
+            </div>
+            <div class="delivery-option-card__desc">
+              QRIS Otomatis, GoPay, ShopeePay, Virtual Account BCA, Mandiri, BNI, BRI.
+            </div>
+            <div class="delivery-option-card__price" style="color:var(--clr-success);font-size:0.75rem;">
+              ⚡ Verifikasi Otomatis
+            </div>
+          </label>
+
+          <!-- Opsi 2: QRIS Manual Toko -->
+          <label class="delivery-option-card" id="optPayQris" onclick="selectPaymentMethod('qris')">
+            <input type="radio" name="payment_method" value="qris">
+            <div class="delivery-option-card__title">
+              <span>📱</span> QRIS Toko (Manual)
+            </div>
+            <div class="delivery-option-card__desc">
+              Transfer scan QRIS toko lalu unggah bukti transfer / screenshot.
+            </div>
+            <div class="delivery-option-card__price" style="color:var(--clr-brown);font-size:0.75rem;">
+              Verifikasi Admin
+            </div>
+          </label>
+        </div>
+
+        <!-- Info Midtrans Box -->
+        <div id="midtransInfoBox" style="background:linear-gradient(135deg,rgba(113,83,48,0.06),rgba(201,168,76,0.08));border:1px solid rgba(113,83,48,0.15);border-radius:var(--radius-md);padding:16px;margin-bottom:20px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+            <span style="font-size:1.5rem;">🔒</span>
+            <div>
+              <strong style="color:var(--clr-brown-dark);font-size:0.92rem;">Pembayaran Cepat & Terverifikasi Otomatis</strong>
+              <div style="font-size:0.78rem;color:var(--clr-grey-dark);">Didukung oleh Midtrans Sandbox Payment Gateway</div>
+            </div>
           </div>
-          <div class="proof-preview-box" id="previewBox">
-            <img src="" id="proofImg" class="proof-preview-img" alt="Pratinjau Bukti">
-            <div style="font-size:0.8rem;color:var(--clr-brown);font-weight:600;margin-top:8px;" id="proofFileName"></div>
-            <div style="font-size:0.75rem;color:var(--clr-grey);">Klik untuk mengganti foto</div>
+          <p style="font-size:0.82rem;color:var(--clr-grey-dark);margin:0;line-height:1.5;">
+            Setelah klik tombol di bawah, jendela pembayaran interaktif Midtrans akan langsung terbuka. Anda dapat memilih bayar via <strong>QRIS</strong>, <strong>Virtual Account Bank</strong>, atau <strong>E-Wallet</strong> tanpa perlu upload foto bukti transfer.
+          </p>
+        </div>
+
+        <!-- Unggah Bukti Pembayaran QRIS Manual (Hanya tampil jika memilih QRIS Manual) -->
+        <div id="qrisUploadSection" style="display:none;margin-bottom:20px;">
+          <h3 style="font-family:var(--font-heading);font-size:1.1rem;color:var(--clr-brown-dark);margin-bottom:8px;">
+            Unggah Bukti Transfer QRIS <span style="color:var(--clr-error)">*</span>
+          </h3>
+          <p style="font-size:0.82rem;color:var(--clr-grey-dark);margin-bottom:12px;">
+            Silakan scan barcode QRIS pada kolom kanan, lalu unggah bukti transfer Anda:
+          </p>
+
+          <div class="proof-upload-zone" id="dropZone">
+            <input type="file" name="payment_proof" id="proofInput" accept="image/png, image/jpeg, image/jpg" onchange="handleProofPreview(event)">
+            <div id="uploadPrompt">
+              <div style="font-size:2.2rem;margin-bottom:8px;">📸</div>
+              <div style="font-weight:600;color:var(--clr-brown);font-size:0.95rem;">Klik untuk pilih foto bukti transfer</div>
+              <div style="font-size:0.78rem;color:var(--clr-grey);margin-top:4px;">Format JPG, JPEG, PNG (Maks 5 MB)</div>
+            </div>
+            <div class="proof-preview-box" id="previewBox">
+              <img src="" id="proofImg" class="proof-preview-img" alt="Pratinjau Bukti">
+              <div style="font-size:0.8rem;color:var(--clr-brown);font-weight:600;margin-top:8px;" id="proofFileName"></div>
+              <div style="font-size:0.75rem;color:var(--clr-grey);">Klik untuk mengganti foto</div>
+            </div>
           </div>
         </div>
 
-        <button type="submit" class="btn btn-primary btn-lg" style="width:100%;justify-content:center;margin-top:24px;padding:14px 24px;font-size:1rem;font-weight:600;">
+        <button type="submit" id="submitBtn" class="btn btn-primary btn-lg" style="width:100%;justify-content:center;margin-top:16px;padding:14px 24px;font-size:1rem;font-weight:600;">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-          Konfirmasi & Kirim Bukti Pembayaran
+          <span id="submitBtnText">Lanjut ke Pembayaran Midtrans</span>
         </button>
-        <p style="text-align:center;font-size:0.78rem;color:var(--clr-grey);margin-top:12px;">
-          🔒 Pembayaran akan diverifikasi oleh Admin toko di dashboard sistem.
+        <p style="text-align:center;font-size:0.78rem;color:var(--clr-grey);margin-top:12px;" id="submitHelpText">
+          🔒 Transaksi aman via Midtrans Sandbox Payment Gateway
         </p>
       </div>
 
-      <!-- ── KOLOM KANAN: BARCODE QRIS & RINGKASAN BELANJA ── -->
+      <!-- ── KOLOM KANAN: INFO PEMBAYARAN & RINGKASAN BELANJA ── -->
       <div>
-        <div class="qris-card">
+        <!-- Card Midtrans (Default Active) -->
+        <div class="qris-card" id="rightMidtransCard">
+          <span class="qris-badge-tag" style="background:var(--clr-brown);color:var(--clr-cream);">MIDTRANS PAYMENT GATEWAY</span>
+          <h3 style="font-family:var(--font-heading);font-size:1.35rem;color:var(--clr-brown-dark);margin:0 0 6px;">
+            Pembayaran Otomatis & Aman
+          </h3>
+          <p style="font-size:0.82rem;color:var(--clr-grey-dark);margin-bottom:16px;">
+            Dukungan metode pembayaran terlengkap dengan konfirmasi instan:
+          </p>
+
+          <div style="background:var(--clr-white);border-radius:var(--radius-md);padding:14px;border:1px solid rgba(113,83,48,0.1);margin-bottom:16px;text-align:left;">
+            <div style="font-weight:700;font-size:0.82rem;color:var(--clr-brown);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.04em;">Metode yang Didukung:</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;font-size:0.78rem;">
+              <span style="background:rgba(113,83,48,0.08);padding:4px 10px;border-radius:4px;font-weight:600;color:var(--clr-brown-dark);">QRIS (Semua Bank/E-Wallet)</span>
+              <span style="background:rgba(113,83,48,0.08);padding:4px 10px;border-radius:4px;font-weight:600;color:var(--clr-brown-dark);">BCA Virtual Account</span>
+              <span style="background:rgba(113,83,48,0.08);padding:4px 10px;border-radius:4px;font-weight:600;color:var(--clr-brown-dark);">Mandiri Bill</span>
+              <span style="background:rgba(113,83,48,0.08);padding:4px 10px;border-radius:4px;font-weight:600;color:var(--clr-brown-dark);">BNI Virtual Account</span>
+              <span style="background:rgba(113,83,48,0.08);padding:4px 10px;border-radius:4px;font-weight:600;color:var(--clr-brown-dark);">BRI Virtual Account</span>
+              <span style="background:rgba(113,83,48,0.08);padding:4px 10px;border-radius:4px;font-weight:600;color:var(--clr-brown-dark);">GoPay / ShopeePay</span>
+            </div>
+          </div>
+
+          <div class="qris-steps">
+            <strong>Cara Kerja:</strong>
+            <ol>
+              <li>Lengkapi data pemesan dan pengiriman di sebelah kiri.</li>
+              <li>Klik tombol <strong>Lanjut ke Pembayaran Midtrans</strong>.</li>
+              <li>Jendela popup Snap akan terbuka untuk memilih cara bayar.</li>
+              <li>Selesaikan pembayaran dan status pesanan langsung otomatis aktif!</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- Card QRIS Manual Toko (Hidden by default) -->
+        <div class="qris-card" id="rightQrisCard" style="display:none;">
           <span class="qris-badge-tag">QRIS RESMI TOKO</span>
           <h3 style="font-family:var(--font-heading);font-size:1.35rem;color:var(--clr-brown-dark);margin:0 0 6px;">
             Pindai QRIS untuk Membayar
@@ -172,51 +257,53 @@
               <li>Simpan bukti transfer dan unggah pada formulir di sebelah kiri.</li>
             </ol>
           </div>
+        </div>
 
-          <!-- Ringkasan Item Pesanan -->
-          <div style="text-align:left;border-top:1px dashed rgba(113,83,48,0.15);padding-top:18px;margin-top:18px;">
-            <h4 style="font-family:var(--font-heading);font-size:1.05rem;color:var(--clr-brown-dark);margin-bottom:12px;">
-              Ringkasan Pesanan ({{ cart_items|length }} Item)
-            </h4>
+        <!-- Ringkasan Item Pesanan -->
+        <div class="qris-card" style="margin-top:20px;text-align:left;">
+          <h4 style="font-family:var(--font-heading);font-size:1.05rem;color:var(--clr-brown-dark);margin-bottom:12px;">
+            Ringkasan Pesanan ({{ cart_items|length }} Item)
+          </h4>
 
-            {% for itm in cart_items %}
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:0.85rem;">
-              <div>
-                <strong style="color:var(--clr-brown-dark)">{{ itm.name }}</strong> &times; {{ itm.qty|default:1 }}
-                {% if itm.options %}
-                <div style="font-size:0.75rem;color:var(--clr-grey-dark)">
-                  {% for k, v in itm.options.items %}
-                    {% if v %}{{ k|option_label }}: {{ v }}{% if not forloop.last %}, {% endif %}{% endif %}
-                  {% endfor %}
-                </div>
-                {% endif %}
+          {% for itm in cart_items %}
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:0.85rem;">
+            <div>
+              <strong style="color:var(--clr-brown-dark)">{{ itm.name }}</strong> &times; {{ itm.qty|default:1 }}
+              {% if itm.options %}
+              <div style="font-size:0.75rem;color:var(--clr-grey-dark)">
+                {% for k, v in itm.options.items %}
+                  {% if v %}{{ k|option_label }}: {{ v }}{% if not forloop.last %}, {% endif %}{% endif %}
+                {% endfor %}
               </div>
-              <div style="font-weight:600;color:var(--clr-brown);white-space:nowrap;margin-left:12px;">
-                {{ itm.price|format_price }}
-              </div>
+              {% endif %}
             </div>
-            {% endfor %}
-
-            <!-- Subtotal & Ongkir Breakdown -->
-            <div style="border-top:1px dashed rgba(113,83,48,0.12);margin-top:10px;padding-top:10px;">
-              <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.85rem;color:var(--clr-grey-dark);margin-bottom:6px;">
-                <span>Subtotal Produk:</span>
-                <span style="font-weight:600;color:var(--clr-brown-dark)">{{ items_subtotal|format_price }}</span>
-              </div>
-              <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.85rem;color:var(--clr-grey-dark);">
-                <span>Biaya Pengiriman:</span>
-                <span style="font-weight:600;color:var(--clr-brown)" id="shippingDisplay">+Rp 15.000</span>
-              </div>
-            </div>
-
-            <div style="border-top:1px solid rgba(113,83,48,0.12);margin-top:12px;padding-top:12px;display:flex;justify-content:space-between;align-items:center;">
-              <span style="font-weight:600;font-size:0.95rem;color:var(--clr-brown-dark)">Total Tagihan:</span>
-              <span style="font-family:var(--font-heading);font-weight:700;font-size:1.35rem;color:var(--clr-brown)" id="totalDisplay">
-                {{ total|format_price }}
-              </span>
+            <div style="font-weight:600;color:var(--clr-brown);white-space:nowrap;margin-left:12px;">
+              {{ itm.price|format_price }}
             </div>
           </div>
+          {% endfor %}
+
+          <!-- Subtotal & Ongkir Breakdown -->
+          <div style="border-top:1px dashed rgba(113,83,48,0.12);margin-top:10px;padding-top:10px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.85rem;color:var(--clr-grey-dark);margin-bottom:6px;">
+              <span>Subtotal Produk:</span>
+              <span style="font-weight:600;color:var(--clr-brown-dark)">{{ items_subtotal|format_price }}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.85rem;color:var(--clr-grey-dark);">
+              <span>Biaya Pengiriman:</span>
+              <span style="font-weight:600;color:var(--clr-brown)" id="shippingDisplay">+Rp 15.000</span>
+            </div>
+          </div>
+
+          <!-- Total Akhir -->
+          <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(113,83,48,0.15);margin-top:12px;padding-top:12px;">
+            <span style="font-family:var(--font-heading);font-weight:700;color:var(--clr-brown-dark);font-size:1.05rem;">Total Akhir:</span>
+            <span style="font-family:var(--font-heading);font-weight:700;font-size:1.35rem;color:var(--clr-brown);" id="totalDisplay">
+              {{ total|format_price }}
+            </span>
+          </div>
         </div>
+
       </div>
     </div>
   </form>
@@ -230,7 +317,11 @@ let currentShipping = 15000;
 
 function selectDelivery(method, fee) {
   currentShipping = fee;
-  document.querySelectorAll('.delivery-option-card').forEach(c => c.classList.remove('selected'));
+  document.querySelectorAll('.delivery-option-card').forEach(c => {
+    if (c.id === 'optCourier' || c.id === 'optPickup') {
+      c.classList.remove('selected');
+    }
+  });
 
   const optCourier = document.getElementById('optCourier');
   const optPickup = document.getElementById('optPickup');
@@ -258,7 +349,44 @@ function selectDelivery(method, fee) {
 
   document.getElementById('shippingDisplay').textContent = formattedFee;
   document.getElementById('totalDisplay').textContent = formattedTotal;
-  document.getElementById('qrisTotalStep').textContent = formattedTotal;
+  const qrisStep = document.getElementById('qrisTotalStep');
+  if (qrisStep) qrisStep.textContent = formattedTotal;
+}
+
+function selectPaymentMethod(method) {
+  const optMidtrans = document.getElementById('optPayMidtrans');
+  const optQris = document.getElementById('optPayQris');
+  const midtransInfoBox = document.getElementById('midtransInfoBox');
+  const qrisUploadSection = document.getElementById('qrisUploadSection');
+  const proofInput = document.getElementById('proofInput');
+  const submitBtnText = document.getElementById('submitBtnText');
+  const submitHelpText = document.getElementById('submitHelpText');
+  const rightQrisCard = document.getElementById('rightQrisCard');
+  const rightMidtransCard = document.getElementById('rightMidtransCard');
+
+  if (method === 'midtrans') {
+    optMidtrans.classList.add('selected');
+    optMidtrans.querySelector('input').checked = true;
+    optQris.classList.remove('selected');
+    midtransInfoBox.style.display = 'block';
+    qrisUploadSection.style.display = 'none';
+    if (proofInput) proofInput.required = false;
+    submitBtnText.textContent = 'Lanjut ke Pembayaran Midtrans';
+    submitHelpText.textContent = '🔒 Transaksi aman via Midtrans Sandbox Payment Gateway';
+    if (rightQrisCard) rightQrisCard.style.display = 'none';
+    if (rightMidtransCard) rightMidtransCard.style.display = 'block';
+  } else {
+    optQris.classList.add('selected');
+    optQris.querySelector('input').checked = true;
+    optMidtrans.classList.remove('selected');
+    midtransInfoBox.style.display = 'none';
+    qrisUploadSection.style.display = 'block';
+    if (proofInput) proofInput.required = true;
+    submitBtnText.textContent = 'Konfirmasi & Kirim Bukti Pembayaran';
+    submitHelpText.textContent = '🔒 Pembayaran akan diverifikasi oleh Admin toko di dashboard sistem.';
+    if (rightQrisCard) rightQrisCard.style.display = 'block';
+    if (rightMidtransCard) rightMidtransCard.style.display = 'none';
+  }
 }
 
 function handleProofPreview(event) {

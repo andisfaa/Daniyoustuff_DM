@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 from . import admin_views
+from . import midtrans_views
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -38,6 +39,11 @@ urlpatterns = [
     path('akun/update', views.profile_update_view),
     path('order/<str:order_code>/', views.order_detail_view, name='order_detail'),
     path('order/<str:order_code>', views.order_detail_view),
+
+    # ── MIDTRANS PAYMENT GATEWAY ──
+    path('midtrans/notification/', midtrans_views.midtrans_notification_view, name='midtrans_notification'),
+    path('midtrans/finish/', midtrans_views.midtrans_finish_view, name='midtrans_finish'),
+    path('midtrans/token/<str:order_code>/', midtrans_views.get_snap_token_api, name='midtrans_token'),
     path('img/<path:filename>', views.serve_img, name='serve_img'),
 
     # ── PANEL ADMIN IN-WEBSITE (NATIVE UI/UX) ──────────────────
