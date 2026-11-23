@@ -1,0 +1,1362 @@
+[
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$fNycq8iOMrOLvo4j6Crzb3$XE3PwgUXZG8nVr7ftkC2PwYiFvXMq4zMWgSGC2ua2GY=",
+    "last_login": "2026-11-23T12:29:53.924Z",
+    "is_superuser": true,
+    "username": "evodia",
+    "first_name": "Sifaa",
+    "last_name": "",
+    "email": "evodia@daniyoustuff.co",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-11-10T02:24:44.240Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "0vbpfdqo0070gyco5y4y31fb3kl3ezkr",
+  "fields": {
+    "session_data": ".eJxVj8tOwzAQRX8l3LVbxQlNUy-LECugUoW6QKgaP9JYdeJgO4uq6r8jAwtYzpw7V2euONKc-uMcTThaDYF7sL87Sepsxgxi8sEsf-e4fBzIutfwFk0YaTDPXhu3_Q3_a-gp9hCoeLfSvK3qlVR1VTWd1mXdUas1p1p2603L61W7MVLzrqmlUbwkvTFrWRvVqjWBQVFIEO9XfItONNG4kLOjtJjseAZDFoHALpNim0mx910qdj94ClYZiKYsy5LhM10gOIOfkvVjhLjme4LA3iZbvMyhI22do77YL7djBMOscnNOGEcDpeJg46zpDgyJxtOJXH60rJoF54uqBIP0FPSDdz5A4NDbZIon52O84MZgBzplX9w-bl8nV38l:1xQUtB:rX-R0FKqY6k3ALbaxFlBTOZnwHuFFalzhw9xn9T0pLc",
+    "expire_date": "2026-11-16T19:18:45.727Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "48dvljzuf4fkqjtug1jmfw8f4z4zdwx9",
+  "fields": {
+    "session_data": ".eJxVjD0LwjAURf_Lm6WY6GvSjoKjODmXl7wbWuwHJO0k_ncROuh4zzncF3WyrX23FeRuUGqJ6fDLgsQn5q8o65JR7btU10mG8Z4fBXmWCbdFMV72-O-hl9JTSw1i7Tm4WB9hk7KPdVK2zoI1qfFnw55PVsBIJw4GQRp1FjBWmuQivT9U7TlP:1xQV6Y:kn0uDy304vqLChH_ATDIHJ-ynMQg1UMphxIb5yAA4Qw",
+    "expire_date": "2026-11-16T19:32:34.479Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "4ywft12jh0p6tcxo99v0utq9l53dr0w0",
+  "fields": {
+    "session_data": ".eJwdzLEOgjAUheFXac5cTMvAcEc2F2PC4GAcTgChSSkIt4MhvLvB_f_-HS1XhTx3JE49BHcuTKbOkQqLZQ1tD6mcc87io1-It5gXDXPaIH9FCJqgwdzy-mYXYuRomkudNljk9vydRR85Uc3j2uSO4wgLZRoGRghKV1aF94X3OI7X8QMLUS8a:1xQUlL:qy3m5WlbL9VezSdC4TiPLHMnrFfWpNWZ8gwHNM06GvQ",
+    "expire_date": "2026-11-16T19:10:39.845Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "5fj9bw38wux2fkt9ov0ivrl9u8x4xinj",
+  "fields": {
+    "session_data": ".eJxVjLsKg0AQRf9lapHZ2XUfloGUIVWqEGR0R5T4gF2tQv49BCyS8p5zuC9oeN-GZs-SmjFCDQaKX9Zy95TlK_K2JimPncvzzON0TbcsaeFZLmuU6XTEfw8D5wFq6HVka8lETdFVzmnlEYmUZtUG7A1VntBWvUO0KrDVwkokRNRCXoxAAR2nDer74_0BPsA6Uw:1xQUtx:ymvGxC2d01CxC-Zggdzfkkwz9WBCbFNZloAAtq_remk",
+    "expire_date": "2026-11-16T19:19:33.516Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "6ir6whzso5dugho5j6oib6q3no3z7tmr",
+  "fields": {
+    "session_data": ".eJxVjMsKwjAQRf9l1lKSpklMl4JLceU6zGQmtNgHJO1K_HcRutDlPedwXxBx34a4VylxZOjBwemXEaanLF9Rt7VIc-zaXGccp3t5VCkLznJbWabLEf89DFgH6IG9MWQTMWdqvVXKB-Mya-qMyYG0ZcdOdKswc8j-3OnAloxPTiQRWnh_AFI4OT4:1xSB86:FPXlyl6w1y8cBbnsSLvZ3hNffD2XaXcFPDJwJIaLNXg",
+    "expire_date": "2026-11-21T10:37:06.523Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "6ix7vlbdhb75tmim23fggk6invk3hhcp",
+  "fields": {
+    "session_data": ".eJxVjLsKwkAQRf9l6hA2cXaym1KwFCsrkTC7M5JgHrCbVOK_i5BCy3vO4b6g423tuy1r6gaBFhCKXxY4PnX-irwuSct95_I08TBe0jVrmnnS8yI6Hvf476Hn3EMLVDUPjoi1NbUjJQ5kKTqxlUMMhCQhMIpl42NjSSr2fKA6GInOR_JQQOS0Qnu7vz9wEztZ:1xQUtY:Kki69UYzkWKjTedin4HvHUVheX_L7J6y0x4N8EES074",
+    "expire_date": "2026-11-16T19:19:08.325Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "7fitc5inlkaxyxd06wffrnf06pfr2dlw",
+  "fields": {
+    "session_data": ".eJxVj81qwzAQhF_FzNkOkp3YsY6BHnpoGzClh1LCylrHIvJPZflQQt69qM0lx9lvdpi5oiUfoD6vsAYKM800Znp1FLLZjhekGGlgKBwjSQ6RJM3UheT4j2dvW4YqhRAixXf4gZIppjnYaVygrvGfoNDYYJPX1XdkrHPUJ83mMC5IsbYxOTrY0UAh-XhuVkN9jxSBxvOZHBRykZeZlJmUuKWwA51jKdy-UpxoDf1pXdif_jbkeLhpai88RrCEyfPmrpfN00DWvfn3hX3c-DIZdoe7-SGhp6WHwq6kmgsyvNVGFoUxeieqlmutpRBlXWlZS9Jyz9uqLDsyvOeWDOWSd6Ksij1uv-JUdcc:1xQUlA:PbkZieBw6wDXHGaFjsh0J_RAgVhnG9LUdHs9dtrMULo",
+    "expire_date": "2026-11-16T19:10:28.835Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "7uc717uedwm41zru4hl5l35t0mqfm9cd",
+  "fields": {
+    "session_data": ".eJxVjMsKwjAQRf9l1lKSpklMl4JLceU6zGQmtNgHJO1K_HcRutDlPedwXxBx34a4VylxZOjBwemXEaanLF9Rt7VIc-zaXGccp3t5VCkLznJbWabLEf89DFgH6IG9MWQTMWdqvVXKB-Mya-qMyYG0ZcdOdKswc8j-3OnAloxPTiQRWnh_AFI4OT4:1xSByz:WMvo8JaXDFrP9RdxCmF__Ka9kH-HRvu3P-NxUYSTQrw",
+    "expire_date": "2026-11-21T11:31:45.530Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "9r89bfd7bfx2k4018tqqnoa0fju0z6rp",
+  "fields": {
+    "session_data": ".eJxVjMEOgjAQBf9lz6YBbNmWo3e_odnXroKaklA4Gf_dkHDQ68xk3hRlW8e4VV3ilGmgtqPTL4Skp5bd5IeU-2zSXNZlgtkTc9hqrnPW1-Vo_waj1JEGYqtn7q23CMzSJYgGdjdpsnrYHJRV0Gb0qXGdt6kPcKyAA1oEb-nzBRoxONc:1xSoaP:HR3WfrLs3itkv9pz6w2AwEGx8l5kNxbsn0TYdgAVXlY",
+    "expire_date": "2026-11-23T04:44:57.335Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "9xc5znbpxwpznfpih248mgu0dc0fleoi",
+  "fields": {
+    "session_data": ".eJxVjMsKwjAQRf9l1lKSpklMl4JLceU6zGQmtNgHJO1K_HcRutDlPedwXxBx34a4VylxZOjBwemXEaanLF9Rt7VIc-zaXGccp3t5VCkLznJbWabLEf89DFgH6IG9MWQTMWdqvVXKB-Mya-qMyYG0ZcdOdKswc8j-3OnAloxPTiQRWnh_AFI4OT4:1xSo9p:yDCkfHLpeWY6AOUT5ZPcYxum502TiUv_OtbwQ2PgtR4",
+    "expire_date": "2026-11-23T04:17:29.065Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "bkz0m1ydmc0hwz688dddwvr8477nrqkw",
+  "fields": {
+    "session_data": ".eJxVjMsKwjAQRf9l1lKSpklMl4JLceU6zGQmtNgHJO1K_HcRutDlPedwXxBx34a4VylxZOjBwemXEaanLF9Rt7VIc-zaXGccp3t5VCkLznJbWabLEf89DFgH6IG9MWQTMWdqvVXKB-Mya-qMyYG0ZcdOdKswc8j-3OnAloxPTiQRWnh_AFI4OT4:1xSC6v:Iv2Ybh97tr6aCI6MMS7XdVWGFizbvTcx5r3tZ3Au_XQ",
+    "expire_date": "2026-11-21T11:39:57.831Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "d5c5pr4e4k9giedzh3ayzpj1a4yf6xhp",
+  "fields": {
+    "session_data": ".eJxVjMsKwjAQRf9l1lKSpklMl4JLceU6zGQmtNgHJO1K_HcRutDlPedwXxBx34a4VylxZOjBwemXEaanLF9Rt7VIc-zaXGccp3t5VCkLznJbWabLEf89DFgH6IG9MWQTMWdqvVXKB-Mya-qMyYG0ZcdOdKswc8j-3OnAloxPTiQRWnh_AFI4OT4:1xSBjT:CuI7AND3qotJN14J0kRpQ_V3jkXg-NwA6HU5wDM9txo",
+    "expire_date": "2026-11-21T11:15:43.267Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "dp44w1q4378czqyv1lynlqxaeujsbuz5",
+  "fields": {
+    "session_data": ".eJxVjLsOgkAQAP9la3O554KU9nwD2b3dE9RAwkFl_HdDQqHtzGTeMNC-jcNedR0mgQ6cg8svZMpPnQ8jD5rvi8nLvK0TmyMxp62mX0Rft7P9G4xUR-jAild0LkdO1AqJL6iNFhYbmpyjTcErE5eWC4Z0FUxEMXnfYMQcgsLnCywTOLQ:1xSoaC:zmOoUG5suf-NBrY8o_3EuxuDMcHgvfT6Ej0HKG150gc",
+    "expire_date": "2026-11-23T04:44:44.212Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "haayafphtwbyb50yhcp3y9iv9xatqxsr",
+  "fields": {
+    "session_data": ".eJxVjMsKwjAQRf9l1lLSaTIZuxS6FFeuw8QkpNgHJO1K_HcRutDlPedwX-Bk37LbayxuDNADwemXeXk84_IVdVtLbI5dm2GWcbqVe41lkTle1xCnyxH_PWSpGXpIKmGbBDVbDD4pz8haGK0lH9AmFBPOLZIlFNZEga1RYrDrSHznGd4fMNo3vQ:1xSAFJ:9--vSxRKZDWgn8wVuLxOYfsDIUXcPizanUQZxLs0k1A",
+    "expire_date": "2026-11-21T09:40:29.005Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "hcdekzck7maa39x4qvdfi0rcflm6z1gy",
+  "fields": {
+    "session_data": ".eJxVjLsOgzAMAP_FcxWBA47L2J1vQDZOGtqKSDymqv9eITG0693p3jDIvuVhX-MyTAYdEFx-mcr4jPMh7CHzvbixzNsyqTsSd9rV9cXi63a2f4Msa4YOUpWwToINBzRNlTJyI4whkBqGhNLatUYKhMINkXFoK2nRexL1yvD5AtYpNxk:1xVTBB:PRdas-PymTNi4pJP_qgyH3KS73Dawkk0YCbLrlhgJak",
+    "expire_date": "2026-11-30T12:29:53.940Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "hjw61kkqdq0i2863bei4fakh5thvd3jb",
+  "fields": {
+    "session_data": ".eJxVjDsKwzAQBe-ydTCSvVpZLgMuQ6rUYmWtkYk_INlVyN1DwEVSvpnhvcDzsSd_FMl-itCBg8svCzw8Zf2Ksm9ZqnOXql94mu_5USSvvMhtizJfz_jvIXFJ0AGydcTGNFoNSMpw0IEaawyywzpYq6lFjqGJQjRExJFVW7NWTqil0cH7AxqzN74:1xSC6v:lvdNRylHw5y8zzdXTHy0nXoHL50n1ZOjNMWS38NfqUQ",
+    "expire_date": "2026-11-21T11:39:57.667Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "hpcenw2nb4o9f63n5u4ud81c17rhkkf6",
+  "fields": {
+    "session_data": ".eJxVjD0LgzAURf_Lm4sYYzR1LHQsnTqH916uKPUDEp1K_3spOLTjPedwXxR434awZ6QwRurI0-mXCesTy1fkbU0ojp2L68zjdE-PjLTwjNsaMV2O-O9h4DxQR-ykYThTchQbbW9Me1YBpKwBrw2r9E7FsqnYA95aqRupFG0sK8DS-wOA6To7:1xSBz0:HmbTUqumSmuhmDUwNzHfDNIkxtzA10ehf8ykzyvraKg",
+    "expire_date": "2026-11-21T11:31:46.138Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "j0ki6c4pdjrap24bk02w8c9bt3qa819s",
+  "fields": {
+    "session_data": ".eJxVjMsKwjAQRf9l1lKSpklMl4JLceU6zGQmtNgHJO1K_HcRutDlPedwXxBx34a4VylxZOjBwemXEaanLF9Rt7VIc-zaXGccp3t5VCkLznJbWabLEf89DFgH6IG9MWQTMWdqvVXKB-Mya-qMyYG0ZcdOdKswc8j-3OnAloxPTiQRWnh_AFI4OT4:1xSAVp:f72G-84Hvyyhud0oGxn0j9FdZaml1Ki8pNWARYkqDpA",
+    "expire_date": "2026-11-21T09:57:33.689Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "l6xf63loqpcbdjeqd30u4e65h4adn5xv",
+  "fields": {
+    "session_data": ".eJxVjMsKwjAQRf9l1lLSaTIZuxS6FFeuw8QkpNgHJO1K_HcRutDlPedwX-Bk37LbayxuDNADwemXeXk84_IVdVtLbI5dm2GWcbqVe41lkTle1xCnyxH_PWSpGXpIKmGbBDVbDD4pz8haGK0lH9AmFBPOLZIlFNZEga1RYrDrSHznGd4fMNo3vQ:1xSnwT:BZGSdnEEMQZ0sCmeSI1sEqJfmhqWD16gvXDHQaTU2xY",
+    "expire_date": "2026-11-23T04:03:41.699Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "lupowzemabjkfsqj3unw5otuu4sbkyzh",
+  "fields": {
+    "session_data": ".eJxVjMsKwjAQRf9l1lKSpklMl4JLceU6zGQmtNgHJO1K_HcRutDlPedwXxBx34a4VylxZOjBwemXEaanLF9Rt7VIc-zaXGccp3t5VCkLznJbWabLEf89DFgH6IG9MWQTMWdqvVXKB-Mya-qMyYG0ZcdOdKswc8j-3OnAloxPTiQRWnh_AFI4OT4:1xSBcO:zxrdSlFsN0UFH2B9yZwGzwwlIlszyPVO38j7gdjqKpE",
+    "expire_date": "2026-11-21T11:08:24.477Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "n8pukwbvzwddry7txlkudyd9bhoa80wt",
+  "fields": {
+    "session_data": ".eJxVjMEOgjAQBf9lz6YBbNmWo3e_odnXroKaklA4Gf_dkHDQ68xk3hRlW8e4VV3ilGmgtqPTL4Skp5bd5IeU-2zSXNZlgtkTc9hqrnPW1-Vo_waj1JEGYqtn7q23CMzSJYgGdjdpsnrYHJRV0Gb0qXGdt6kPcKyAA1oEb-nzBRoxONc:1xSoaO:PxB9zGgz-JYxHJYIi2WAl2V2BVZ7RONybxl1FOImONo",
+    "expire_date": "2026-11-23T04:44:56.886Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "t7ngyk7dgbzwhwcd3mb3owo9i7cjtfsw",
+  "fields": {
+    "session_data": ".eJxVjMsKwjAQRf9l1lKSpklMl4JLceU6zGQmtNgHJO1K_HcRutDlPedwXxBx34a4VylxZOjBwemXEaanLF9Rt7VIc-zaXGccp3t5VCkLznJbWabLEf89DFgH6IG9MWQTMWdqvVXKB-Mya-qMyYG0ZcdOdKswc8j-3OnAloxPTiQRWnh_AFI4OT4:1xSAxh:9UG7CT7Rp_P4yYisVegomoM2lKutz1Lhel5m11W9gss",
+    "expire_date": "2026-11-21T10:26:21.554Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "tptl70qfyolnoas2yzrr3gcp7ni8e4b1",
+  "fields": {
+    "session_data": ".eJxVjMsKwjAQRf9l1lKSpklMl4JLceU6zGQmtNgHJO1K_HcRutDlPedwXxBx34a4VylxZOjBwemXEaanLF9Rt7VIc-zaXGccp3t5VCkLznJbWabLEf89DFgH6IG9MWQTMWdqvVXKB-Mya-qMyYG0ZcdOdKswc8j-3OnAloxPTiQRWnh_AFI4OT4:1xSBYJ:az_dL2EecKMXw-QZxbxrj1JStoqYGqimq_d4ZYxt-h0",
+    "expire_date": "2026-11-21T11:04:11.996Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "w5y7pgcx5hq2hxhf7eomm5ja1etwylab",
+  "fields": {
+    "session_data": ".eJxVjD0LwjAURf_Lm6WY6GvSjoKjODmXl7wbWuwHJO0k_ncROuh4zzncF3WyrX23FeRuUGqJ6fDLgsQn5q8o65JR7btU10mG8Z4fBXmWCbdFMV72-O-hl9JTSw1i7Tm4WB9hk7KPdVK2zoI1qfFnw55PVsBIJw4GQRp1FjBWmuQivT9U7TlP:1xSCVF:argwxPZCpeENVYkwjPkS9NqYeJSaAyeNGa4d64KuHco",
+    "expire_date": "2026-11-21T12:05:05.299Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "wf0uzkmnfxoph31dly19pgfduqjh7d7j",
+  "fields": {
+    "session_data": ".eJxVjD0LwjAURf_Lm6WY6GvSjoKjODmXl7wbWuwHJO0k_ncROuh4zzncF3WyrX23FeRuUGqJ6fDLgsQn5q8o65JR7btU10mG8Z4fBXmWCbdFMV72-O-hl9JTSw1i7Tm4WB9hk7KPdVK2zoI1qfFnw55PVsBIJw4GQRp1FjBWmuQivT9U7TlP:1xQV6L:3YdTA7G_dQ9q4mGMsJl_Iq1QzJcYoSOGQnkfBvyDNEs",
+    "expire_date": "2026-11-16T19:32:21.546Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "x9j0xj70mcx0oenbd5nk8d7tz2ua9wup",
+  "fields": {
+    "session_data": ".eJxVjDsKwzAQBe-ydTCSvVpZLgMuQ6rUYmWtkYk_INlVyN1DwEVSvpnhvcDzsSd_FMl-itABweWXBR6esn5F2bcs1blL1S88zff8KJJXXuS2RZmvZ_z3kLgk6ADZOmJjGq0GJGU46ECNNQbZYR2s1dQix9BEIRoi4siqrVkrJ9TS6OD9ARjlN7s:1xQbXQ:u-rCd-zhmIBJUNSAQLmhO3oVl611b-BwDU4ycyIdpcg",
+    "expire_date": "2026-11-17T02:24:44.364Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "y23uy6crd46jpl7m3b2o10cf2a2yd4k2",
+  "fields": {
+    "session_data": ".eJxVjD0LwjAURf_Lm6WY6GvSjoKjODmXl7wbWuwHJO0k_ncROuh4zzncF3WyrX23FeRuUGqJ6fDLgsQn5q8o65JR7btU10mG8Z4fBXmWCbdFMV72-O-hl9JTSw1i7Tm4WB9hk7KPdVK2zoI1qfFnw55PVsBIJw4GQRp1FjBWmuQivT9U7TlP:1xSD0p:OuKC5zq9tvHHiFwk0xhBiMrSq6gGGRzQwKLx4N5S3eE",
+    "expire_date": "2026-11-21T12:37:43.084Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "zf544quj49cvz28xmmk7ered576bjjdu",
+  "fields": {
+    "session_data": ".eJxVjLsKg0AQRf9l6iDrruuOlgHLkCq1zLgzKPEBu1qF_HsIWCTlPedwX9DTsY_9kSX1U4QWHFx-GdPwlPUr8r4lKc6di26hab6nR5a00iK3Lcp8PeO_h5HyCC2It6ZiwiAcdcCoXFvnQqNovChLSd6jwbpSJovWucgm2BIbVuKACu8PWR85Eg:1xQUoA:zqja72tH8HK4uiYfSN-Ehmdar4bttlL7ZlDOUKq2oOk",
+    "expire_date": "2026-11-16T19:13:34.197Z"
+  }
+},
+{
+  "model": "store.userprofile",
+  "pk": 6,
+  "fields": {
+    "user": [
+      "evodia"
+    ],
+    "phone_number": "082347048779",
+    "address": "Lorong Mu'min No.7, Jl.Sungai Saddang Baru",
+    "created_at": "2026-11-10T02:24:44.249Z",
+    "updated_at": "2026-11-23T12:29:53.932Z"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 3,
+  "fields": {
+    "id_slug": "papan-bulat",
+    "name": "Papan Bulat",
+    "category": "Papan Bulat",
+    "size": "60×60 cm",
+    "price": 60000,
+    "shape": "round",
+    "description": "Papan bulat elegan dengan berbagai pilihan warna dekorasi. Cocok untuk momen wisuda, semhas, ulang tahun, dan acara spesial lainnya.",
+    "features": [
+      "Frame kayu premium",
+      "Dekorasi bunga segar",
+      "Custom teks & nama",
+      "Dapat difoto dari semua sisi"
+    ],
+    "gradient": "linear-gradient(135deg, #FFB6C1 0%, #FFDDE1 100%)",
+    "image": "products/bulat-1.jpeg",
+    "available": true,
+    "stock": 5,
+    "created_at": "2026-11-10T02:16:10.924Z",
+    "updated_at": "2026-11-14T11:58:57.477Z"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 4,
+  "fields": {
+    "id_slug": "papan-kubah",
+    "name": "Papan Kubah",
+    "category": "Papan Kubah",
+    "size": "50×70 cm",
+    "price": 60000,
+    "shape": "dome",
+    "description": "Papan kubah unik dengan bentuk melengkung yang elegan. Tersedia dalam berbagai pilihan warna yang menawan untuk segala momen istimewamu.",
+    "features": [
+      "Bentuk kubah unik",
+      "Dekorasi bunga segar",
+      "Custom teks & nama",
+      "Tinggi & menawan"
+    ],
+    "gradient": "linear-gradient(135deg, #1565C0 0%, #42A5F5 100%)",
+    "image": "products/kubah-1.jpeg",
+    "available": true,
+    "stock": 5,
+    "created_at": "2026-11-10T02:16:11.289Z",
+    "updated_at": "2026-11-14T11:58:57.485Z"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 5,
+  "fields": {
+    "id_slug": "flowerbox",
+    "name": "Flowerbox",
+    "category": "Flowerbox",
+    "size": "Custom",
+    "price": 70000,
+    "shape": "box",
+    "description": "Flowerbox eksklusif dengan bunga premium dan kotak elegan. Tersedia dalam model Portrait dan Landscape.",
+    "features": [
+      "Kotak floral premium",
+      "Bunga segar pilihan",
+      "Ribbon dekoratif",
+      "Cocok untuk hadiah"
+    ],
+    "gradient": "linear-gradient(135deg, #E91E8C 0%, #FF6B9D 50%, #FFB6C1 100%)",
+    "image": "products/flowerbox-1.jpeg",
+    "available": true,
+    "stock": 4,
+    "created_at": "2026-11-10T02:16:11.706Z",
+    "updated_at": "2026-11-14T11:58:57.489Z"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 6,
+  "fields": {
+    "id_slug": "papan-besar",
+    "name": "Papan Besar",
+    "category": "Papan Besar",
+    "size": "80×60 cm",
+    "price": 100000,
+    "shape": "large",
+    "description": "Papan besar premium ukuran 80×60 cm yang megah dan impactful. Sempurna untuk wisuda dan acara besar.",
+    "features": [
+      "Ukuran extra large",
+      "Frame premium",
+      "Dekorasi bunga mewah",
+      "Impactful & megah"
+    ],
+    "gradient": "linear-gradient(135deg, #0D47A1 0%, #1565C0 50%, #1976D2 100%)",
+    "image": "products/besar-1.jpeg",
+    "available": true,
+    "stock": 2,
+    "created_at": "2026-11-10T02:16:11.819Z",
+    "updated_at": "2026-11-14T11:58:57.493Z"
+  }
+},
+{
+  "model": "store.productimage",
+  "pk": 1,
+  "fields": {
+    "product": 3,
+    "image": "products/bulat-1.jpeg",
+    "path": "",
+    "order": 0
+  }
+},
+{
+  "model": "store.productimage",
+  "pk": 2,
+  "fields": {
+    "product": 3,
+    "image": "products/bulat-2.jpeg",
+    "path": "",
+    "order": 1
+  }
+},
+{
+  "model": "store.productimage",
+  "pk": 3,
+  "fields": {
+    "product": 3,
+    "image": "products/bulat-3.jpeg",
+    "path": "",
+    "order": 2
+  }
+},
+{
+  "model": "store.productimage",
+  "pk": 4,
+  "fields": {
+    "product": 3,
+    "image": "products/bulat-4.jpeg",
+    "path": "",
+    "order": 3
+  }
+},
+{
+  "model": "store.productimage",
+  "pk": 5,
+  "fields": {
+    "product": 3,
+    "image": "products/bulat-5.jpeg",
+    "path": "",
+    "order": 4
+  }
+},
+{
+  "model": "store.productimage",
+  "pk": 6,
+  "fields": {
+    "product": 3,
+    "image": "products/bulat-6.jpeg",
+    "path": "",
+    "order": 5
+  }
+},
+{
+  "model": "store.productimage",
+  "pk": 7,
+  "fields": {
+    "product": 3,
+    "image": "products/bulat-7.jpeg",
+    "path": "",
+    "order": 6
+  }
+},
+{
+  "model": "store.productimage",
+  "pk": 8,
+  "fields": {
+    "product": 3,
+    "image": "products/bulat-8.jpeg",
+    "path": "",
+    "order": 7
+  }
+},
+{
+  "model": "store.productimage",
+  "pk": 9,
+  "fields": {
+    "product": 3,
+    "image": "products/bulat-9.jpeg",
+    "path": "",
+    "order": 8
+  }
+},
+{
+  "model": "store.productimage",
+  "pk": 10,
+  "fields": {
+    "product": 4,
+    "image": "products/kubah-1.jpeg",
+    "path": "",
+    "order": 0
+  }
+},
+{
+  "model": "store.productimage",
+  "pk": 11,
+  "fields": {
+    "product": 4,
+    "image": "products/kubah-2.jpeg",
+    "path": "",
+    "order": 1
+  }
+},
+{
+  "model": "store.productimage",
+  "pk": 12,
+  "fields": {
+    "product": 4,
+    "image": "products/kubah-3.jpeg",
+    "path": "",
+    "order": 2
+  }
+},
+{
+  "model": "store.productimage",
+  "pk": 13,
+  "fields": {
+    "product": 4,
+    "image": "products/kubah-4.jpeg",
+    "path": "",
+    "order": 3
+  }
+},
+{
+  "model": "store.productimage",
+  "pk": 14,
+  "fields": {
+    "product": 4,
+    "image": "products/kubah-5.jpeg",
+    "path": "",
+    "order": 4
+  }
+},
+{
+  "model": "store.productimage",
+  "pk": 15,
+  "fields": {
+    "product": 4,
+    "image": "products/kubah-6.jpeg",
+    "path": "",
+    "order": 5
+  }
+},
+{
+  "model": "store.productimage",
+  "pk": 16,
+  "fields": {
+    "product": 4,
+    "image": "products/kubah-7.jpeg",
+    "path": "",
+    "order": 6
+  }
+},
+{
+  "model": "store.productimage",
+  "pk": 17,
+  "fields": {
+    "product": 4,
+    "image": "products/kubah-8.jpeg",
+    "path": "",
+    "order": 7
+  }
+},
+{
+  "model": "store.productimage",
+  "pk": 18,
+  "fields": {
+    "product": 4,
+    "image": "products/kubah-9.jpeg",
+    "path": "",
+    "order": 8
+  }
+},
+{
+  "model": "store.productimage",
+  "pk": 19,
+  "fields": {
+    "product": 5,
+    "image": "products/flowerbox-1.jpeg",
+    "path": "",
+    "order": 0
+  }
+},
+{
+  "model": "store.productimage",
+  "pk": 20,
+  "fields": {
+    "product": 5,
+    "image": "products/flowerbox-2.jpeg",
+    "path": "",
+    "order": 1
+  }
+},
+{
+  "model": "store.productimage",
+  "pk": 21,
+  "fields": {
+    "product": 6,
+    "image": "products/besar-1.jpeg",
+    "path": "",
+    "order": 0
+  }
+},
+{
+  "model": "store.productimage",
+  "pk": 22,
+  "fields": {
+    "product": 6,
+    "image": "products/besar-2.jpeg",
+    "path": "",
+    "order": 1
+  }
+},
+{
+  "model": "store.productimage",
+  "pk": 23,
+  "fields": {
+    "product": 6,
+    "image": "products/besar-3.jpeg",
+    "path": "",
+    "order": 2
+  }
+},
+{
+  "model": "store.productimage",
+  "pk": 24,
+  "fields": {
+    "product": 6,
+    "image": "products/besar-4.jpeg",
+    "path": "",
+    "order": 3
+  }
+},
+{
+  "model": "store.productvariant",
+  "pk": 1,
+  "fields": {
+    "product": 3,
+    "key": "boardColor",
+    "label": "",
+    "value": "Putih",
+    "extra_price": 0
+  }
+},
+{
+  "model": "store.productvariant",
+  "pk": 2,
+  "fields": {
+    "product": 3,
+    "key": "boardColor",
+    "label": "",
+    "value": "Abu",
+    "extra_price": 0
+  }
+},
+{
+  "model": "store.productvariant",
+  "pk": 3,
+  "fields": {
+    "product": 3,
+    "key": "decorColor",
+    "label": "",
+    "value": "Pink Soft",
+    "extra_price": 0
+  }
+},
+{
+  "model": "store.productvariant",
+  "pk": 4,
+  "fields": {
+    "product": 3,
+    "key": "decorColor",
+    "label": "",
+    "value": "Pink Merah",
+    "extra_price": 0
+  }
+},
+{
+  "model": "store.productvariant",
+  "pk": 5,
+  "fields": {
+    "product": 3,
+    "key": "decorColor",
+    "label": "",
+    "value": "Kuning",
+    "extra_price": 0
+  }
+},
+{
+  "model": "store.productvariant",
+  "pk": 6,
+  "fields": {
+    "product": 3,
+    "key": "decorColor",
+    "label": "",
+    "value": "Biru",
+    "extra_price": 0
+  }
+},
+{
+  "model": "store.productvariant",
+  "pk": 7,
+  "fields": {
+    "product": 3,
+    "key": "decorColor",
+    "label": "",
+    "value": "Merah",
+    "extra_price": 0
+  }
+},
+{
+  "model": "store.productvariant",
+  "pk": 8,
+  "fields": {
+    "product": 3,
+    "key": "decorColor",
+    "label": "",
+    "value": "Biru Hijau",
+    "extra_price": 0
+  }
+},
+{
+  "model": "store.productvariant",
+  "pk": 9,
+  "fields": {
+    "product": 3,
+    "key": "decorColor",
+    "label": "",
+    "value": "Merah Hit",
+    "extra_price": 0
+  }
+},
+{
+  "model": "store.productvariant",
+  "pk": 10,
+  "fields": {
+    "product": 3,
+    "key": "decorColor",
+    "label": "",
+    "value": "Biru Navy",
+    "extra_price": 0
+  }
+},
+{
+  "model": "store.productvariant",
+  "pk": 11,
+  "fields": {
+    "product": 3,
+    "key": "decorColor",
+    "label": "",
+    "value": "Biru Elektrik",
+    "extra_price": 0
+  }
+},
+{
+  "model": "store.productvariant",
+  "pk": 12,
+  "fields": {
+    "product": 3,
+    "key": "layout",
+    "label": "",
+    "value": "Lurus",
+    "extra_price": 0
+  }
+},
+{
+  "model": "store.productvariant",
+  "pk": 13,
+  "fields": {
+    "product": 3,
+    "key": "layout",
+    "label": "",
+    "value": "Miring",
+    "extra_price": 0
+  }
+},
+{
+  "model": "store.productvariant",
+  "pk": 14,
+  "fields": {
+    "product": 4,
+    "key": "warna",
+    "label": "",
+    "value": "Biru Navy",
+    "extra_price": 0
+  }
+},
+{
+  "model": "store.productvariant",
+  "pk": 15,
+  "fields": {
+    "product": 4,
+    "key": "warna",
+    "label": "",
+    "value": "Pink Biru",
+    "extra_price": 0
+  }
+},
+{
+  "model": "store.productvariant",
+  "pk": 16,
+  "fields": {
+    "product": 4,
+    "key": "warna",
+    "label": "",
+    "value": "Pink Soft",
+    "extra_price": 0
+  }
+},
+{
+  "model": "store.productvariant",
+  "pk": 17,
+  "fields": {
+    "product": 4,
+    "key": "warna",
+    "label": "",
+    "value": "Kuning",
+    "extra_price": 0
+  }
+},
+{
+  "model": "store.productvariant",
+  "pk": 18,
+  "fields": {
+    "product": 4,
+    "key": "warna",
+    "label": "",
+    "value": "Pink Merah",
+    "extra_price": 0
+  }
+},
+{
+  "model": "store.productvariant",
+  "pk": 19,
+  "fields": {
+    "product": 4,
+    "key": "warna",
+    "label": "",
+    "value": "Biru",
+    "extra_price": 0
+  }
+},
+{
+  "model": "store.productvariant",
+  "pk": 20,
+  "fields": {
+    "product": 4,
+    "key": "warna",
+    "label": "",
+    "value": "Ungu",
+    "extra_price": 0
+  }
+},
+{
+  "model": "store.productvariant",
+  "pk": 21,
+  "fields": {
+    "product": 4,
+    "key": "warna",
+    "label": "",
+    "value": "Pink",
+    "extra_price": 0
+  }
+},
+{
+  "model": "store.productvariant",
+  "pk": 22,
+  "fields": {
+    "product": 4,
+    "key": "warna",
+    "label": "",
+    "value": "Merah Pink",
+    "extra_price": 0
+  }
+},
+{
+  "model": "store.productvariant",
+  "pk": 23,
+  "fields": {
+    "product": 4,
+    "key": "warna",
+    "label": "",
+    "value": "Biru Soft",
+    "extra_price": 0
+  }
+},
+{
+  "model": "store.productvariant",
+  "pk": 24,
+  "fields": {
+    "product": 4,
+    "key": "warna",
+    "label": "",
+    "value": "Merah",
+    "extra_price": 0
+  }
+},
+{
+  "model": "store.productvariant",
+  "pk": 25,
+  "fields": {
+    "product": 4,
+    "key": "warna",
+    "label": "",
+    "value": "Biru Hijau",
+    "extra_price": 0
+  }
+},
+{
+  "model": "store.productvariant",
+  "pk": 26,
+  "fields": {
+    "product": 4,
+    "key": "warna",
+    "label": "",
+    "value": "Biru Pink",
+    "extra_price": 0
+  }
+},
+{
+  "model": "store.productvariant",
+  "pk": 27,
+  "fields": {
+    "product": 4,
+    "key": "layout",
+    "label": "",
+    "value": "Lurus",
+    "extra_price": 0
+  }
+},
+{
+  "model": "store.productvariant",
+  "pk": 28,
+  "fields": {
+    "product": 4,
+    "key": "layout",
+    "label": "",
+    "value": "Miring",
+    "extra_price": 0
+  }
+},
+{
+  "model": "store.productvariant",
+  "pk": 29,
+  "fields": {
+    "product": 5,
+    "key": "warna",
+    "label": "",
+    "value": "Pink",
+    "extra_price": 0
+  }
+},
+{
+  "model": "store.productvariant",
+  "pk": 30,
+  "fields": {
+    "product": 5,
+    "key": "warna",
+    "label": "",
+    "value": "Merah Pink",
+    "extra_price": 0
+  }
+},
+{
+  "model": "store.productvariant",
+  "pk": 31,
+  "fields": {
+    "product": 5,
+    "key": "model",
+    "label": "",
+    "value": "Potrait",
+    "extra_price": 0
+  }
+},
+{
+  "model": "store.productvariant",
+  "pk": 32,
+  "fields": {
+    "product": 5,
+    "key": "model",
+    "label": "",
+    "value": "Landscape",
+    "extra_price": 15000
+  }
+},
+{
+  "model": "store.productvariant",
+  "pk": 33,
+  "fields": {
+    "product": 6,
+    "key": "warna",
+    "label": "",
+    "value": "Navy",
+    "extra_price": 0
+  }
+},
+{
+  "model": "store.productvariant",
+  "pk": 34,
+  "fields": {
+    "product": 6,
+    "key": "warna",
+    "label": "",
+    "value": "Merah Hitam Putih",
+    "extra_price": 0
+  }
+},
+{
+  "model": "store.testimonial",
+  "pk": 1,
+  "fields": {
+    "name": "Aliya Putri",
+    "event": "Wisuda S1 UNHAS 2024",
+    "text": "Papan bulat pinknya cantik banget! Semua foto jadi aesthetic. Highly recommend!",
+    "rating": 5,
+    "avatar_color": "#FFB6C1",
+    "order": 1,
+    "is_active": true,
+    "created_at": "2026-11-09T19:30:15.526Z"
+  }
+},
+{
+  "model": "store.testimonial",
+  "pk": 2,
+  "fields": {
+    "name": "Rizky Amalia",
+    "event": "Seminar Hasil UMI 2024",
+    "text": "Pelayanan ramah dan profesional. Papan kubahnya elegan, antar tepat waktu. Puas!",
+    "rating": 5,
+    "avatar_color": "#1565C0",
+    "order": 2,
+    "is_active": true,
+    "created_at": "2026-11-09T19:30:15.530Z"
+  }
+},
+{
+  "model": "store.testimonial",
+  "pk": 3,
+  "fields": {
+    "name": "Siti Nurhaliza",
+    "event": "Ulang Tahun ke-22",
+    "text": "Flowerboxnya BAGUS BANGET! Teman-teman langsung tanya sewa di mana haha.",
+    "rating": 5,
+    "avatar_color": "#E91E8C",
+    "order": 3,
+    "is_active": true,
+    "created_at": "2026-11-09T19:30:15.534Z"
+  }
+},
+{
+  "model": "store.testimonial",
+  "pk": 4,
+  "fields": {
+    "name": "Farhan Maulana",
+    "event": "Wisuda S2 UNM 2024",
+    "text": "Papan besar navy-nya megah. Foto bareng keluarga jadi sangat berkesan. Terima kasih!",
+    "rating": 5,
+    "avatar_color": "#0D47A1",
+    "order": 4,
+    "is_active": true,
+    "created_at": "2026-11-09T19:30:15.538Z"
+  }
+},
+{
+  "model": "store.galleryitem",
+  "pk": 1,
+  "fields": {
+    "title": "Papan Bulat - Momen Pelanggan",
+    "category": "Papan Bulat",
+    "image": "gallery/bulat-1.jpeg",
+    "static_path": "",
+    "order": 1,
+    "is_active": true,
+    "created_at": "2026-11-10T02:16:16.424Z"
+  }
+},
+{
+  "model": "store.galleryitem",
+  "pk": 2,
+  "fields": {
+    "title": "Papan Bulat - Momen Pelanggan",
+    "category": "Papan Bulat",
+    "image": "gallery/bulat-2.jpeg",
+    "static_path": "",
+    "order": 2,
+    "is_active": true,
+    "created_at": "2026-11-10T02:16:16.431Z"
+  }
+},
+{
+  "model": "store.galleryitem",
+  "pk": 3,
+  "fields": {
+    "title": "Papan Bulat - Momen Pelanggan",
+    "category": "Papan Bulat",
+    "image": "gallery/bulat-3.jpeg",
+    "static_path": "",
+    "order": 3,
+    "is_active": true,
+    "created_at": "2026-11-10T02:16:16.444Z"
+  }
+},
+{
+  "model": "store.galleryitem",
+  "pk": 4,
+  "fields": {
+    "title": "Papan Bulat - Momen Pelanggan",
+    "category": "Papan Bulat",
+    "image": "gallery/bulat-4.jpeg",
+    "static_path": "",
+    "order": 4,
+    "is_active": true,
+    "created_at": "2026-11-10T02:16:16.465Z"
+  }
+},
+{
+  "model": "store.galleryitem",
+  "pk": 5,
+  "fields": {
+    "title": "Papan Bulat - Momen Pelanggan",
+    "category": "Papan Bulat",
+    "image": "gallery/bulat-5.jpeg",
+    "static_path": "",
+    "order": 5,
+    "is_active": true,
+    "created_at": "2026-11-10T02:16:16.481Z"
+  }
+},
+{
+  "model": "store.galleryitem",
+  "pk": 6,
+  "fields": {
+    "title": "Papan Bulat - Momen Pelanggan",
+    "category": "Papan Bulat",
+    "image": "gallery/bulat-6.jpeg",
+    "static_path": "",
+    "order": 6,
+    "is_active": true,
+    "created_at": "2026-11-10T02:16:16.488Z"
+  }
+},
+{
+  "model": "store.galleryitem",
+  "pk": 7,
+  "fields": {
+    "title": "Papan Bulat - Momen Pelanggan",
+    "category": "Papan Bulat",
+    "image": "gallery/bulat-7.jpeg",
+    "static_path": "",
+    "order": 7,
+    "is_active": true,
+    "created_at": "2026-11-10T02:16:16.504Z"
+  }
+},
+{
+  "model": "store.galleryitem",
+  "pk": 8,
+  "fields": {
+    "title": "Papan Bulat - Momen Pelanggan",
+    "category": "Papan Bulat",
+    "image": "gallery/bulat-8.jpeg",
+    "static_path": "",
+    "order": 8,
+    "is_active": true,
+    "created_at": "2026-11-10T02:16:16.520Z"
+  }
+},
+{
+  "model": "store.galleryitem",
+  "pk": 9,
+  "fields": {
+    "title": "Papan Bulat - Momen Pelanggan",
+    "category": "Papan Bulat",
+    "image": "gallery/bulat-9.jpeg",
+    "static_path": "",
+    "order": 9,
+    "is_active": true,
+    "created_at": "2026-11-10T02:16:16.542Z"
+  }
+},
+{
+  "model": "store.galleryitem",
+  "pk": 10,
+  "fields": {
+    "title": "Papan Kubah - Momen Pelanggan",
+    "category": "Papan Kubah",
+    "image": "gallery/kubah-1.jpeg",
+    "static_path": "",
+    "order": 10,
+    "is_active": true,
+    "created_at": "2026-11-10T02:16:16.549Z"
+  }
+},
+{
+  "model": "store.galleryitem",
+  "pk": 11,
+  "fields": {
+    "title": "Papan Kubah - Momen Pelanggan",
+    "category": "Papan Kubah",
+    "image": "gallery/kubah-2.jpeg",
+    "static_path": "",
+    "order": 11,
+    "is_active": true,
+    "created_at": "2026-11-10T02:16:16.561Z"
+  }
+},
+{
+  "model": "store.galleryitem",
+  "pk": 12,
+  "fields": {
+    "title": "Papan Kubah - Momen Pelanggan",
+    "category": "Papan Kubah",
+    "image": "gallery/kubah-3.jpeg",
+    "static_path": "",
+    "order": 12,
+    "is_active": true,
+    "created_at": "2026-11-10T02:16:16.578Z"
+  }
+},
+{
+  "model": "store.galleryitem",
+  "pk": 13,
+  "fields": {
+    "title": "Papan Kubah - Momen Pelanggan",
+    "category": "Papan Kubah",
+    "image": "gallery/kubah-4.jpeg",
+    "static_path": "",
+    "order": 13,
+    "is_active": true,
+    "created_at": "2026-11-10T02:16:16.594Z"
+  }
+},
+{
+  "model": "store.galleryitem",
+  "pk": 14,
+  "fields": {
+    "title": "Papan Kubah - Momen Pelanggan",
+    "category": "Papan Kubah",
+    "image": "gallery/kubah-5.jpeg",
+    "static_path": "",
+    "order": 14,
+    "is_active": true,
+    "created_at": "2026-11-10T02:16:16.616Z"
+  }
+},
+{
+  "model": "store.galleryitem",
+  "pk": 15,
+  "fields": {
+    "title": "Papan Kubah - Momen Pelanggan",
+    "category": "Papan Kubah",
+    "image": "gallery/kubah-6.jpeg",
+    "static_path": "",
+    "order": 15,
+    "is_active": true,
+    "created_at": "2026-11-10T02:16:16.626Z"
+  }
+},
+{
+  "model": "store.galleryitem",
+  "pk": 16,
+  "fields": {
+    "title": "Papan Kubah - Momen Pelanggan",
+    "category": "Papan Kubah",
+    "image": "gallery/kubah-7.jpeg",
+    "static_path": "",
+    "order": 16,
+    "is_active": true,
+    "created_at": "2026-11-10T02:16:16.638Z"
+  }
+},
+{
+  "model": "store.galleryitem",
+  "pk": 17,
+  "fields": {
+    "title": "Papan Kubah - Momen Pelanggan",
+    "category": "Papan Kubah",
+    "image": "gallery/kubah-8.jpeg",
+    "static_path": "",
+    "order": 17,
+    "is_active": true,
+    "created_at": "2026-11-10T02:16:16.657Z"
+  }
+},
+{
+  "model": "store.galleryitem",
+  "pk": 18,
+  "fields": {
+    "title": "Papan Kubah - Momen Pelanggan",
+    "category": "Papan Kubah",
+    "image": "gallery/kubah-9.jpeg",
+    "static_path": "",
+    "order": 18,
+    "is_active": true,
+    "created_at": "2026-11-10T02:16:16.674Z"
+  }
+},
+{
+  "model": "store.galleryitem",
+  "pk": 19,
+  "fields": {
+    "title": "Flowerbox - Momen Pelanggan",
+    "category": "Flowerbox",
+    "image": "gallery/flowerbox-1.jpeg",
+    "static_path": "",
+    "order": 19,
+    "is_active": true,
+    "created_at": "2026-11-10T02:16:16.682Z"
+  }
+},
+{
+  "model": "store.galleryitem",
+  "pk": 20,
+  "fields": {
+    "title": "Flowerbox - Momen Pelanggan",
+    "category": "Flowerbox",
+    "image": "gallery/flowerbox-2.jpeg",
+    "static_path": "",
+    "order": 20,
+    "is_active": true,
+    "created_at": "2026-11-10T02:16:16.698Z"
+  }
+},
+{
+  "model": "store.galleryitem",
+  "pk": 21,
+  "fields": {
+    "title": "Papan Besar - Momen Pelanggan",
+    "category": "Papan Besar",
+    "image": "gallery/besar-1.jpeg",
+    "static_path": "",
+    "order": 21,
+    "is_active": true,
+    "created_at": "2026-11-10T02:16:16.716Z"
+  }
+},
+{
+  "model": "store.galleryitem",
+  "pk": 22,
+  "fields": {
+    "title": "Papan Besar - Momen Pelanggan",
+    "category": "Papan Besar",
+    "image": "gallery/besar-2.jpeg",
+    "static_path": "",
+    "order": 22,
+    "is_active": true,
+    "created_at": "2026-11-10T02:16:16.736Z"
+  }
+},
+{
+  "model": "store.galleryitem",
+  "pk": 23,
+  "fields": {
+    "title": "Papan Besar - Momen Pelanggan",
+    "category": "Papan Besar",
+    "image": "gallery/besar-3.jpeg",
+    "static_path": "",
+    "order": 23,
+    "is_active": true,
+    "created_at": "2026-11-10T02:16:16.753Z"
+  }
+},
+{
+  "model": "store.galleryitem",
+  "pk": 24,
+  "fields": {
+    "title": "Papan Besar - Momen Pelanggan",
+    "category": "Papan Besar",
+    "image": "gallery/besar-4.jpeg",
+    "static_path": "",
+    "order": 24,
+    "is_active": true,
+    "created_at": "2026-11-10T02:16:16.761Z"
+  }
+},
+{
+  "model": "store.articletag",
+  "pk": 1,
+  "fields": {
+    "name": "Wisuda",
+    "slug": "wisuda"
+  }
+},
+{
+  "model": "store.articletag",
+  "pk": 2,
+  "fields": {
+    "name": "Tips",
+    "slug": "tips"
+  }
+},
+{
+  "model": "store.articletag",
+  "pk": 3,
+  "fields": {
+    "name": "Akrilik",
+    "slug": "akrilik"
+  }
+}
+]
