@@ -93,7 +93,7 @@ WSGI_APPLICATION = 'daniyou.wsgi.application'
 DATABASE_URL = os.environ.get('DATABASE_URL', '')
 
 if DATABASE_URL:
-    # Production: Neon PostgreSQL
+    # Production: Neon PostgreSQL (Vercel)
     DATABASES = {
         'default': dj_database_url.config(
             default=DATABASE_URL,
@@ -101,6 +101,14 @@ if DATABASE_URL:
             conn_health_checks=True,
             ssl_require=True,
         )
+    }
+elif os.environ.get('VERCEL'):
+    # Di Vercel tapi belum ada DATABASE_URL — pakai SQLite sementara
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': '/tmp/db.sqlite3',
+        }
     }
 else:
     # Lokal: coba MySQL dulu, fallback SQLite
