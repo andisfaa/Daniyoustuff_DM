@@ -5,6 +5,11 @@
 
 {% block head %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+  if (typeof tinymce === 'undefined') {
+    document.write('<script src="https://cdn.jsdelivr.net/npm/tinymce@6.8.2/tinymce.min.js"><\/script>');
+  }
+</script>
 <style>
   /* ── ADMIN DASHBOARD STYLES ──────────────────────────────── */
   .admin-modal__box--article {
@@ -16,6 +21,7 @@
   .tox-tinymce {
     border-radius: 12px !important;
     border-color: #ebd9c0 !important;
+    width: 100% !important;
   }
   .admin-wrap {
     max-width: 1240px;
@@ -1677,10 +1683,22 @@
   }
 
   // Inisialisasi TinyMCE Rich Text Editor untuk Artikel
-  if (typeof tinymce !== 'undefined') {
+  function initTinyMCEForArticle(selector, initialContent) {
+    if (typeof tinymce === 'undefined') return;
+    var el = document.querySelector(selector);
+    if (!el) return;
+
+    var existing = tinymce.get(el.id);
+    if (existing) {
+      if (initialContent !== undefined) {
+        existing.setContent(initialContent);
+      }
+      return;
+    }
+
     tinymce.init({
-      selector: '#artContent, #editArtContent',
-      height: 400,
+      selector: selector,
+      height: 380,
       menubar: 'edit insert format table tools',
       plugins: [
         'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
@@ -1712,6 +1730,13 @@
           reader.readAsDataURL(file);
         };
         input.click();
+      },
+      setup: function(editor) {
+        editor.on('init', function() {
+          if (initialContent !== undefined) {
+            editor.setContent(initialContent);
+          }
+        });
       }
     });
   }
@@ -1722,13 +1747,14 @@
     document.getElementById('artSlug').value = '';
     var sum = document.getElementById('artSummary');
     if (sum) sum.value = '';
-    if (typeof tinymce !== 'undefined' && tinymce.get('artContent')) {
-      tinymce.get('artContent').setContent('');
-    } else {
-      var c = document.getElementById('artContent');
-      if (c) c.value = '';
-    }
+    var c = document.getElementById('artContent');
+    if (c) c.value = '';
+
     openModal('modalArticle');
+
+    setTimeout(function() {
+      initTinyMCEForArticle('#artContent', '');
+    }, 60);
   }
 
   // Populate data ke Modal Edit Artikel
@@ -1737,16 +1763,27 @@
     document.getElementById('editArtTitle').value = a.title;
     document.getElementById('editArtSlug').value = a.slug;
     document.getElementById('editArtSummary').value = a.summary || '';
-    if (typeof tinymce !== 'undefined' && tinymce.get('editArtContent')) {
-      tinymce.get('editArtContent').setContent(a.content || '');
-    } else {
-      document.getElementById('editArtContent').value = a.content || '';
-    }
+    document.getElementById('editArtContent').value = a.content || '';
     document.getElementById('editArtTags').value = a.tags || '';
     document.getElementById('editArtStatus').value = a.status || 'draft';
     document.getElementById('editArtPublishedAt').value = a.published_at || '';
+
     openModal('modalArticleEdit');
+
+    setTimeout(function() {
+      initTinyMCEForArticle('#editArtContent', a.content || '');
+    }, 60);
   }
+
+  // Pre-load on DOM ready
+  document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+      if (typeof tinymce !== 'undefined') {
+        initTinyMCEForArticle('#artContent', '');
+        initTinyMCEForArticle('#editArtContent', '');
+      }
+    }, 100);
+  });
 
   // Form submit handler to trigger TinyMCE save and validation
   document.querySelectorAll('form').forEach(function(form) {
