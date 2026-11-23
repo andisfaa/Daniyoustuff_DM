@@ -26,14 +26,29 @@ def _path_of(img):
         return ""
     if isinstance(img, str):
         return img
+    # Jika ImageField / FieldFile - cek dulu apakah nilainya sudah full URL
+    if hasattr(img, 'name'):
+        name = str(img.name or '')
+        if name.startswith(('http://', 'https://')):
+            return name
     if hasattr(img, 'url'):
-        return img.url
+        try:
+            url = img.url
+            return url
+        except Exception:
+            return str(img)
     for field in ("image", "image_path", "path", "url", "filename"):
         val = getattr(img, field, None)
         if val:
+            val_str = str(val)
+            if val_str.startswith(('http://', 'https://')):
+                return val_str
             if hasattr(val, 'url'):
-                return val.url
-            return str(val)
+                try:
+                    return val.url
+                except Exception:
+                    pass
+            return val_str
     return ""
 
 
@@ -45,11 +60,20 @@ def product_img(product):
     if isinstance(product, str):
         return img_static(product)
 
+    # Cek method get_image_url() dulu (handle Cloudinary full URL)
+    if hasattr(product, 'get_image_url'):
+        url = product.get_image_url()
+        if url:
+            return url
+
     # Cek ImageField utama langsung jika instance Product
     if hasattr(product, "image") and product.image:
+        val = str(product.image)
+        if val.startswith(('http://', 'https://')):
+            return val
         try:
             return product.image.url
-        except ValueError:
+        except Exception:
             pass
 
     images = getattr(product, "images", None)

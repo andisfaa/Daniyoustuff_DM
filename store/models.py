@@ -64,13 +64,32 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
+    def get_image_url(self):
+        """Return URL gambar utama - handle full Cloudinary URL atau path relatif."""
+        if not self.image:
+            return ''
+        val = str(self.image)
+        if val.startswith(('http://', 'https://')):
+            return val
+        try:
+            return self.image.url
+        except Exception:
+            return val
+
     def get_images(self):
         imgs = []
         if self.image:
-            imgs.append(self.image.url)
+            imgs.append(self.get_image_url())
         for pi in self.images.all():
             if pi.image:
-                imgs.append(pi.image.url)
+                val = str(pi.image)
+                if val.startswith(('http://', 'https://')):
+                    imgs.append(val)
+                else:
+                    try:
+                        imgs.append(pi.image.url)
+                    except Exception:
+                        imgs.append(val)
             elif pi.path:
                 imgs.append(pi.path)
         return imgs
@@ -238,7 +257,13 @@ class GalleryItem(models.Model):
 
     def get_src(self):
         if self.image:
-            return self.image.url
+            val = str(self.image)
+            if val.startswith(('http://', 'https://')):
+                return val
+            try:
+                return self.image.url
+            except Exception:
+                return val
         if self.static_path:
             return self.static_path
         return ''
