@@ -31,7 +31,8 @@ pyvenv.cfg
 *.log
 local_settings.py
 db.sqlite3
-staticfiles/
+# staticfiles dikecualikan dari gitignore agar Vercel bisa serve CSS/JS
+# staticfiles/
 media/*
 !media/products/
 !media/gallery/
