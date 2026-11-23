@@ -20,35 +20,50 @@ def multiply(value, arg):
         return 0
 
 
+def _clean_url(url):
+    """Bersihkan URL jika terjadi double-prefixed Cloudinary storage."""
+    if not url:
+        return ""
+    url_str = str(url).strip()
+    if "https%3A" in url_str or "http%3A" in url_str or "https:/" in url_str:
+        import urllib.parse
+        unquoted = urllib.parse.unquote(url_str)
+        idx = unquoted.rfind("https://")
+        if idx == -1:
+            idx = unquoted.rfind("http://")
+        if idx != -1:
+            return unquoted[idx:]
+    return url_str
+
+
 def _path_of(img):
     """Ambil URL/path gambar dari string atau objek gambar/ImageField."""
     if not img:
         return ""
     if isinstance(img, str):
-        return img
+        return _clean_url(img)
     # Jika ImageField / FieldFile - cek dulu apakah nilainya sudah full URL
     if hasattr(img, 'name'):
         name = str(img.name or '')
         if name.startswith(('http://', 'https://')):
-            return name
+            return _clean_url(name)
     if hasattr(img, 'url'):
         try:
-            url = img.url
-            return url
+            return _clean_url(img.url)
         except Exception:
-            return str(img)
+            return _clean_url(str(img))
     for field in ("image", "image_path", "path", "url", "filename"):
         val = getattr(img, field, None)
         if val:
             val_str = str(val)
             if val_str.startswith(('http://', 'https://')):
-                return val_str
+                return _clean_url(val_str)
             if hasattr(val, 'url'):
                 try:
-                    return val.url
+                    return _clean_url(val.url)
                 except Exception:
                     pass
-            return val_str
+            return _clean_url(val_str)
     return ""
 
 

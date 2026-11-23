@@ -54,10 +54,14 @@ def generate_wa_message(cart_items, subtotal):
 def get_product_images(product):
     imgs = []
     if product.image:
-        imgs.append(product.image.url)
+        imgs.append(product.get_image_url() if hasattr(product, 'get_image_url') else product.image.url)
     for pi in product.images.all():
         if pi.image:
-            imgs.append(pi.image.url)
+            val = str(pi.image)
+            if val.startswith(('http://', 'https://')):
+                imgs.append(val)
+            else:
+                imgs.append(pi.image.url)
         elif pi.path:
             imgs.append(pi.path)
     return imgs
@@ -91,7 +95,7 @@ def _to_product_dict(p):
         'gradient': p.gradient,
         'available': p.available,
         'stock': p.stock,
-        'image': p.image.url if p.image else (imgs[0] if imgs else ''),
+        'image': p.get_image_url() if hasattr(p, 'get_image_url') else (p.image.url if p.image else (imgs[0] if imgs else '')),
         'images': imgs,
         'variants': _build_variants(p),
     }
@@ -105,11 +109,13 @@ def home(request):
     for slug in ('papan-bulat', 'papan-kubah', 'flowerbox'):
         p = all_qs.filter(id_slug=slug).first()
         if p and p.image:
-            hero_boards.append({'url': p.image.url, 'name': p.name})
+            url = p.get_image_url() if hasattr(p, 'get_image_url') else p.image.url
+            hero_boards.append({'url': url, 'name': p.name})
     if len(hero_boards) < 3:
         for p in all_qs:
-            if p.image and not any(h['url'] == p.image.url for h in hero_boards):
-                hero_boards.append({'url': p.image.url, 'name': p.name})
+            url = p.get_image_url() if hasattr(p, 'get_image_url') else (p.image.url if p.image else '')
+            if url and not any(h['url'] == url for h in hero_boards):
+                hero_boards.append({'url': url, 'name': p.name})
             if len(hero_boards) >= 3:
                 break
 
@@ -118,7 +124,8 @@ def home(request):
     for cat in ('Papan Bulat', 'Papan Kubah', 'Flowerbox'):
         g = gallery_qs.filter(category=cat).first()
         if g and g.image:
-            brand_boards.append({'url': g.image.url, 'name': g.category})
+            url = g.get_src() if hasattr(g, 'get_src') else g.image.url
+            brand_boards.append({'url': url, 'name': g.category})
     if len(brand_boards) < 3:
         brand_boards = hero_boards
 
@@ -292,19 +299,22 @@ def about(request):
     for cat in ['Papan Bulat', 'Papan Kubah', 'Flowerbox', 'Papan Besar']:
         item = gallery_qs.filter(category=cat).first()
         if item and item.image:
-            story_photos.append({'url': item.image.url, 'name': item.category})
+            url = item.get_src() if hasattr(item, 'get_src') else item.image.url
+            story_photos.append({'url': url, 'name': item.category})
 
     if len(story_photos) < 4:
         for g in gallery_qs:
-            if g.image and not any(s['url'] == g.image.url for s in story_photos):
-                story_photos.append({'url': g.image.url, 'name': g.category})
+            url = g.get_src() if hasattr(g, 'get_src') else (g.image.url if g.image else '')
+            if url and not any(s['url'] == url for s in story_photos):
+                story_photos.append({'url': url, 'name': g.category})
             if len(story_photos) >= 4:
                 break
 
     if len(story_photos) < 4:
         for p in Product.objects.filter(available=True).exclude(image=''):
-            if p.image and not any(s['url'] == p.image.url for s in story_photos):
-                story_photos.append({'url': p.image.url, 'name': p.name})
+            url = p.get_image_url() if hasattr(p, 'get_image_url') else (p.image.url if p.image else '')
+            if url and not any(s['url'] == url for s in story_photos):
+                story_photos.append({'url': url, 'name': p.name})
             if len(story_photos) >= 4:
                 break
 
@@ -338,11 +348,13 @@ def _get_login_boards():
     for slug in ('papan-bulat', 'papan-kubah', 'flowerbox'):
         p = Product.objects.filter(id_slug=slug).first()
         if p and p.image:
-            boards.append({'url': p.image.url, 'name': p.name})
+            url = p.get_image_url() if hasattr(p, 'get_image_url') else p.image.url
+            boards.append({'url': url, 'name': p.name})
     if len(boards) < 3:
         for p in Product.objects.filter(available=True).exclude(image=''):
-            if p.image and not any(b['url'] == p.image.url for b in boards):
-                boards.append({'url': p.image.url, 'name': p.name})
+            url = p.get_image_url() if hasattr(p, 'get_image_url') else (p.image.url if p.image else '')
+            if url and not any(b['url'] == url for b in boards):
+                boards.append({'url': url, 'name': p.name})
             if len(boards) >= 3:
                 break
     return boards
