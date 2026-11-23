@@ -176,48 +176,56 @@
 {% if order.status == 'pending' %}
 <script src="{% if midtrans_is_production %}https://app.midtrans.com/snap/snap.js{% else %}https://app.sandbox.midtrans.com/snap/snap.js{% endif %}" data-client-key="{{ midtrans_client_key }}"></script>
 <script>
-let currentSnapToken = "{{ order.snap_token|default:'' }}";
 const orderCode = "{{ order.order_code }}";
+let snapToken = "";
+let isFetchingToken = false;
 
 function triggerPayPopup() {
   const payBtn = document.getElementById('payButton');
+  if (isFetchingToken) return;
+  isFetchingToken = true;
+
   if (payBtn) {
     payBtn.disabled = true;
-    payBtn.textContent = 'Menyiapkan Pembayaran...';
+    payBtn.innerHTML = '<span style="opacity:.7">⏳ Menyiapkan Pembayaran...</span>';
   }
 
-  if (!currentSnapToken) {
-    fetch(`/midtrans/token/${orderCode}/`)
-      .then(r => r.json())
-      .then(data => {
-        if (payBtn) {
-          payBtn.disabled = false;
-          payBtn.textContent = 'Bayar Sekarang ({{ order.subtotal|format_price }})';
-        }
-        if (data.snap_token) {
-          currentSnapToken = data.snap_token;
-          launchSnap(data.snap_token);
-        } else {
-          alert('Gagal memuat metode pembayaran: ' + (data.error || 'Silakan coba lagi'));
-        }
-      })
-      .catch(err => {
-        if (payBtn) {
-          payBtn.disabled = false;
-          payBtn.textContent = 'Bayar Sekarang ({{ order.subtotal|format_price }})';
-        }
-        alert('Terjadi kesalahan jaringan.');
-      });
-  } else {
-    if (payBtn) {
-      payBtn.disabled = false;
-      payBtn.textContent = 'Bayar Sekarang ({{ order.subtotal|format_price }})';
-    }
-    launchSnap(currentSnapToken);
-  }
+  // Selalu ambil token baru dari server agar tidak pakai token expired
+  fetch(`/midtrans/token/${orderCode}/`)
+    .then(r => {
+      if (!r.ok) throw new Error('Server error: ' + r.status);
+      return r.json();
+    })
+    .then(data => {
+      isFetchingToken = false;
+      if (payBtn) {
+        payBtn.disabled = false;
+        payBtn.innerHTML = '💳 Bayar Sekarang ({{ order.subtotal|format_price }})';
+      }
+      if (data.snap_token) {
+        snapToken = data.snap_token;
+        launchSnap(snapToken);
+      } else {
+        const msg = data.error || 'Token tidak tersedia. Silakan coba lagi.';
+        alert('⚠️ Gagal memuat metode pembayaran:\n' + msg);
+      }
+    })
+    .catch(err => {
+      isFetchingToken = false;
+      if (payBtn) {
+        payBtn.disabled = false;
+        payBtn.innerHTML = '💳 Bayar Sekarang ({{ order.subtotal|format_price }})';
+      }
+      alert('❌ Terjadi kesalahan jaringan. Periksa koneksi internet Anda dan coba lagi.');
+      console.error('Midtrans token fetch error:', err);
+    });
 }
 
 function launchSnap(token) {
+  if (!window.snap) {
+    alert('Layanan pembayaran belum siap. Coba refresh halaman ini.');
+    return;
+  }
   window.snap.pay(token, {
     onSuccess: function(result) {
       console.log('Payment success:', result);
@@ -226,7 +234,7 @@ function launchSnap(token) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ order_code: orderCode, result_status: 'success', result: result })
       }).then(() => {
-        window.location.href = window.location.pathname; // reload
+        window.location.href = window.location.pathname;
       }).catch(() => {
         window.location.href = window.location.pathname;
       });
@@ -245,7 +253,7 @@ function launchSnap(token) {
     },
     onError: function(result) {
       console.error('Payment error:', result);
-      alert('Pembayaran belum berhasil diselesaikan.');
+      alert('⚠️ Pembayaran belum berhasil. Silakan coba lagi atau pilih metode lain.');
     },
     onClose: function() {
       console.log('Customer closed popup.');
@@ -255,9 +263,9 @@ function launchSnap(token) {
 
 document.getElementById('payButton')?.addEventListener('click', triggerPayPopup);
 
-// Jika diarahkan langsung dari checkout, otomatis buka popup pembayaran
+// Auto buka popup jika diarahkan langsung dari checkout
 if (window.location.search.includes('auto_pay=1')) {
-  setTimeout(triggerPayPopup, 600);
+  setTimeout(triggerPayPopup, 800);
 }
 </script>
 {% endif %}

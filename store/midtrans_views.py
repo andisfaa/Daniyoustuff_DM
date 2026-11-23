@@ -119,19 +119,23 @@ def midtrans_finish_view(request):
 
 
 def get_snap_token_api(request, order_code):
-    """API untuk mengambil atau memperbarui Snap Token pesanan tertentu."""
+    """API untuk mengambil atau membuat ulang Snap Token pesanan tertentu."""
     order = get_object_or_404(Order, order_code=order_code.upper())
 
-    if not order.snap_token:
-        try:
-            create_order_snap_token(order, request=request)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+    # Selalu buat token baru agar tidak pakai token expired/konflik
+    order.snap_token = ''
+    order.save(update_fields=['snap_token'])
+
+    try:
+        create_order_snap_token(order, request=request)
+    except Exception as e:
+        logger.error(f"get_snap_token_api error: {e}")
+        return JsonResponse({'error': str(e)}, status=500)
 
     from django.conf import settings
     return JsonResponse({
         'order_code': order.order_code,
-        'snap_token': order.snap_token,
+        'snap_token': order.snap_token or '',
         'client_key': getattr(settings, 'MIDTRANS_CLIENT_KEY', ''),
         'is_production': getattr(settings, 'MIDTRANS_IS_PRODUCTION', False),
     })

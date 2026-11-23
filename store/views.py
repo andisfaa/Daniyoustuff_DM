@@ -642,13 +642,17 @@ def order_detail_view(request, order_code):
     except Order.DoesNotExist:
         return redirect('track')
 
-    # Jika pesanan Midtrans dan status masih pending tapi belum ada snap token, generate
-    if order.payment_method == 'midtrans' and order.status == 'pending' and not order.snap_token:
+    # Selalu generate ulang snap token untuk pesanan Midtrans yang masih pending
+    # agar token tidak expired dan metode pembayaran muncul
+    if order.payment_method == 'midtrans' and order.status == 'pending':
         from .midtrans_service import create_order_snap_token
         try:
+            # Reset dulu agar generate fresh token
+            order.snap_token = ''
+            order.save(update_fields=['snap_token'])
             create_order_snap_token(order, request=request)
         except Exception as e:
-            logger.error(f"Error auto generating snap token: {e}")
+            logger.error(f"Error generating snap token di order_detail: {e}")
 
     midtrans_client_key = getattr(settings, 'MIDTRANS_CLIENT_KEY', '')
     midtrans_is_production = getattr(settings, 'MIDTRANS_IS_PRODUCTION', False)
