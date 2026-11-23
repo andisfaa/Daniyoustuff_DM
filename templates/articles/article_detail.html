@@ -136,6 +136,22 @@
   .article-content a { color: #715330; }
   .article-content a:hover { text-decoration: underline; }
   .article-content hr { border: none; border-top: 1px solid #e0d4bc; margin: 2em 0; }
+  .article-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5em 0;
+    font-size: 0.95rem;
+  }
+  .article-content th, .article-content td {
+    border: 1px solid #ebd9c0;
+    padding: 10px 14px;
+    text-align: left;
+  }
+  .article-content th {
+    background: #fbf8f2;
+    font-weight: 700;
+    color: #3b2a1a;
+  }
 
   /* Back Link */
   .article-back {
@@ -280,7 +296,7 @@
 
   <!-- Content -->
   <div class="article-content">
-    {{ article.content|linebreaks }}
+    {{ article.content|safe }}
   </div>
 
   <!-- Back -->
